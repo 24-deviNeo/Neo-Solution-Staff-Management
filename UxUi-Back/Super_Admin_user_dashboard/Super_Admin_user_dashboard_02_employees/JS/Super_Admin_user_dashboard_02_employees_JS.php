@@ -128,8 +128,7 @@
                 <div class="row-actions" style="display:flex; align-items:center; justify-content:center; margin:0 auto; gap:6px;">
                   <button class="action-btn view" title="View Profile" onclick="viewEmp(${e.id})">${iconEye}</button>
                   <button class="action-btn edit" title="Edit Employee" onclick="editEmp(${e.id})">${iconEdit}</button>
-                  <button class="action-btn" title="Auto Login as Employee" onclick="window.loginAsEmpByProfileId(${Number(e.id)})"
-                    style="background:linear-gradient(135deg,#6366f1,#4f46e5); color:#fff; border:none; border-radius:8px; width:32px; height:32px; display:inline-flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 2px 8px rgba(99,102,241,.35); transition:all .2s;" onmouseover="this.style.transform='scale(1.12)'" onmouseout="this.style.transform='scale(1)'">${iconLoginAs}</button>
+                 
                 </div>
               </td>
             </tr>
