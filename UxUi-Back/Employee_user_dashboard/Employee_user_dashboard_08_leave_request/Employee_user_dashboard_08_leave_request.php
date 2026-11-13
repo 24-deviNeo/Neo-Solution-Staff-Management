@@ -634,13 +634,20 @@
           list.sort((a, b) => Number(b.id) - Number(a.id));
           renderEmpLeaveHistory(list);
         } else {
-          renderEmpLeaveHistory([]);
+          showLeaveHistoryLoadError();
         }
       })
-      .catch(() => {
-        renderEmpLeaveHistory([]);
+      .catch((error) => {
+        console.error('Unable to load leave history:', error);
+        showLeaveHistoryLoadError();
       });
   };
+
+  function showLeaveHistoryLoadError() {
+    const message = 'Unable to load leave history. Please refresh the page and try again.';
+    if (tbody) tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding: 30px 16px; color:#b91c1c;">${message}</td></tr>`;
+    if (mobileContainer) mobileContainer.innerHTML = `<div style="text-align:center; padding: 24px 16px; color:#b91c1c; background:#fff; border-radius:12px;">${message}</div>`;
+  }
 
   function renderEmpLeaveHistory(list) {
     if (!tbody || !mobileContainer) return;
@@ -857,12 +864,10 @@
             showEmpToast(res.message || 'Error submitting leave request.', 'error');
           }
         })
-        .catch(() => {
+        .catch((error) => {
           if (btn) btn.disabled = false;
-          showEmpToast('Leave request submitted successfully.', 'success');
-          form.reset();
-          window.initLeaveDateConstraints();
-          window.fetchEmpLeaveHistory();
+          console.error('Leave request submission failed:', error);
+          showEmpToast('Unable to submit the leave request. Please try again.', 'error');
         });
     });
   }
