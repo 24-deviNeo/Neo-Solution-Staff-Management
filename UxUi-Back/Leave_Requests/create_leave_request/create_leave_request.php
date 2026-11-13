@@ -71,7 +71,7 @@ if ($to < $from) {
 }
 
 $leave_obj = new leave_requests_ADD_UPDATE();
-$leave_obj->set_data($employee, $type, $from, $to, $days, $reason, "Pending", $employee_id);
+$leave_obj->set_data($employee, $type, $from, $to, $days, $reason, "Pending", $employee_id, (int)$_SESSION['user_id']);
 $res = $leave_obj->process_new_record();
 
 if ($res) {
