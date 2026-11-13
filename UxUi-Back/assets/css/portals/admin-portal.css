@@ -1152,3 +1152,145 @@ body :is(
         display: none !important;
     }
 }
+
+body :is(
+    [id^="Admin_user_dashboard_"],
+    [id^="Super_Admin_user_dashboard_"]
+):not(#_) {
+    padding-left: var(--erp-page-gutter) !important;
+    padding-right: var(--erp-page-gutter) !important;
+    box-sizing: border-box !important;
+}
+
+body #Admin_user_dashboard_01,
+body #Super_Admin_user_dashboard_01 {
+    padding-left: var(--erp-page-gutter) !important;
+    padding-right: var(--erp-page-gutter) !important;
+    box-sizing: border-box !important;
+}
+
+body :is(
+    [id^="Admin_user_dashboard_"],
+    [id^="Super_Admin_user_dashboard_"]
+) :is(.main, .main-wrapper, .content-wrapper, .dashboard-content, .content) > *:not(.topbar):not(.overlay):not(.w3-modal-overlay):not(.w3-modal):not(.modal):not(.modal-overlay) {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+body :is(
+    [id^="Admin_user_dashboard_"],
+    [id^="Super_Admin_user_dashboard_"]
+):not(#_) :is(
+    .banner,
+    .card,
+    .table-card,
+    .w3-table-card,
+    .settings-card,
+    .notif-card,
+    .doc-main-card,
+    .dept-card,
+    .role-card,
+    .pd-bento-card,
+    .onboarding-stat-card,
+    .mobile-emp-card,
+    .mobile-leave-card,
+    .mobile-doc-card
+) {
+    padding: var(--erp-card-padding) !important;
+}
+
+body :is(
+    [id^="Admin_user_dashboard_"],
+    [id^="Super_Admin_user_dashboard_"]
+):not(#_) .stat-card {
+    padding: var(--erp-stat-card-padding) !important;
+    gap: 10px !important;
+}
+
+body :is(
+    [id^="Admin_user_dashboard_"],
+    [id^="Super_Admin_user_dashboard_"]
+):not(#_) .banner {
+    padding: 18px 22px !important;
+}
+
+body :is(
+    [id^="Admin_user_dashboard_"],
+    [id^="Super_Admin_user_dashboard_"]
+):not(#_) .card-header-row {
+    gap: 8px !important;
+}
+
+@media (max-width: 600px) {
+    body :is(
+        [id^="Admin_user_dashboard_"],
+        [id^="Super_Admin_user_dashboard_"]
+    ):not(#_) .banner {
+        padding: 14px !important;
+    }
+
+    body :is(
+        [id^="Admin_user_dashboard_"],
+        [id^="Super_Admin_user_dashboard_"]
+    ):not(#_) .stat-card {
+        gap: 8px !important;
+    }
+}
+
+#Admin_user_dashboard_01 .main,
+#Super_Admin_user_dashboard_01 .main {
+    display: flex !important;
+    flex-direction: column !important;
+    row-gap: 0 !important;
+}
+
+#Admin_user_dashboard_01 .main > .topbar,
+#Super_Admin_user_dashboard_01 .main > .topbar {
+    margin: 0 !important;
+}
+
+#Admin_user_dashboard_01 .main > .banner,
+#Admin_user_dashboard_01 .main > .stats,
+#Admin_user_dashboard_01 .main > .charts-row,
+#Admin_user_dashboard_01 .main > .active-members-card,
+#Admin_user_dashboard_01 .main > .daily-plans-card,
+#Super_Admin_user_dashboard_01 .main > .banner,
+#Super_Admin_user_dashboard_01 .main > .stats,
+#Super_Admin_user_dashboard_01 .main > .charts-row,
+#Super_Admin_user_dashboard_01 .main > .active-members-card,
+#Super_Admin_user_dashboard_01 .main > .daily-plans-card {
+    margin: 12px 0 0 !important;
+}
+
+#Admin_user_dashboard_01 :is(.stats, .charts-row, .active-members-list),
+#Super_Admin_user_dashboard_01 :is(.stats, .charts-row, .active-members-list) {
+    gap: 12px !important;
+}
+
+body :is(
+    [id^="Admin_user_dashboard_"],
+    [id^="Super_Admin_user_dashboard_"]
+) #Employee_user_dashboard_03_personal_details {
+    padding-left: var(--erp-page-gutter) !important;
+    padding-right: var(--erp-page-gutter) !important;
+    box-sizing: border-box !important;
+}
+
+body :is(
+    [id^="Admin_user_dashboard_"],
+    [id^="Super_Admin_user_dashboard_"],
+    #Employee_user_dashboard_03_personal_details
+):not(#_) .topbar {
+    width: calc(100% + var(--erp-page-gutter) + var(--erp-page-gutter)) !important;
+    max-width: none !important;
+    margin: 0 !important;
+    transform: translateX(calc(0px - var(--erp-page-gutter))) !important;
+}
+
+body :is(
+    [id^="Admin_user_dashboard_"],
+    [id^="Super_Admin_user_dashboard_"],
+    #Employee_user_dashboard_03_personal_details
+):not(#_) .topbar + * {
+    margin-top: 12px !important;
+}
