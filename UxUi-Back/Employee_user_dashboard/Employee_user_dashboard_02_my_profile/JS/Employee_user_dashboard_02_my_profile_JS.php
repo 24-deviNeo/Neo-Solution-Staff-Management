@@ -373,7 +373,7 @@
     const saveUrl = baseUrl + 'UxUi-Back/Employee/update_profile/update_profile.php';
     const form = document.getElementById('editProfileForm');
     const formData = new FormData(form);
-    const userId = (userProfileData && (userProfileData.id || userProfileData.user_id)) ? (userProfileData.id || userProfileData.user_id) : (window.empSessionUserId || 0);
+    const userId = window.empSessionUserId || (userProfileData && userProfileData.user_id) || 0;
     formData.append('user_id', userId);
     formData.append('source', 'employee_self');
 
@@ -385,6 +385,11 @@
       .then(res => {
         if (btn) btn.disabled = false;
         if (res.status === 'success') {
+          if (res.data) {
+            userProfileData = Object.assign({}, userProfileData, res.data);
+            window.userProfileData = userProfileData;
+            renderProfileData(userProfileData);
+          }
           showProfileToast('Profile details updated successfully!', 'success');
           window.closeEditProfileModal();
           window.fetchEmployeeProfileData();
