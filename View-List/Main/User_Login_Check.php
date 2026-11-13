@@ -216,7 +216,10 @@ if ($User_Account_Check_obj->check_user_name()) {
                 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci");
 
                 // Only query employee tables for non-admin accounts
-                $chkEmpProf = $lconn->query("SELECT * FROM `employee_profiles` WHERE `user_id` = '{$safeUid}' OR (`email` != '' AND `email` = '{$safeUemail}') LIMIT 1");
+                $chkEmpProf = $lconn->query("SELECT * FROM `employee_profiles` WHERE `user_id` = '{$safeUid}' ORDER BY `id` DESC LIMIT 1");
+                if (!$chkEmpProf || $chkEmpProf->num_rows === 0) {
+                    $chkEmpProf = $lconn->query("SELECT * FROM `employee_profiles` WHERE `email` = '{$safeUemail}' ORDER BY `id` DESC LIMIT 1");
+                }
                 if ($chkEmpProf && $ep = $chkEmpProf->fetch_assoc()) {
                     if (!empty($ep['full_name'])) $_SESSION['full_name'] = $ep['full_name'];
                     if (!empty($ep['job_title'])) $_SESSION['job_title'] = $ep['job_title'];
