@@ -20,10 +20,12 @@ require_login(['admin']);
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="../UxUi-Back/assets/css/erp-theme.css">
+    <?php $portalThemeStylesheet = __DIR__ . '/../UxUi-Back/assets/css/erp-theme.css'; ?>
+    <link rel="stylesheet" href="../UxUi-Back/assets/css/erp-theme.css?v=<?php echo filemtime($portalThemeStylesheet) . '-' . filesize($portalThemeStylesheet); ?>">
     <title>Admin Portal | NEO Solution</title>
     <link rel="stylesheet" href="../UxUi-Back/assets/css/portals/sidebar-admin.css">
-    <link rel="stylesheet" href="../UxUi-Back/assets/css/portals/admin-portal.css?v=<?php echo filemtime(__DIR__ . '/../UxUi-Back/assets/css/portals/admin-portal.css'); ?>">
+    <?php $adminPortalStylesheet = __DIR__ . '/../UxUi-Back/assets/css/portals/admin-portal.css'; ?>
+    <link rel="stylesheet" href="../UxUi-Back/assets/css/portals/admin-portal.css?v=<?php echo filemtime($adminPortalStylesheet) . '-' . filesize($adminPortalStylesheet); ?>">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 
