@@ -22,6 +22,7 @@ class leave_requests_ADD_UPDATE
     private $status = "";
     private $approved_by = "";
     private $approved_date = "";
+    private $user_id = 0;
     
     private $ast = "1";
     private $sdt = "";
@@ -41,7 +42,8 @@ class leave_requests_ADD_UPDATE
         $get_days = 1,
         $get_reason = "",
         $get_status = "",
-        $get_employee_id = ""
+        $get_employee_id = "",
+        $get_user_id = 0
     ) {
         $this->set_employee_name($get_employee_name);
         $this->set_leave_type($get_leave_type);
@@ -53,6 +55,12 @@ class leave_requests_ADD_UPDATE
         if (!empty($get_employee_id)) {
             $this->set_employee_id($get_employee_id);
         }
+        $this->set_user_id($get_user_id);
+    }
+
+    public function set_user_id($get_user_id)
+    {
+        $this->user_id = (int)$get_user_id;
     }
 
     public function set_employee_id($get_employee_id)
@@ -173,6 +181,16 @@ class leave_requests_ADD_UPDATE
         $data_base_obj = new DataBase();
         $conn = $data_base_obj->get_data_base_connction();
 
+        $user_id_column = $conn->query("SHOW COLUMNS FROM `leave_requests` WHERE `Field` = 'user_id'");
+        if (!$user_id_column) {
+            $this->error_msg = $conn->error;
+            return false;
+        }
+        if ($user_id_column->num_rows === 0 && !$conn->query("ALTER TABLE `leave_requests` ADD COLUMN `user_id` int DEFAULT NULL")) {
+            $this->error_msg = $conn->error;
+            return false;
+        }
+
         $info = $this->get_existing_table_columns_info($conn);
         $cols = $info['cols'];
         $has_auto_inc = $info['has_auto_inc'];
@@ -193,6 +211,7 @@ class leave_requests_ADD_UPDATE
         }
 
         $field_map = [
+            'user_id'       => (int)$this->user_id,
             'employee_name' => addslashes($this->employee_name),
             'leave_type'    => addslashes($this->leave_type),
             'from_date'     => !empty($this->from_date) ? addslashes($this->from_date) : date('Y-m-d'),
