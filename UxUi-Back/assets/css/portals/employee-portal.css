@@ -277,19 +277,20 @@ header.topbar,
     box-shadow: 0 2px 8px rgba(20, 25, 60, .04) !important;
 }
 
-[id^="Employee_user_dashboard_"] .banner {
-    padding: 18px 22px !important;
+body :is([id^="Employee_user_dashboard_"]):not(#_) .banner {
+    padding: var(--erp-card-padding) !important;
     margin-bottom: 16px !important;
     border-radius: 14px !important;
 }
 
-[id^="Employee_user_dashboard_"] .stat-card {
-    padding: 14px 16px !important;
+body :is([id^="Employee_user_dashboard_"]):not(#_) .stat-card {
+    padding: var(--erp-stat-card-padding) !important;
+    gap: 10px !important;
 }
 
-[id^="Employee_user_dashboard_"] .card,
-[id^="Employee_user_dashboard_"] .settings-card {
-    padding: 16px 18px !important;
+body :is([id^="Employee_user_dashboard_"]):not(#_) .card,
+body :is([id^="Employee_user_dashboard_"]):not(#_) .settings-card {
+    padding: var(--erp-card-padding) !important;
 }
 
 [id^="Employee_user_dashboard_"] .table-card,
@@ -512,6 +513,10 @@ header.topbar,
         padding: 0 10px 28px !important;
     }
 
+    body :is([id^="Employee_user_dashboard_"]):not(#_) .stat-card {
+        gap: 8px !important;
+    }
+
     [id^="Employee_user_dashboard_"] .stats-grid,
     [id^="Employee_user_dashboard_"] .stats,
     [id^="Employee_user_dashboard_"] .charts-row,
@@ -644,6 +649,17 @@ body :is(
     overflow: hidden !important;
     text-overflow: ellipsis !important;
     white-space: nowrap !important;
+}
+
+body :is([id^="Employee_user_dashboard_"]):not(#_) {
+    padding-left: var(--erp-page-gutter) !important;
+    padding-right: var(--erp-page-gutter) !important;
+    box-sizing: border-box !important;
+}
+
+body :is([id^="Employee_user_dashboard_"]):not(#_) .emp-leave-container {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
 }
 
 @media (min-width: 901px) {
@@ -1046,4 +1062,23 @@ body .employee-dashboard-content :is(
     ) .topbar :is(.admin-pill, .emp-pill, .profile-pill) > span {
         display: none !important;
     }
+}
+
+body .employee-dashboard-content :is([id^="Employee_user_dashboard_"]):not(#_) .topbar {
+    width: calc(100% + var(--erp-page-gutter) + var(--erp-page-gutter)) !important;
+    max-width: none !important;
+    margin: 0 !important;
+    transform: translateX(calc(0px - var(--erp-page-gutter))) !important;
+}
+
+body .employee-dashboard-content #Employee_user_dashboard_01 .topbar + .banner {
+    margin-top: 12px !important;
+}
+
+body .employee-dashboard-content #Employee_user_dashboard_01 .main > .banner {
+    margin-bottom: 12px !important;
+}
+
+body .employee-dashboard-content :is([id^="Employee_user_dashboard_"]):not(#_) .topbar + * {
+    margin-top: 12px !important;
 }
