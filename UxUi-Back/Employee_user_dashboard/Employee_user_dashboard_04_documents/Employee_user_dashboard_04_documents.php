@@ -1033,9 +1033,9 @@
 
   function saveEmployeeDoc(key, docType) {
     var formData = new FormData();
-    var empName = (typeof window.userProfileData !== 'undefined' && window.userProfileData.full_name) ? window.userProfileData.full_name : '';
-    var empId = (typeof window.userProfileData !== 'undefined' && window.userProfileData.employee_id_code) ? window.userProfileData.employee_id_code : 'EMP-001';
-    var currentUid = (typeof window.empSessionUserId !== 'undefined' && window.empSessionUserId > 0) ? window.empSessionUserId : 1;
+    var empName = (typeof window.userProfileData !== 'undefined' && window.userProfileData.full_name) ? window.userProfileData.full_name : (window.currentEmployeeName || '');
+    var empId = (typeof window.userProfileData !== 'undefined' && window.userProfileData.employee_id_code) ? window.userProfileData.employee_id_code : (window.currentEmployeeCode || '');
+    var currentUid = (typeof window.empSessionUserId !== 'undefined' && window.empSessionUserId > 0) ? window.empSessionUserId : 0;
 
     formData.append('doc_type', docType);
     formData.append('category', docType);
@@ -1043,7 +1043,7 @@
       formData.append('employee_name', empName);
       formData.append('employee', empName);
     }
-    formData.append('employee_id', empId);
+    if (empId) formData.append('employee_id', empId);
     formData.append('user_id', currentUid);
     if (window._pendingRequestId) {
       formData.append('request_id', window._pendingRequestId);
