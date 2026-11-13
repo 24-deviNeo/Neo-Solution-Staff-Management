@@ -33,13 +33,20 @@ if (!$is_admin) {
     $employee_name = !empty($current_user['full_name']) && $current_user['full_name'] !== 'Guest'
         ? $current_user['full_name']
         : '';
-    $list_obj->filter_for_employee($employee_id, $employee_name);
+    $list_obj->filter_for_employee($employee_id, $employee_name, $session_user_id);
 }
 
 $res = $list_obj->get_result();
 $leaves = [];
 
-if ($res && $res->num_rows > 0) {
+if (!$res) {
+    error_log('Unable to fetch leave history: ' . $list_obj->get_error());
+    http_response_code(500);
+    echo json_encode(['status' => 'error', 'message' => 'Unable to load leave history.']);
+    exit;
+}
+
+if ($res->num_rows > 0) {
     while ($row = $res->fetch_assoc()) {
         $id = (int)$row['id'];
         $employee = !empty($row['employee_name']) ? $row['employee_name'] : 'Employee #' . $id;
