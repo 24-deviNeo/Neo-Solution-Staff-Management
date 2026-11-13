@@ -32,20 +32,20 @@ $safeEmail = addslashes($userEmail);
 $profile = null;
 
 try {
-    // 1. Try to find in employee_profiles table
-    // Priority order: exact profile id, exact user_id, exact email, exact employee code
+    // Resolve the profile by account identity before using the profile-row id.
     $p = null;
-    if ($empProfileId > 0) {
-        $c = $conn->query("SELECT * FROM `employee_profiles` WHERE `id` = '{$empProfileId}' LIMIT 1");
+    $profileUserIds = array_values(array_unique(array_filter([$userId, $mainUserId])));
+    foreach ($profileUserIds as $profileUserId) {
+        $c = $conn->query("SELECT * FROM `employee_profiles` WHERE `user_id` = '{$profileUserId}' ORDER BY `id` DESC LIMIT 1");
         if ($c && $c->num_rows > 0) $p = $c->fetch_assoc();
-    }
-    if (!$p && ($mainUserId > 0 || $userId > 0)) {
-        $uTarget = $mainUserId > 0 ? $mainUserId : $userId;
-        $c = $conn->query("SELECT * FROM `employee_profiles` WHERE `user_id` = '{$uTarget}' ORDER BY `id` DESC LIMIT 1");
-        if ($c && $c->num_rows > 0) $p = $c->fetch_assoc();
+        if ($p) break;
     }
     if (!$p && !empty($safeEmail)) {
         $c = $conn->query("SELECT * FROM `employee_profiles` WHERE `email` = '{$safeEmail}' ORDER BY `id` DESC LIMIT 1");
+        if ($c && $c->num_rows > 0) $p = $c->fetch_assoc();
+    }
+    if (!$p && $empProfileId > 0) {
+        $c = $conn->query("SELECT * FROM `employee_profiles` WHERE `id` = '{$empProfileId}' LIMIT 1");
         if ($c && $c->num_rows > 0) $p = $c->fetch_assoc();
     }
     if (!$p && !empty($_SESSION['employee_id_code'])) {
