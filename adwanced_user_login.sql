@@ -498,6 +498,7 @@ CREATE TABLE IF NOT EXISTS `documents` (
 
 CREATE TABLE IF NOT EXISTS `leave_requests` (
   `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int DEFAULT NULL,
   `ast` varchar(10) DEFAULT '1',
   `sdt` datetime DEFAULT CURRENT_TIMESTAMP,
   `employee_id` varchar(50) DEFAULT '',
