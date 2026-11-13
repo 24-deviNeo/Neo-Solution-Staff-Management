@@ -58,6 +58,9 @@ function loadAdminDocuments() {
         });
       } else {
         allAdminDocs = [];
+        updateDocStats([]);
+        renderAdminDocsError();
+        return;
       }
       updateDocStats(allAdminDocs);
       renderAdminDocs(allAdminDocs);
@@ -85,6 +88,9 @@ function loadAdminDocuments() {
             });
           } else {
             allAdminDocs = [];
+            updateDocStats([]);
+            renderAdminDocsError();
+            return;
           }
           updateDocStats(allAdminDocs);
           renderAdminDocs(allAdminDocs);
@@ -92,11 +98,19 @@ function loadAdminDocuments() {
         error: function() {
           allAdminDocs = [];
           updateDocStats([]);
-          renderAdminDocs([]);
+          renderAdminDocsError();
         }
       });
     }
   });
+}
+
+function renderAdminDocsError() {
+  var message = 'Documents could not be loaded. Please refresh and try again.';
+  var tbody = document.getElementById('docTableBody');
+  var mobileCards = document.getElementById('mobileDocCardsContainer');
+  if (tbody) tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding:48px 20px; color:#b91c1c;">' + message + '</td></tr>';
+  if (mobileCards) mobileCards.innerHTML = '<div style="text-align:center; padding:36px 16px; color:#b91c1c; background:#fff; border-radius:12px;">' + message + '</div>';
 }
 
 function updateDocStats(docs) {
