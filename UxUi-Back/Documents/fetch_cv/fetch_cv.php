@@ -12,6 +12,12 @@ $documents = [];
 try {
     $db = new DataBase();
     $res = $db->get_result("SELECT * FROM documents WHERE ast = '1' ORDER BY id DESC");
+    if (!$res) {
+        error_log("DB Error fetching documents: " . $db->get_error());
+        http_response_code(500);
+        echo json_encode(['status' => 'error', 'message' => 'Unable to load documents from the database.']);
+        exit;
+    }
     if ($res && $res->num_rows > 0) {
         while ($row = $res->fetch_assoc()) {
             $documents[] = [
@@ -34,8 +40,11 @@ try {
             ];
         }
     }
-} catch (Exception $e) {
-    // Database query error handled gracefully
+} catch (Throwable $e) {
+    error_log("Error fetching documents: " . $e->getMessage());
+    http_response_code(500);
+    echo json_encode(['status' => 'error', 'message' => 'Unable to load documents from the database.']);
+    exit;
 }
 
 echo json_encode([
