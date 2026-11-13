@@ -17,6 +17,33 @@ if (session_status() === PHP_SESSION_NONE) {
 $db = new DataBase();
 $conn = $db->get_data_base_connction();
 
+$profileColumns = [
+    'email' => 'varchar(255) DEFAULT NULL',
+    'full_name' => 'varchar(255) DEFAULT NULL',
+    'phone' => 'varchar(50) DEFAULT NULL',
+    'nic' => 'varchar(50) DEFAULT NULL',
+    'dob' => 'date DEFAULT NULL',
+    'gender' => 'varchar(20) DEFAULT NULL',
+    'address' => 'text DEFAULT NULL',
+    'emergency_contact_name' => 'varchar(255) DEFAULT NULL',
+    'emergency_contact_phone' => 'varchar(50) DEFAULT NULL',
+];
+foreach ($profileColumns as $column => $definition) {
+    $columnCheck = $conn->query("SHOW COLUMNS FROM `employee_profiles` WHERE `Field` = '{$column}'");
+    if (!$columnCheck) {
+        error_log("DB Error checking employee_profiles.{$column}: " . $conn->error);
+        http_response_code(500);
+        echo json_encode(['status' => 'error', 'message' => 'Unable to verify the employee profile database schema.']);
+        exit;
+    }
+    if ($columnCheck->num_rows === 0 && !$conn->query("ALTER TABLE `employee_profiles` ADD COLUMN `{$column}` {$definition}")) {
+        error_log("DB Error adding employee_profiles.{$column}: " . $conn->error);
+        http_response_code(500);
+        echo json_encode(['status' => 'error', 'message' => 'Unable to prepare the employee profile database for updates.']);
+        exit;
+    }
+}
+
 $sessionUid = isset($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : 0;
 $sessionMainId = isset($_SESSION['main_user_login_id']) ? (int)$_SESSION['main_user_login_id'] : $sessionUid;
 $sessionProfileId = isset($_SESSION['employee_profile_id']) ? (int)$_SESSION['employee_profile_id'] : 0;
@@ -78,16 +105,28 @@ $safeEmail    = addslashes($email);
 $safeFullName = addslashes($fullName);
 $safeSessEmail = addslashes($sessionEmail);
 
-// Check employee_profiles: prioritized resolution
-$profQ = "SELECT * FROM `employee_profiles` WHERE 1=0";
-if ($sessionProfileId > 0) $profQ .= " OR `id` = '{$sessionProfileId}'";
-if (!empty($sessionEmail)) $profQ .= " OR `email` = '{$safeSessEmail}'";
-if ($sessionUid > 0) $profQ .= " OR `user_id` = '{$sessionUid}'";
-if ($userId > 0) $profQ .= " OR `id` = '$userId' OR `user_id` = '$userId'";
-if (!empty($email)) $profQ .= " OR `email` = '{$safeEmail}'";
-$prof_check = $conn->query($profQ . " ORDER BY `id` ASC LIMIT 1");
-if ($prof_check && ($p = $prof_check->fetch_assoc())) {
-    $targetProf = $p;
+$profileLookups = [];
+if ($isEmployeeSelf) {
+    if ($sessionUid > 0) $profileLookups[] = "`user_id` = '{$sessionUid}'";
+    if (!empty($sessionEmail)) $profileLookups[] = "`email` = '{$safeSessEmail}'";
+    if ($sessionProfileId > 0) $profileLookups[] = "`id` = '{$sessionProfileId}'";
+    if ($userId > 0) $profileLookups[] = "`user_id` = '{$userId}'";
+} else {
+    if ($userId > 0) {
+        $profileLookups[] = "`id` = '{$userId}'";
+        $profileLookups[] = "`user_id` = '{$userId}'";
+    }
+    if (!empty($email)) $profileLookups[] = "`email` = '{$safeEmail}'";
+    if ($sessionProfileId > 0) $profileLookups[] = "`id` = '{$sessionProfileId}'";
+    if ($sessionUid > 0) $profileLookups[] = "`user_id` = '{$sessionUid}'";
+    if (!empty($sessionEmail)) $profileLookups[] = "`email` = '{$safeSessEmail}'";
+}
+foreach ($profileLookups as $lookup) {
+    $prof_check = $conn->query("SELECT * FROM `employee_profiles` WHERE {$lookup} ORDER BY `id` DESC LIMIT 1");
+    if ($prof_check && ($p = $prof_check->fetch_assoc())) {
+        $targetProf = $p;
+        break;
+    }
 }
 
 // Resolve main_user_login id (for employee accounts, access level 2 or 3)
@@ -220,6 +259,9 @@ if ($prof_id > 0) {
     if (!empty($updates)) {
         if (!$conn->query("UPDATE `employee_profiles` SET " . implode(", ", $updates) . " WHERE `id` = '$prof_id'")) {
             error_log("DB Error UPDATE employee_profiles: " . $conn->error);
+            http_response_code(500);
+            echo json_encode(['status' => 'error', 'message' => 'The profile could not be saved. Please try again or contact an administrator.']);
+            exit;
         }
     }
 } else {
@@ -233,17 +275,36 @@ if ($prof_id > 0) {
     $insJoined = !empty($joined) ? $joined : date('Y-m-d');
     $insMode = !empty($workMode) ? $workMode : 'On-Site (Active)';
 
-    $conn->query("INSERT INTO `employee_profiles` (
-        `user_id`, `full_name`, `email`, `phone`, `department`, `job_title`, `status`, `join_date`,
-        `nic`, `dob`, `gender`, `address`, `emergency_contact_name`, `emergency_contact_phone`,
-        `employee_id_code`, `employment_type`, `work_location`, `work_shift`, `working_days`, `weekly_roster`,
-        `work_mode`, `updated_at`
-    ) VALUES (
-        '$main_user_id', '{$safeFullName}', '{$safeEmail}', '" . addslashes($phone) . "', '" . addslashes($dept) . "', '" . addslashes($role) . "', '{$insStatus}', '{$insJoined}',
-        '" . addslashes($nic) . "', '" . addslashes($dob) . "', '" . addslashes($gender) . "', '" . addslashes($address) . "', '" . addslashes($emName) . "', '" . addslashes($emPhone) . "',
-        '" . addslashes($empCode) . "', '{$insType}', '{$insLocation}', '{$insShift}', '{$insDays}', '" . addslashes($insRoster) . "',
-        '{$insMode}', NOW()
-    )");
+    if ($isEmployeeSelf) {
+        $profileEmail = !empty($email) ? $safeEmail : $safeSessEmail;
+        $insertProfileResult = $conn->query("INSERT INTO `employee_profiles` (
+            `user_id`, `full_name`, `email`, `phone`, `nic`, `dob`, `gender`, `address`,
+            `emergency_contact_name`, `emergency_contact_phone`
+        ) VALUES (
+            '{$main_user_id}', '{$safeFullName}', '{$profileEmail}', '" . addslashes($phone) . "',
+            '" . addslashes($nic) . "', " . (!empty($dob) ? "'" . addslashes($dob) . "'" : "NULL") . ",
+            '" . addslashes($gender) . "', '" . addslashes($address) . "',
+            '" . addslashes($emName) . "', '" . addslashes($emPhone) . "'
+        )");
+    } else {
+        $insertProfileResult = $conn->query("INSERT INTO `employee_profiles` (
+            `user_id`, `full_name`, `email`, `phone`, `department`, `job_title`, `status`, `join_date`,
+            `nic`, `dob`, `gender`, `address`, `emergency_contact_name`, `emergency_contact_phone`,
+            `employee_id_code`, `employment_type`, `work_location`, `work_shift`, `working_days`, `weekly_roster`,
+            `work_mode`, `updated_at`
+        ) VALUES (
+            '$main_user_id', '{$safeFullName}', '{$safeEmail}', '" . addslashes($phone) . "', '" . addslashes($dept) . "', '" . addslashes($role) . "', '{$insStatus}', '{$insJoined}',
+            '" . addslashes($nic) . "', " . (!empty($dob) ? "'" . addslashes($dob) . "'" : "NULL") . ", '" . addslashes($gender) . "', '" . addslashes($address) . "', '" . addslashes($emName) . "', '" . addslashes($emPhone) . "',
+            '" . addslashes($empCode) . "', '{$insType}', '{$insLocation}', '{$insShift}', '{$insDays}', '" . addslashes($insRoster) . "',
+            '{$insMode}', NOW()
+        )");
+    }
+    if (!$insertProfileResult) {
+        error_log("DB Error INSERT employee_profiles: " . $conn->error);
+        http_response_code(500);
+        echo json_encode(['status' => 'error', 'message' => 'The profile could not be saved. Please try again or contact an administrator.']);
+        exit;
+    }
     $prof_id = (int)$conn->insert_id;
 }
 
