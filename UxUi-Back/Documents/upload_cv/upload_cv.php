@@ -6,6 +6,7 @@ if (session_status() === PHP_SESSION_NONE) {
 }
 
 include_once __DIR__ . '/../../../imports/need/DB.php';
+include_once __DIR__ . '/../../../Controllers/Main/Documents/documents_ADD_UPDATE.php';
 include_once __DIR__ . '/../../../imports/need/SystemNotifications.php';
 include_once __DIR__ . '/../../../imports/email/Email_Send.php';
 
@@ -16,24 +17,23 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 
 $db = new DataBase();
 
-// Ensure documents table has correct schema & auto-increment primary key
-$db->get_result("CREATE TABLE IF NOT EXISTS `documents` (
-    `id` int(11) NOT NULL AUTO_INCREMENT,
-    `user_id` int(11) DEFAULT 1,
-    `employee_id` varchar(50) DEFAULT 'EMP-001',
-    `employee_name` varchar(255) DEFAULT '',
-    `doc_type` varchar(255) DEFAULT 'Document',
-    `file_name` varchar(255) DEFAULT '',
-    `file_path` varchar(500) DEFAULT '',
-    `file_size` varchar(50) DEFAULT '1.0 MB',
-    `status` varchar(50) DEFAULT 'Uploaded',
-    `uploaded_date` datetime DEFAULT CURRENT_TIMESTAMP,
-    `ast` varchar(10) DEFAULT '1',
-    `sdt` datetime DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4");
+$sessionUserId = isset($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : 0;
+$userRole = strtolower(trim((string)($_SESSION['user_role'] ?? $_SESSION['ac_type'] ?? '')));
+$accessLevel = isset($_SESSION['main_user_account_access_level_list_id'])
+    ? (int)$_SESSION['main_user_account_access_level_list_id']
+    : 0;
+$isAdminUploader = in_array($userRole, ['admin', 'super_admin'], true) || $accessLevel === 1;
+$postedUserId = isset($_POST['user_id']) ? (int)$_POST['user_id'] : 0;
+$user_id = (!$isAdminUploader && $sessionUserId > 0)
+    ? $sessionUserId
+    : ($postedUserId > 0 ? $postedUserId : $sessionUserId);
+if ($user_id <= 0) {
+    http_response_code(401);
+    echo json_encode(['status' => 'error', 'message' => 'Please sign in before uploading a document.']);
+    exit;
+}
 
-$user_id       = isset($_POST['user_id']) ? (int)$_POST['user_id'] : 1;
+$document_saver = new documents_ADD_UPDATE();
 $employee_id   = isset($_POST['employee_id']) ? trim($_POST['employee_id']) : '';
 $employee_name = isset($_POST['employee_name']) ? trim($_POST['employee_name']) : (isset($_POST['employee']) ? trim($_POST['employee']) : (isset($_POST['name']) ? trim($_POST['name']) : ''));
 $doc_type      = isset($_POST['doc_type']) ? trim($_POST['doc_type']) : (isset($_POST['category']) ? trim($_POST['category']) : (isset($_POST['type']) ? trim($_POST['type']) : 'Document'));
@@ -43,7 +43,11 @@ $request_id    = isset($_POST['request_id']) && (int)$_POST['request_id'] > 0 ? 
 
 // If employee_name or employee_id is empty, lookup from employee_profiles or employees table
 if (empty($employee_name) || empty($employee_id)) {
-    $prof_res = $db->get_result("SELECT * FROM `employee_profiles` WHERE `user_id` = '$user_id' OR `id` = '$user_id' LIMIT 1");
+    $prof_res = $db->get_result("SELECT * FROM `employee_profiles` WHERE `user_id` = '$user_id' ORDER BY `id` DESC LIMIT 1");
+    if ((!$prof_res || $prof_res->num_rows === 0) && !empty($_SESSION['user_name'])) {
+        $safeSessionEmail = addslashes((string)$_SESSION['user_name']);
+        $prof_res = $db->get_result("SELECT * FROM `employee_profiles` WHERE `email` = '{$safeSessionEmail}' ORDER BY `id` DESC LIMIT 1");
+    }
     if ($prof_res && $prof_res->num_rows > 0) {
         $p = $prof_res->fetch_assoc();
         if (empty($employee_name) && !empty($p['full_name'])) $employee_name = $p['full_name'];
@@ -51,7 +55,7 @@ if (empty($employee_name) || empty($employee_id)) {
     }
     
     if (empty($employee_name)) {
-        $emp_res = $db->get_result("SELECT * FROM `employees` WHERE `id` = '$user_id' OR `ast` = '1' LIMIT 1");
+        $emp_res = $db->get_result("SELECT * FROM `employees` WHERE `main_user_login_id` = '$user_id' ORDER BY `id` DESC LIMIT 1");
         if ($emp_res && $emp_res->num_rows > 0) {
             $e = $emp_res->fetch_assoc();
             if (!empty($e['fullname'])) $employee_name = $e['fullname'];
@@ -61,10 +65,12 @@ if (empty($employee_name) || empty($employee_id)) {
 }
 
 if (empty($employee_name)) {
-    $employee_name = isset($_SESSION['user_name']) ? $_SESSION['user_name'] : (isset($_SESSION['fullname']) ? $_SESSION['fullname'] : 'Employee');
+    $employee_name = $_SESSION['full_name'] ?? $_SESSION['user_name'] ?? 'Employee';
 }
 if (empty($employee_id)) {
-    $employee_id = 'EMP-' . str_pad($user_id, 3, '0', STR_PAD_LEFT);
+    $employee_id = !empty($_SESSION['employee_id_code'])
+        ? (string)$_SESSION['employee_id_code']
+        : 'EMP-' . str_pad($user_id, 3, '0', STR_PAD_LEFT);
 }
 
 // 1. Identify files to process (Supports single file or Front+Back PNG pair)
@@ -134,25 +140,24 @@ foreach ($files_to_process as $idx => $item) {
     }
 
     if (move_uploaded_file($file_field['tmp_name'], $target_file) || copy($file_field['tmp_name'], $target_file)) {
-        $safe_emp_id    = addslashes($employee_id);
-        $safe_emp_name  = addslashes($employee_name);
-        $safe_doc_type  = addslashes($item_doc_type);
-        $safe_file_name = addslashes($original_name);
-        $safe_file_path = addslashes($relative_url);
-        $safe_file_size = addslashes($size_formatted);
-        $safe_status    = addslashes($status);
-
-        $sql = "INSERT INTO `documents` (`user_id`, `employee_id`, `employee_name`, `doc_type`, `file_name`, `file_path`, `file_size`, `status`, `uploaded_date`, `ast`, `sdt`) 
-                VALUES ('$user_id', '$safe_emp_id', '$safe_emp_name', '$safe_doc_type', '$safe_file_name', '$safe_file_path', '$safe_file_size', '$safe_status', NOW(), '1', NOW())";
-        $db->get_result($sql);
-        
-        $inserted_id = (int)$db->get_id();
-        if ($inserted_id <= 0) {
-            $last_res = $db->get_result("SELECT id FROM documents ORDER BY id DESC LIMIT 1");
-            if ($last_res && $last_res->num_rows > 0) {
-                $inserted_id = (int)$last_res->fetch_assoc()['id'];
-            }
+        $document_saver->set_data(
+            $employee_name,
+            $item_doc_type,
+            $original_name,
+            $relative_url,
+            $size_formatted,
+            $employee_id,
+            $user_id,
+            $status
+        );
+        if (!$document_saver->process_new_record()) {
+            if (is_file($target_file)) @unlink($target_file);
+            error_log("DB Error saving uploaded document: " . $document_saver->get_error());
+            http_response_code(500);
+            echo json_encode(['status' => 'error', 'message' => 'The file uploaded, but its document record could not be saved. Please try again.']);
+            exit;
         }
+        $inserted_id = (int)$document_saver->get_id();
 
         if ($primary_id === 0) {
             $primary_id = $inserted_id;
