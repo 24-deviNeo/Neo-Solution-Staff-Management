@@ -62,7 +62,7 @@ class documents_ADD_UPDATE
         ];
 
         foreach ($columns_to_check as $col => $typeDef) {
-            $check = $db->get_result("SHOW COLUMNS FROM `documents` LIKE '{$col}'");
+            $check = $db->get_result("SHOW COLUMNS FROM `documents` WHERE `Field` = '{$col}'");
             if ($check && $check->num_rows == 0) {
                 @$db->get_result("ALTER TABLE `documents` ADD COLUMN `{$col}` {$typeDef}");
             }
