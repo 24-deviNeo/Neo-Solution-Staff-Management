@@ -542,6 +542,7 @@
       }
 
       #Admin_user_dashboard_09_notifications .content-header {
+        flex-direction: column !important;
         align-items: stretch !important;
         padding: 0 !important;
         gap: 8px !important;
@@ -563,6 +564,7 @@
         display: flex !important;
         flex-wrap: nowrap !important;
         flex-shrink: 0 !important;
+        width: 100% !important;
         gap: 6px !important;
       }
 
