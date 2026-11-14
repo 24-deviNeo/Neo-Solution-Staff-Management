@@ -17,6 +17,16 @@
     const notifCount = document.getElementById('notifCount');
     const markAllReadBtn = document.getElementById('markAllReadBtn');
 
+    function escapeHtml(value) {
+      return String(value || '').replace(/[&<>"']/g, char => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+      })[char]);
+    }
+
     function formatTimeAgo(timeStr) {
       if (!timeStr) return '';
       const date = new Date(timeStr.replace(/-/g, '/'));
@@ -100,10 +110,10 @@
             </div>
             <div class="notif-body">
               <div class="notif-title-row">
-                <h4 class="notif-title">${n.title}</h4>
+                <h4 class="notif-title">${escapeHtml(n.title)}</h4>
                 <span class="notif-time">${formatTimeAgo(n.time)}</span>
               </div>
-              <p class="notif-msg">${n.message}</p>
+              <p class="notif-msg">${escapeHtml(n.message)}</p>
               <span class="notif-link">View Page →</span>
             </div>
             ${unreadDot}
@@ -222,3 +232,4 @@
   }
 })();
 </script>
+<?php include_once __DIR__ . '/../../../Notifications/employee_message_box_JS.php'; ?>
