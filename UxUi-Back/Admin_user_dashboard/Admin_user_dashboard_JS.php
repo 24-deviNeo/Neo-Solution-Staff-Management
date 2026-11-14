@@ -5,6 +5,7 @@
      item.classList.toggle('active', isMatch);
      item.classList.toggle('wwjm-sidebar-active', isMatch);
    });
+   sessionStorage.setItem('adminPortalActivePage', pageName);
  }
 
  function setAdminDashboardSectionDisplay(id, displayValue) {
@@ -137,6 +138,26 @@ function Admin_user_dashboard_10_OPEN() {
  if (typeof window.fetchAdminSettings === 'function') {
   window.fetchAdminSettings();
  }
+}
+
+function Admin_user_dashboard_restore_active_page() {
+  var pageOpeners = {
+    dashboard: Admin_user_dashboard_01_OPEN,
+    employees: Admin_user_dashboard_02_OPEN,
+    documents: Admin_user_dashboard_03_OPEN,
+    bank_details: Admin_user_dashboard_04_OPEN,
+    departments: Admin_user_dashboard_05_OPEN,
+    job_roles: Admin_user_dashboard_06_OPEN,
+    task_management: Admin_user_dashboard_07_OPEN,
+    leave_requests: Admin_user_dashboard_08_OPEN,
+    notifications: Admin_user_dashboard_09_OPEN,
+    settings: Admin_user_dashboard_10_OPEN
+  };
+  var openPage = pageOpeners[sessionStorage.getItem('adminPortalActivePage')];
+  if (typeof openPage !== 'function') {
+    openPage = Admin_user_dashboard_01_OPEN;
+  }
+  openPage();
 }
 
  </script>
