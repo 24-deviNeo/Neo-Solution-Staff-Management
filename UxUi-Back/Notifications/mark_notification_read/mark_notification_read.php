@@ -34,7 +34,7 @@ $recipient_name = !empty($current_user['full_name']) && $current_user['full_name
     : '';
 $scope = $is_admin
     ? "(recipient_role = 'admin' OR recipient_role = 'all')"
-    : "(recipient_role = 'all'" . ($recipient_name !== '' ? " OR (recipient_role = 'employee' AND recipient_name = '$recipient_name')" : '') . ")";
+    : "(recipient_role = 'all' OR (recipient_role = 'employee' AND ((recipient_user_id = $session_user_id)" . ($recipient_name !== '' ? " OR (recipient_user_id IS NULL AND recipient_name = '$recipient_name')" : '') . ")))";
 
 $id   = isset($_POST['id']) ? (int)$_POST['id'] : (isset($_GET['id']) ? (int)$_GET['id'] : 0);
 
