@@ -672,8 +672,13 @@
           <div class="header-title">
             <p id="notifCount">3 unread notifications</p>
           </div>
-          <button class="mark-read-btn" id="markAllReadBtn" type="button">Mark all as read</button>
+          <div class="notification-header-actions">
+            <button class="mark-read-btn employee-message-toggle" id="employeeMessageToggle" type="button" aria-controls="employeeMessageBox" aria-expanded="false">Compose message</button>
+            <button class="mark-read-btn" id="markAllReadBtn" type="button">Mark all as read</button>
+          </div>
         </div>
+
+        <?php include_once __DIR__ . '/../../Notifications/employee_message_box.php'; ?>
 
         <div class="notifications-list" id="notificationsContainer">
         </div>
