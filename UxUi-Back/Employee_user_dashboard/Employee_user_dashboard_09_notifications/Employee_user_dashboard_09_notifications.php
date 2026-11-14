@@ -205,6 +205,10 @@
     word-break: break-word;
   }
 
+  .emp-notif-item p {
+    white-space: pre-wrap;
+  }
+
   .emp-notif-icon {
     width: 38px;
     height: 38px;
@@ -396,6 +400,16 @@
     return timeStr.substring(0, 10);
   }
 
+  function escapeHtml(value) {
+    return String(value || '').replace(/[&<>"']/g, char => ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#39;'
+    })[char]);
+  }
+
   function renderEmpNotifs() {
     if (!listContainer) return;
 
@@ -416,7 +430,9 @@
       const type = (n.type || '').toLowerCase();
       let iconHtml = '<div class="emp-notif-icon" style="background:#eff6ff; color:#2563eb;"><i class="fa-solid fa-bell"></i></div>';
 
-      if (type.includes('payment') || type.includes('receipt') || type.includes('salary')) {
+      if (type.includes('admin_message')) {
+        iconHtml = '<div class="emp-notif-icon" style="background:#faf5ff; color:#7e22ce;"><i class="fa-solid fa-envelope"></i></div>';
+      } else if (type.includes('payment') || type.includes('receipt') || type.includes('salary')) {
         iconHtml = '<div class="emp-notif-icon" style="background:#ecfdf5; color:#059669;"><i class="fa-solid fa-file-invoice-dollar"></i></div>';
       } else if (type.includes('approved') || type.includes('complete') || type.includes('success')) {
         iconHtml = '<div class="emp-notif-icon" style="background:#ecfdf5; color:#059669;"><i class="fa-solid fa-check"></i></div>';
@@ -428,17 +444,18 @@
 
       const unreadClass = n.unread ? 'unread' : '';
       const dotHtml = n.unread ? '<span style="width:7px; height:7px; border-radius:50%; background:#2563eb; display:inline-block; margin-left:6px;"></span>' : '';
+      const actionLabel = type.includes('admin_message') ? 'Message from admin' : 'View Details →';
 
       return `
         <div class="emp-notif-item ${unreadClass}" onclick="handleEmpNotifClick(${n.id}, '${n.type}')" title="Click to view details">
           ${iconHtml}
           <div style="flex:1;">
             <div style="display:flex; align-items:center; justify-content:space-between;">
-              <h4 style="margin:0 0 3px; font-size:14px; font-weight:700; color:#1e293b;">${n.title} ${dotHtml}</h4>
+              <h4 style="margin:0 0 3px; font-size:14px; font-weight:700; color:#1e293b;">${escapeHtml(n.title)} ${dotHtml}</h4>
               <span style="font-size:11.5px; color:#94a3b8; font-weight:500;">${formatTimeAgo(n.time)}</span>
             </div>
-            <p style="margin:0; font-size:12.5px; color:#475569; line-height:1.4;">${n.message}</p>
-            <span style="font-size:11.5px; color:#2563eb; font-weight:600; margin-top:4px; display:inline-block;">View Details →</span>
+            <p style="margin:0; font-size:12.5px; color:#475569; line-height:1.4;">${escapeHtml(n.message)}</p>
+            <span style="font-size:11.5px; color:#2563eb; font-weight:600; margin-top:4px; display:inline-block;">${actionLabel}</span>
           </div>
         </div>
       `;
@@ -488,7 +505,9 @@
     renderEmpNotifs();
 
     const t = (type || '').toLowerCase();
-    if (t.includes('pay') || t.includes('receipt') || t.includes('salary')) {
+    if (t.includes('admin_message')) {
+      return;
+    } else if (t.includes('pay') || t.includes('receipt') || t.includes('salary')) {
       if (typeof Employee_user_dashboard_05_OPEN === 'function') Employee_user_dashboard_05_OPEN();
     } else if (t.includes('leave')) {
       if (typeof Employee_user_dashboard_08_OPEN === 'function') Employee_user_dashboard_08_OPEN();
