@@ -784,10 +784,13 @@
         align-items: flex-start !important;
         gap: 12px !important;
         padding: 12px 0 !important;
+        flex-wrap: wrap !important;
       }
 
       #Super_Admin_user_dashboard_10_settings .setting-info {
         min-width: 0 !important;
+        width: 100% !important;
+        flex: 1 1 100% !important;
       }
 
       #Super_Admin_user_dashboard_10_settings .setting-info h4 {
