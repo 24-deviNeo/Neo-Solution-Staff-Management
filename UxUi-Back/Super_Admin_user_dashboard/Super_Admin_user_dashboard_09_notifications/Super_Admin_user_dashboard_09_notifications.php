@@ -561,12 +561,15 @@
 
       #Super_Admin_user_dashboard_09_notifications .notification-header-actions {
         display: flex !important;
+        flex-wrap: nowrap !important;
         flex-shrink: 0 !important;
         gap: 6px !important;
       }
 
       #Super_Admin_user_dashboard_09_notifications .mark-read-btn {
         align-self: center !important;
+        width: auto !important;
+        white-space: nowrap !important;
         padding: 7px 9px !important;
         font-size: 11px !important;
         border-radius: 7px !important;
@@ -642,7 +645,7 @@
       }
 
       #Super_Admin_user_dashboard_09_notifications .mark-read-btn {
-        width: auto !important;
+        min-width: 0 !important;
         flex: 1 1 0 !important;
       }
     }
