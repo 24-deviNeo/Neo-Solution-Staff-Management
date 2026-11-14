@@ -41,7 +41,9 @@ if ($is_admin) {
 } else {
     $where = "WHERE recipient_role = 'all'";
     if ($safe_name !== '') {
-        $where .= " OR (recipient_role = 'employee' AND recipient_name = '$safe_name')";
+        $where .= " OR (recipient_role = 'employee' AND ((recipient_user_id = $session_user_id) OR (recipient_user_id IS NULL AND recipient_name = '$safe_name')))";
+    } else {
+        $where .= " OR (recipient_role = 'employee' AND recipient_user_id = $session_user_id)";
     }
 }
 
