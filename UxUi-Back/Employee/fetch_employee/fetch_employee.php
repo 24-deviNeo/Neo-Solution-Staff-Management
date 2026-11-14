@@ -73,6 +73,14 @@ try {
             $name = !empty($p['full_name']) ? trim($p['full_name']) : '';
             if (empty($name)) continue;
 
+            $uId = (int)($p['user_id'] ?? 0);
+            $emailVal = !empty($p['email']) ? trim($p['email']) : '';
+            if (($uId > 0 && isset($seenAccountIds[$uId])) ||
+                (!empty($emailVal) && isset($seenEmails[strtolower($emailVal)])) ||
+                isset($seenNames[strtolower($name)])) {
+                continue;
+            }
+
             $initials = '';
             foreach (explode(' ', $name) as $w) {
                 if (!empty($w)) $initials .= strtoupper($w[0]);
@@ -122,9 +130,6 @@ try {
                     }
                 }
             } catch (\Throwable $e) {}
-
-            $uId = (int)($p['user_id'] ?? 0);
-            $emailVal = !empty($p['email']) ? trim($p['email']) : '';
 
             if ($uId > 0) $seenAccountIds[$uId] = true;
             if (!empty($emailVal)) $seenEmails[strtolower($emailVal)] = true;
