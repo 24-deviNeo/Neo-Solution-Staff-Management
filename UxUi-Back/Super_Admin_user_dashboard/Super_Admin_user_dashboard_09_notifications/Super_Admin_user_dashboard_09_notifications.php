@@ -559,6 +559,12 @@
         line-height: 1.3 !important;
       }
 
+      #Super_Admin_user_dashboard_09_notifications .notification-header-actions {
+        display: flex !important;
+        flex-shrink: 0 !important;
+        gap: 6px !important;
+      }
+
       #Super_Admin_user_dashboard_09_notifications .mark-read-btn {
         align-self: center !important;
         padding: 7px 9px !important;
@@ -631,8 +637,13 @@
         align-items: stretch !important;
       }
 
-      #Super_Admin_user_dashboard_09_notifications .mark-read-btn {
+      #Super_Admin_user_dashboard_09_notifications .notification-header-actions {
         width: 100% !important;
+      }
+
+      #Super_Admin_user_dashboard_09_notifications .mark-read-btn {
+        width: auto !important;
+        flex: 1 1 0 !important;
       }
     }
   </style>
