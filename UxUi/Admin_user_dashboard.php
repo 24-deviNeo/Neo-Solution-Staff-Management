@@ -34,8 +34,12 @@ require_login(['admin']);
         window.pth = <?php echo json_encode(isset($pth) && $pth !== '' ? $pth : '../'); ?>;
         window.homePage = <?php echo json_encode(isset($home_page) ? rtrim($home_page, '/') . '/' : '../'); ?>;
         document.addEventListener("DOMContentLoaded", function() {
-            Admin_user_dashboard_close_all();
-            Admin_user_dashboard_01_OPEN();
+            if (typeof Admin_user_dashboard_restore_active_page === 'function') {
+                Admin_user_dashboard_restore_active_page();
+            } else {
+                Admin_user_dashboard_close_all();
+                Admin_user_dashboard_01_OPEN();
+            }
         });
 </script><?php 
     include_once __DIR__ . '/../UxUi-Back/Includes/sidebar.php';
