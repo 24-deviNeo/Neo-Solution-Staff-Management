@@ -25,11 +25,15 @@ require_login(['superadmin', 'super admin', 'super_admin', 'admin']);
         window.pth = <?php echo json_encode(isset($pth) && $pth !== '' ? $pth : '../'); ?>;
         window.homePage = <?php echo json_encode(isset($home_page) ? rtrim($home_page, '/') . '/' : '../'); ?>;
         document.addEventListener("DOMContentLoaded", function() {
-            if (typeof Super_Admin_user_dashboard_close_all === 'function') {
+            if (typeof Super_Admin_user_dashboard_restore_active_page === 'function') {
+                Super_Admin_user_dashboard_restore_active_page();
+            } else if (typeof Super_Admin_user_dashboard_close_all === 'function') {
                 Super_Admin_user_dashboard_close_all();
-            }
-            if (typeof Super_Admin_user_dashboard_01_OPEN === 'function') {
-                Super_Admin_user_dashboard_01_OPEN();
+                if (typeof Super_Admin_user_dashboard_01_OPEN === 'function') {
+                    Super_Admin_user_dashboard_01_OPEN();
+                } else if (typeof Admin_user_dashboard_01_OPEN === 'function') {
+                    Admin_user_dashboard_01_OPEN();
+                }
             } else if (typeof Admin_user_dashboard_01_OPEN === 'function') {
                 Admin_user_dashboard_01_OPEN();
             }
