@@ -239,13 +239,16 @@
     #Admin_user_dashboard_09_notifications .notification-header-actions,
     #Super_Admin_user_dashboard_09_notifications .notification-header-actions {
       align-items: stretch;
-      flex-direction: column;
+      flex-direction: row;
+      flex-wrap: nowrap;
       width: 100%;
     }
 
     #Admin_user_dashboard_09_notifications .employee-message-toggle,
     #Super_Admin_user_dashboard_09_notifications .employee-message-toggle {
-      width: 100%;
+      width: auto;
+      min-width: 0;
+      flex: 1 1 0;
     }
   }
 </style>
