@@ -42,7 +42,7 @@ class dashboard_details_LIST
     }
 
     // --- Dynamic KPI Summary purely from Database ---
-    public function get_kpi_summary()
+    public function get_kpi_summary($daily_active_members = null)
     {
         $data_base_obj = new DataBase();
 
@@ -64,14 +64,23 @@ class dashboard_details_LIST
         $emp_user_ids = [];
         $total_emp = 0;
 
-        $prof_res = $data_base_obj->get_result("SELECT id, user_id, full_name, email FROM `employee_profiles`");
+        $prof_res = $data_base_obj->get_result("SELECT id, user_id, full_name, email FROM `employee_profiles` ORDER BY id ASC");
         if ($prof_res && $prof_res->num_rows > 0) {
             while ($p = $prof_res->fetch_assoc()) {
                 $name = trim($p['full_name'] ?? '');
                 if (empty($name)) continue;
+
+                $uid = (int)($p['user_id'] ?? 0);
+                $email = trim($p['email'] ?? '');
+                if (($uid > 0 && isset($emp_user_ids[$uid])) ||
+                    (!empty($email) && isset($emp_emails[strtolower($email)])) ||
+                    isset($emp_names[strtolower($name)])) {
+                    continue;
+                }
+
                 $total_emp++;
-                if (!empty($p['user_id'])) $emp_user_ids[(int)$p['user_id']] = true;
-                if (!empty($p['email'])) $emp_emails[strtolower(trim($p['email']))] = true;
+                if ($uid > 0) $emp_user_ids[$uid] = true;
+                if (!empty($email)) $emp_emails[strtolower($email)] = true;
                 $emp_names[strtolower($name)] = true;
             }
         }
@@ -93,10 +102,14 @@ class dashboard_details_LIST
             }
         }
 
-        $acc_res = $data_base_obj->get_result("SELECT l.id, l.user_name, l.name_show, l.first_name, l.last_name
+        $acc_res = $data_base_obj->get_result("SELECT l.id, l.user_name, l.name_show, l.first_name, l.last_name,
+                l.ac_type, a.type_of_access
             FROM `main_user_login` l
-            INNER JOIN `main_user_account_access_level_list` a ON a.id = l.main_user_account_access_level_list_id
-            WHERE LOWER(a.type_of_access) = 'employee'");
+            LEFT JOIN `main_user_account_access_level_list` a ON a.id = l.main_user_account_access_level_list_id
+            WHERE l.id != 1
+              AND LOWER(TRIM(COALESCE(a.type_of_access, ''))) != 'admin'
+              AND LOWER(TRIM(COALESCE(l.ac_type, ''))) != 'admin'
+            ORDER BY l.id ASC");
         if ($acc_res && $acc_res->num_rows > 0) {
             while ($acc = $acc_res->fetch_assoc()) {
                 $uid = (int)$acc['id'];
@@ -118,7 +131,7 @@ class dashboard_details_LIST
         $stats['total_employees'] = $total_emp;
 
         // Daily activity is based on presence / work plan activity today
-        $daily = $this->get_daily_active_members();
+        $daily = is_array($daily_active_members) ? $daily_active_members : $this->get_daily_active_members();
         $stats['active_employees'] = count($daily);
         $stats['inactive_today'] = max(0, $stats['total_employees'] - $stats['active_employees']);
 
@@ -130,7 +143,7 @@ class dashboard_details_LIST
         }
 
         $res = $data_base_obj->get_result("SELECT 
-            SUM(CASE WHEN LOWER(TRIM(status)) = 'pending' THEN 1 ELSE 0 END) AS pending_cnt,
+            SUM(CASE WHEN LOWER(TRIM(COALESCE(NULLIF(status, ''), 'pending'))) = 'pending' THEN 1 ELSE 0 END) AS pending_cnt,
             SUM(CASE WHEN LOWER(TRIM(status)) = 'completed' OR LOWER(TRIM(status)) = 'done' THEN 1 ELSE 0 END) AS completed_cnt,
             SUM(CASE WHEN LOWER(TRIM(status)) = 'in progress' OR LOWER(TRIM(status)) = 'in-progress' OR LOWER(TRIM(status)) = 'inprogress' THEN 1 ELSE 0 END) AS in_prog_cnt
             FROM `$tasks_table`");
@@ -240,7 +253,7 @@ class dashboard_details_LIST
             while ($row = $res->fetch_assoc()) {
                 $pId = (int)$row['profile_id'];
                 $uId = (int)$row['user_id'];
-                $dedupKey = $pId > 0 ? "p_{$pId}" : "u_{$uId}";
+                $dedupKey = $uId > 0 ? "u_{$uId}" : "p_{$pId}";
                 if (isset($seenMembers[$dedupKey])) continue;
                 $seenMembers[$dedupKey] = true;
 
@@ -293,30 +306,10 @@ class dashboard_details_LIST
             LEFT JOIN `employee_profiles` p ON (p.id = w.employee_profile_id OR p.user_id = w.user_id)
             LEFT JOIN `employees` e ON (e.id = w.employee_profile_id OR e.id = w.user_id OR e.main_user_login_id = w.user_id)
             LEFT JOIN `main_user_login` l ON l.id = w.user_id
-            WHERE (w.plan_date = '{$today}' OR w.plan_date = CURDATE() OR DATE(w.updated_at) = '{$today}' OR DATE(w.updated_at) = CURDATE())
+            WHERE w.plan_date = '{$today}'
             GROUP BY w.id
             ORDER BY w.updated_at DESC, w.id DESC";
         $res = $data_base_obj->get_result($query);
-        if (!$res || $res->num_rows === 0) {
-                $fallbackQuery = "SELECT w.id, w.user_id, w.plan_text, w.status, w.started_at,
-                    COALESCE((SELECT d.ip_address FROM `main_user_login_device` d
-                    WHERE d.main_user_login_id = w.user_id AND d.ast = 1
-                    ORDER BY d.is_active DESC, d.last_activity DESC LIMIT 1), '') AS ip_address,
-                    w.submitted_at, w.updated_at, w.plan_date,
-                    COALESCE(NULLIF(w.employee_name, ''), NULLIF(p.full_name, ''), NULLIF(e.fullname, ''), NULLIF(l.name_show, ''),
-                        NULLIF(CONCAT_WS(' ', l.first_name, l.last_name), ''), l.user_name, 'Employee') AS full_name,
-                    COALESCE(NULLIF(w.department, ''), NULLIF(p.department, ''), NULLIF(e.departments, ''), '') AS department,
-                    COALESCE(NULLIF(w.job_title, ''), NULLIF(p.job_title, ''), NULLIF(e.job_roles, ''), '') AS job_title,
-                    COALESCE(p.id, e.id, w.employee_profile_id, w.user_id) AS profile_id
-                FROM `daily_employee_work_plans` w
-                LEFT JOIN `employee_profiles` p ON (p.id = w.employee_profile_id OR p.user_id = w.user_id)
-                LEFT JOIN `employees` e ON (e.id = w.employee_profile_id OR e.id = w.user_id OR e.main_user_login_id = w.user_id)
-                LEFT JOIN `main_user_login` l ON l.id = w.user_id
-                GROUP BY w.id
-                ORDER BY w.updated_at DESC, w.id DESC LIMIT 20";
-            $res = $data_base_obj->get_result($fallbackQuery);
-        }
-
         if ($res && $res->num_rows > 0) {
             while ($row = $res->fetch_assoc()) {
                 $plans[] = [
@@ -388,9 +381,11 @@ class dashboard_details_LIST
     }
 
     // --- Task Status Distribution purely from database ---
-    public function get_task_status_distribution()
+    public function get_task_status_distribution($kpi = null)
     {
-        $kpi = $this->get_kpi_summary();
+        if (!is_array($kpi)) {
+            $kpi = $this->get_kpi_summary();
+        }
 
         return [
             ['label' => 'Completed',   'count' => (int)$kpi['completed_tasks'],   'color' => '#12b76a'],
@@ -528,12 +523,15 @@ class dashboard_details_LIST
     // --- Full Dashboard Data Payload ---
     public function get_full_dashboard_data()
     {
+        $active_members = $this->get_daily_active_members();
+        $kpi = $this->get_kpi_summary($active_members);
+
         return [
-            'kpi'           => $this->get_kpi_summary(),
-            'active_members'=> $this->get_daily_active_members(),
+            'kpi'           => $kpi,
+            'active_members'=> $active_members,
             'daily_work_plans' => $this->get_daily_work_plans(),
             'monthly_tasks' => $this->get_task_completion_statistics(12),
-            'task_status'   => $this->get_task_status_distribution(),
+            'task_status'   => $this->get_task_status_distribution($kpi),
             'departments'   => $this->get_department_distribution(),
             'activities'    => $this->get_recent_activities()
         ];
