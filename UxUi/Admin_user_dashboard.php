@@ -74,6 +74,8 @@ require_login(['admin']);
 
     include_once __DIR__ . '/../UxUi-Back/Admin_user_dashboard/Admin_user_dashboard_10_settings/Admin_user_dashboard_10_settings.php';
     include_once __DIR__ . '/../UxUi-Back/Admin_user_dashboard/Admin_user_dashboard_10_settings/JS/Admin_user_dashboard_10_settings_JS.php';
+
+    include_once __DIR__ . '/../UxUi-Back/Admin_user_dashboard/Admin_user_dashboard_12_staff_info/Admin_user_dashboard_12_staff_info.php';
 ?>
  
         <?php 
