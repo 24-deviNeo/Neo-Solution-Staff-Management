@@ -29,34 +29,6 @@ $current_page = basename($_SERVER['PHP_SELF']);
             <span>Employees</span>
         </a>
 
-        <a role="button" tabindex="0" onclick="if(typeof Super_Admin_user_dashboard_03_OPEN==='function'){ Super_Admin_user_dashboard_03_OPEN(); } else if(typeof Admin_user_dashboard_03_OPEN==='function'){ Admin_user_dashboard_03_OPEN(); } if(typeof closeAdminSidebar==='function'){ closeAdminSidebar(); }"
-           data-page="documents"
-           class="sidebar-link">
-            <i class="fa-solid fa-folder-open"></i>
-            <span>Documents</span>
-        </a>
-
-        <a role="button" tabindex="0" onclick="if(typeof Super_Admin_user_dashboard_04_OPEN==='function'){ Super_Admin_user_dashboard_04_OPEN(); } else if(typeof Admin_user_dashboard_04_OPEN==='function'){ Admin_user_dashboard_04_OPEN(); } if(typeof closeAdminSidebar==='function'){ closeAdminSidebar(); }"
-           data-page="bank_details"
-           class="sidebar-link">
-            <i class="fa-solid fa-building-columns"></i>
-            <span>Bank Details</span>
-        </a>
-
-        <a role="button" tabindex="0" onclick="if(typeof Super_Admin_user_dashboard_05_OPEN==='function'){ Super_Admin_user_dashboard_05_OPEN(); } else if(typeof Admin_user_dashboard_05_OPEN==='function'){ Admin_user_dashboard_05_OPEN(); } if(typeof closeAdminSidebar==='function'){ closeAdminSidebar(); }"
-           data-page="departments"
-           class="sidebar-link">
-            <i class="fa-solid fa-sitemap"></i>
-            <span>Departments</span>
-        </a>
-
-        <a role="button" tabindex="0" onclick="if(typeof Super_Admin_user_dashboard_06_OPEN==='function'){ Super_Admin_user_dashboard_06_OPEN(); } else if(typeof Admin_user_dashboard_06_OPEN==='function'){ Admin_user_dashboard_06_OPEN(); } if(typeof closeAdminSidebar==='function'){ closeAdminSidebar(); }"
-           data-page="job_roles"
-           class="sidebar-link">
-            <i class="fa-solid fa-briefcase"></i>
-            <span>Job Roles</span>
-        </a>
-
         <a role="button" tabindex="0" onclick="if(typeof Super_Admin_user_dashboard_07_OPEN==='function'){ Super_Admin_user_dashboard_07_OPEN(); } else if(typeof Admin_user_dashboard_07_OPEN==='function'){ Admin_user_dashboard_07_OPEN(); } if(typeof closeAdminSidebar==='function'){ closeAdminSidebar(); }"
            data-page="task_management"
            class="sidebar-link">
@@ -64,18 +36,12 @@ $current_page = basename($_SERVER['PHP_SELF']);
             <span>Task Management</span>
         </a>
 
-        <a role="button" tabindex="0" onclick="if(typeof Super_Admin_user_dashboard_08_OPEN==='function'){ Super_Admin_user_dashboard_08_OPEN(); } else if(typeof Admin_user_dashboard_08_OPEN==='function'){ Admin_user_dashboard_08_OPEN(); } if(typeof closeAdminSidebar==='function'){ closeAdminSidebar(); }"
-           data-page="leave_requests"
+        <!-- Staff Info Button: Opens Staff Info Hub Page -->
+        <a role="button" tabindex="0" onclick="if(typeof Super_Admin_user_dashboard_12_OPEN==='function'){ Super_Admin_user_dashboard_12_OPEN(); } else if(typeof Admin_user_dashboard_12_OPEN==='function'){ Admin_user_dashboard_12_OPEN(); } if(typeof closeAdminSidebar==='function'){ closeAdminSidebar(); }"
+           data-page="staff_info"
            class="sidebar-link">
-            <i class="fa-solid fa-calendar-check"></i>
-            <span>Leave Requests</span>
-        </a>
-
-        <a role="button" tabindex="0" onclick="if(typeof Super_Admin_user_dashboard_09_OPEN==='function'){ Super_Admin_user_dashboard_09_OPEN(); } else if(typeof Admin_user_dashboard_09_OPEN==='function'){ Admin_user_dashboard_09_OPEN(); } if(typeof closeAdminSidebar==='function'){ closeAdminSidebar(); }"
-           data-page="notifications"
-           class="sidebar-link">
-            <i class="fa-solid fa-bell"></i>
-            <span>Notifications</span>
+            <i class="fa-solid fa-id-card-clip"></i>
+            <span>Staff Info</span>
         </a>
 
         <a role="button" tabindex="0" onclick="if(typeof Super_Admin_user_dashboard_10_OPEN==='function'){ Super_Admin_user_dashboard_10_OPEN(); } else if(typeof Admin_user_dashboard_10_OPEN==='function'){ Admin_user_dashboard_10_OPEN(); } if(typeof closeAdminSidebar==='function'){ closeAdminSidebar(); }"
@@ -100,6 +66,44 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
 <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeAdminSidebar()"></div>
 
+<!-- Modern Mobile App-Style Bottom Navigation Bar -->
+<nav class="admin-mobile-bottom-nav" id="adminMobileBottomNav">
+    <a role="button" tabindex="0" onclick="if(typeof Super_Admin_user_dashboard_01_OPEN==='function'){ Super_Admin_user_dashboard_01_OPEN(); } else if(typeof Admin_user_dashboard_01_OPEN==='function'){ Admin_user_dashboard_01_OPEN(); }"
+       data-page="dashboard"
+       class="mobile-nav-item active">
+        <i class="fa-solid fa-gauge-high"></i>
+        <span>Dashboard</span>
+    </a>
+
+    <a role="button" tabindex="0" onclick="if(typeof Super_Admin_user_dashboard_02_OPEN==='function'){ Super_Admin_user_dashboard_02_OPEN(); } else if(typeof Admin_user_dashboard_02_OPEN==='function'){ Admin_user_dashboard_02_OPEN(); }"
+       data-page="employees"
+       class="mobile-nav-item">
+        <i class="fa-solid fa-users"></i>
+        <span>Employees</span>
+    </a>
+
+    <a role="button" tabindex="0" onclick="if(typeof Super_Admin_user_dashboard_07_OPEN==='function'){ Super_Admin_user_dashboard_07_OPEN(); } else if(typeof Admin_user_dashboard_07_OPEN==='function'){ Admin_user_dashboard_07_OPEN(); }"
+       data-page="task_management"
+       class="mobile-nav-item">
+        <i class="fa-solid fa-clipboard-check"></i>
+        <span>Tasks</span>
+    </a>
+
+    <a role="button" tabindex="0" onclick="if(typeof Super_Admin_user_dashboard_12_OPEN==='function'){ Super_Admin_user_dashboard_12_OPEN(); } else if(typeof Admin_user_dashboard_12_OPEN==='function'){ Admin_user_dashboard_12_OPEN(); }"
+       data-page="staff_info"
+       class="mobile-nav-item">
+        <i class="fa-solid fa-id-card-clip"></i>
+        <span>Staff Info</span>
+    </a>
+
+    <a role="button" tabindex="0" onclick="if(typeof Super_Admin_user_dashboard_10_OPEN==='function'){ Super_Admin_user_dashboard_10_OPEN(); } else if(typeof Admin_user_dashboard_10_OPEN==='function'){ Admin_user_dashboard_10_OPEN(); }"
+       data-page="settings"
+       class="mobile-nav-item">
+        <i class="fa-solid fa-gear"></i>
+        <span>Settings</span>
+    </a>
+</nav>
+
 <script>
     function closeAdminSidebar() {
         var sb = document.getElementById('adminSidebar');
@@ -107,6 +111,17 @@ $current_page = basename($_SERVER['PHP_SELF']);
         if (sb) sb.classList.remove('mobile-open');
         if (ov) ov.classList.remove('active');
         document.body.style.overflow = '';
+    }
+
+    function toggleStaffInfoSubmenu(e) {
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        var group = document.getElementById('staffInfoGroup');
+        if (group) {
+            group.classList.toggle('open');
+        }
     }
 
     function openAdminSidebar() {
