@@ -1,10 +1,19 @@
 <script type="text/javascript">
  function setSidebarActive(pageName) {
-   document.querySelectorAll('.wwjm-sidebar-nav-item, .sidebar-link').forEach(function(item){
+   document.querySelectorAll('.wwjm-sidebar-nav-item, .sidebar-link, .sidebar-sublink, .mobile-nav-item').forEach(function(item){
      var isMatch = item.getAttribute('data-page') === pageName;
      item.classList.toggle('active', isMatch);
      item.classList.toggle('wwjm-sidebar-active', isMatch);
    });
+
+   // If a sub-page of Staff Info is opened, also highlight staff_info in mobile bottom nav
+   var staffInfoPages = ['documents', 'bank_details', 'departments', 'job_roles', 'leave_requests', 'staff_info'];
+   if (staffInfoPages.indexOf(pageName) !== -1) {
+     document.querySelectorAll('.mobile-nav-item[data-page="staff_info"]').forEach(function(el) {
+       el.classList.add('active');
+     });
+   }
+
    sessionStorage.setItem('adminPortalActivePage', pageName);
  }
 
@@ -26,6 +35,7 @@ function Super_Admin_user_dashboard_close_all() {
  setSuperAdminDashboardSectionDisplay("Super_Admin_user_dashboard_08_leave_requests", "none");
  setSuperAdminDashboardSectionDisplay("Super_Admin_user_dashboard_09_notifications", "none");
  setSuperAdminDashboardSectionDisplay("Super_Admin_user_dashboard_10_settings", "none");
+ setSuperAdminDashboardSectionDisplay("Super_Admin_user_dashboard_12_staff_info", "none");
 
  }
 
@@ -140,6 +150,12 @@ function Super_Admin_user_dashboard_10_OPEN() {
  }
 }
 
+function Super_Admin_user_dashboard_12_OPEN() {
+ Super_Admin_user_dashboard_close_all();
+ setSuperAdminDashboardSectionDisplay("Super_Admin_user_dashboard_12_staff_info", "block");
+ setSidebarActive('staff_info');
+}
+
 function Super_Admin_user_dashboard_restore_active_page() {
   var pageOpeners = {
     dashboard: Super_Admin_user_dashboard_01_OPEN,
@@ -151,7 +167,8 @@ function Super_Admin_user_dashboard_restore_active_page() {
     task_management: Super_Admin_user_dashboard_07_OPEN,
     leave_requests: Super_Admin_user_dashboard_08_OPEN,
     notifications: Super_Admin_user_dashboard_09_OPEN,
-    settings: Super_Admin_user_dashboard_10_OPEN
+    settings: Super_Admin_user_dashboard_10_OPEN,
+    staff_info: Super_Admin_user_dashboard_12_OPEN
   };
   var openPage = pageOpeners[sessionStorage.getItem('adminPortalActivePage')];
   if (typeof openPage !== 'function') {
@@ -174,4 +191,5 @@ window.Admin_user_dashboard_07_OPEN = Super_Admin_user_dashboard_07_OPEN;
 window.Admin_user_dashboard_08_OPEN = Super_Admin_user_dashboard_08_OPEN;
 window.Admin_user_dashboard_09_OPEN = Super_Admin_user_dashboard_09_OPEN;
 window.Admin_user_dashboard_10_OPEN = Super_Admin_user_dashboard_10_OPEN;
+window.Admin_user_dashboard_12_OPEN = Super_Admin_user_dashboard_12_OPEN;
 </script>
