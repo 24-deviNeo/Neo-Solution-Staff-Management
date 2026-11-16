@@ -1,10 +1,22 @@
 <script type="text/javascript">
  function setSidebarActive(pageName) {
-   document.querySelectorAll('.wwjm-sidebar-nav-item, .sidebar-link').forEach(function(item){
+   document.querySelectorAll('.wwjm-sidebar-nav-item, .sidebar-link, .sidebar-sublink').forEach(function(item){
      var isMatch = item.getAttribute('data-page') === pageName;
      item.classList.toggle('active', isMatch);
      item.classList.toggle('wwjm-sidebar-active', isMatch);
    });
+
+   // Auto-expand and style the Staff Info dropdown group when a sub-page is active
+   var staffInfoPages = ['documents', 'bank_details', 'departments', 'job_roles', 'leave_requests'];
+   var staffInfoGroup = document.getElementById('staffInfoGroup');
+   if (staffInfoGroup) {
+     var isStaffInfoPage = staffInfoPages.indexOf(pageName) !== -1;
+     staffInfoGroup.classList.toggle('has-active', isStaffInfoPage);
+     if (isStaffInfoPage) {
+       staffInfoGroup.classList.add('open');
+     }
+   }
+
    sessionStorage.setItem('adminPortalActivePage', pageName);
  }
 
@@ -26,6 +38,7 @@ function Admin_user_dashboard_close_all() {
  setAdminDashboardSectionDisplay("Admin_user_dashboard_08_leave_requests", "none");
  setAdminDashboardSectionDisplay("Admin_user_dashboard_09_notifications", "none");
  setAdminDashboardSectionDisplay("Admin_user_dashboard_10_settings", "none");
+ setAdminDashboardSectionDisplay("Super_Admin_user_dashboard_12_staff_info", "none");
 
  }
 
@@ -140,6 +153,12 @@ function Admin_user_dashboard_10_OPEN() {
  }
 }
 
+function Admin_user_dashboard_12_OPEN() {
+ Admin_user_dashboard_close_all();
+ setAdminDashboardSectionDisplay("Super_Admin_user_dashboard_12_staff_info", "block");
+ setSidebarActive('staff_info');
+}
+
 function Admin_user_dashboard_restore_active_page() {
   var pageOpeners = {
     dashboard: Admin_user_dashboard_01_OPEN,
@@ -151,7 +170,8 @@ function Admin_user_dashboard_restore_active_page() {
     task_management: Admin_user_dashboard_07_OPEN,
     leave_requests: Admin_user_dashboard_08_OPEN,
     notifications: Admin_user_dashboard_09_OPEN,
-    settings: Admin_user_dashboard_10_OPEN
+    settings: Admin_user_dashboard_10_OPEN,
+    staff_info: Admin_user_dashboard_12_OPEN
   };
   var openPage = pageOpeners[sessionStorage.getItem('adminPortalActivePage')];
   if (typeof openPage !== 'function') {
