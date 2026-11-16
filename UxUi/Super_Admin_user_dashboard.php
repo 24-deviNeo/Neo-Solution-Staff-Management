@@ -74,6 +74,8 @@ require_login(['superadmin', 'super admin', 'super_admin', 'admin']);
 
             include_once __DIR__ . '/../UxUi-Back/Super_Admin_user_dashboard/Super_Admin_user_dashboard_10_settings/Super_Admin_user_dashboard_10_settings.php';
             include_once __DIR__ . '/../UxUi-Back/Super_Admin_user_dashboard/Super_Admin_user_dashboard_10_settings/JS/Super_Admin_user_dashboard_10_settings_JS.php';
+
+            include_once __DIR__ . '/../UxUi-Back/Super_Admin_user_dashboard/Super_Admin_user_dashboard_12_staff_info/Super_Admin_user_dashboard_12_staff_info.php';
       ?>
  
         <?php 
