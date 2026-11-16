@@ -1,20 +1,17 @@
 <script type="text/javascript">
  function setSidebarActive(pageName) {
-   document.querySelectorAll('.wwjm-sidebar-nav-item, .sidebar-link, .sidebar-sublink').forEach(function(item){
+   document.querySelectorAll('.wwjm-sidebar-nav-item, .sidebar-link, .sidebar-sublink, .mobile-nav-item').forEach(function(item){
      var isMatch = item.getAttribute('data-page') === pageName;
      item.classList.toggle('active', isMatch);
      item.classList.toggle('wwjm-sidebar-active', isMatch);
    });
 
-   // Auto-expand and style the Staff Info dropdown group when a sub-page is active
-   var staffInfoPages = ['documents', 'bank_details', 'departments', 'job_roles', 'leave_requests'];
-   var staffInfoGroup = document.getElementById('staffInfoGroup');
-   if (staffInfoGroup) {
-     var isStaffInfoPage = staffInfoPages.indexOf(pageName) !== -1;
-     staffInfoGroup.classList.toggle('has-active', isStaffInfoPage);
-     if (isStaffInfoPage) {
-       staffInfoGroup.classList.add('open');
-     }
+   // If a sub-page of Staff Info is opened, also highlight staff_info in mobile bottom nav
+   var staffInfoPages = ['documents', 'bank_details', 'departments', 'job_roles', 'leave_requests', 'staff_info'];
+   if (staffInfoPages.indexOf(pageName) !== -1) {
+     document.querySelectorAll('.mobile-nav-item[data-page="staff_info"]').forEach(function(el) {
+       el.classList.add('active');
+     });
    }
 
    sessionStorage.setItem('adminPortalActivePage', pageName);
