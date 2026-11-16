@@ -271,6 +271,110 @@
     box-shadow: 0 3px 8px rgba(37, 99, 235, 0.35);
 }
 
+/* Dropdown / Submenu Styles for Staff Info */
+.sidebar-group {
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+}
+
+.sidebar-dropdown-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    cursor: pointer;
+}
+
+.sidebar-link-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+}
+
+.sidebar-chevron {
+    font-size: 11px;
+    color: #94a3b8;
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), color 0.15s ease;
+    margin-right: 4px;
+}
+
+.sidebar-group.open .sidebar-chevron {
+    transform: rotate(180deg);
+    color: #2563eb;
+}
+
+.sidebar-group.has-active > .sidebar-link {
+    background: #f1f5f9;
+    color: #1e293b;
+    font-weight: 700;
+}
+
+.sidebar-group.has-active > .sidebar-link i {
+    background: #e2e8f0;
+    color: #2563eb;
+}
+
+.sidebar-submenu {
+    display: none;
+    flex-direction: column;
+    gap: 2px;
+    margin: 3px 0 3px 14px;
+    padding-left: 12px;
+    border-left: 2px solid #e2e8f0;
+    transition: all 0.2s ease;
+}
+
+.sidebar-group.open .sidebar-submenu {
+    display: flex;
+}
+
+.sidebar-sublink {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    padding: 6px 10px;
+    border-radius: 6px;
+    text-decoration: none;
+    color: #64748b;
+    font-size: 12.5px;
+    font-weight: 600;
+    transition: all 0.15s ease;
+    cursor: pointer;
+    border: 1px solid transparent;
+    user-select: none;
+}
+
+.sidebar-sublink i {
+    font-size: 12px;
+    width: 18px;
+    text-align: center;
+    color: #94a3b8;
+    transition: color 0.15s ease;
+}
+
+.sidebar-sublink:hover {
+    background: #f8fafc;
+    color: #0f172a;
+    transform: translateX(2px);
+}
+
+.sidebar-sublink:hover i {
+    color: #2563eb;
+}
+
+.sidebar-sublink.active {
+    background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+    color: #1d4ed8;
+    font-weight: 700;
+    border-color: #bfdbfe;
+}
+
+.sidebar-sublink.active i {
+    color: #2563eb;
+}
+
 /* Bottom Logout */
 .sidebar-bottom {
     padding: 8px 10px 10px 10px;
