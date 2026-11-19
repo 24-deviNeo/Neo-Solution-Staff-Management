@@ -1,79 +1,100 @@
 <?php
-if (!class_exists('DataBase')) {
-    if (file_exists(__DIR__ . '/../../../imports/need/DB.php')) {
-        include_once __DIR__ . '/../../../imports/need/DB.php';
-    } elseif (file_exists(__DIR__ . '/../../../database.php')) {
-        include_once __DIR__ . '/../../../database.php';
-    }
-}
+
+include_once __DIR__ . '/../../../UxUi-Back/Tasks/ProjectTaskStore.php';
 
 class task_management_LIST
 {
-    private $sql_search_data = "";
-    private $sql_process_data = "*";
-    private $pagination_data_result = "";
-    private $ast_state = "1";
+    private $conditions = [];
+    private $limit = '';
+    private $countOnly = false;
+    private $removedOnly = false;
+    private $store;
 
-    public function filter_by_ast($get_ast)
+    public function __construct()
     {
-        $this->ast_state = $get_ast;
-        $this->sql_search_data .= " AND ast='" . $this->ast_state . "'";
+        $this->store = new ProjectTaskStore();
     }
 
-    public function filter_by_id($get_id)
+    public function filter_by_ast($ast)
     {
-        $this->sql_search_data .= " AND id='" . (int)$get_id . "'";
+        $this->removedOnly = (string)$ast === '0';
+    }
+
+    public function filter_by_id($id)
+    {
+        $this->conditions[] = '`id` = ' . (int)$id;
     }
 
     public function filter_by_status($status)
     {
-        $this->sql_search_data .= " AND status='" . addslashes($status) . "'";
+        $connection = $this->store->getConnection();
+        $status = strtolower($connection->real_escape_string((string)$status));
+        if ($status === 'pending') {
+            $this->conditions[] = '`is_pending` = 1';
+        } elseif ($status === 'completed' || $status === 'done') {
+            $this->conditions[] = '`is_completed` = 1';
+        } elseif ($status === 'in progress' || $status === 'in-progress') {
+            $this->conditions[] = '`is_pending` = 0 AND `is_completed` = 0';
+        }
     }
 
-    public function filter_by_department($dept)
+    public function filter_by_department($department)
     {
-        $this->sql_search_data .= " AND department='" . addslashes($dept) . "'";
+        $value = $this->store->getConnection()->real_escape_string((string)$department);
+        $this->conditions[] = "`department` = '{$value}'";
     }
 
-    public function filter_by_employee($emp)
+    public function filter_by_employee($employee)
     {
-        $this->sql_search_data .= " AND assigned_employee LIKE '%" . addslashes($emp) . "%'";
+        $value = $this->store->getConnection()->real_escape_string((string)$employee);
+        $this->conditions[] = "`assigned_to` LIKE '%{$value}%'";
     }
 
-    public function filter_by_search($get_search)
+    public function filter_by_search($search)
     {
-        $s = addslashes($get_search);
-        $this->sql_search_data .= " AND (task_title LIKE '%" . $s . "%' OR department LIKE '%" . $s . "%' OR assigned_employee LIKE '%" . $s . "%')";
+        $value = $this->store->getConnection()->real_escape_string((string)$search);
+        $this->conditions[] = "(`title` LIKE '%{$value}%' OR `department` LIKE '%{$value}%' OR `assigned_to` LIKE '%{$value}%')";
     }
 
     public function get_count_report()
     {
-        $this->sql_process_data = "COUNT(id)";
+        $this->countOnly = true;
     }
 
-    public function set_data_limits($start_point, $per_page_data_count)
+    public function set_data_limits($start, $count)
     {
-        $this->pagination_data_result = " ORDER BY id DESC LIMIT " . (int)$start_point . ", " . (int)$per_page_data_count;
+        $this->limit = ' ORDER BY `id` DESC LIMIT ' . max(0, (int)$start) . ', ' . max(0, (int)$count);
     }
 
     public function remove_list()
     {
-        $this->ast_state = "0";
+        $this->removedOnly = true;
     }
 
     public function get_result()
     {
-        $data_base_obj = new DataBase();
-        $get_sql_query = "SELECT " . $this->sql_process_data .
-            " FROM task_management WHERE 1=1 " .
-            $this->sql_search_data .
-            $this->pagination_data_result;
+        $connection = $this->store->getConnection();
+        if ($this->removedOnly) {
+            return $connection->query("SELECT `id` FROM `project_tasks` WHERE 1 = 0");
+        }
 
-        return $data_base_obj->get_result($get_sql_query);
+        $selection = $this->countOnly
+            ? 'COUNT(`id`) AS `count`'
+            : "`id`, `title` AS `task_title`, `description`, `department`,
+               `assigned_to` AS `assigned_employee`, `mode` AS `work_mode`, `priority`,
+               `deadline`, `progress`,
+               CASE WHEN `is_completed` = 1 THEN 'Completed'
+                    WHEN `is_pending` = 1 THEN 'Pending' ELSE 'In Progress' END AS `status`";
+        $sql = "SELECT {$selection} FROM `project_tasks`";
+        if ($this->conditions) {
+            $sql .= ' WHERE ' . implode(' AND ', $this->conditions);
+        }
+        $sql .= $this->limit;
+        $result = $connection->query($sql);
+        if ($result === false) {
+            throw new RuntimeException($connection->error);
+        }
+        return $result;
     }
-}
-
-if (!class_exists('task_management_details_LIST')) {
-    class task_management_details_LIST extends task_management_LIST {}
 }
 ?>
