@@ -45,17 +45,28 @@ try {
                     : (strtolower(trim((string)$_POST['status'])) === 'in progress' ? 50 : 0))
                 : (int)$existing['progress'])
     ];
-    $store->saveTask($task);
-
     $updaterRole = trim((string)($_POST['updater_role'] ?? ''));
+    if ($updaterRole === 'employee' && isset($_POST['status'])) {
+        $task = $store->updateTaskStatus($id, $task['status']);
+    } else {
+        $store->saveTask($task);
+    }
+
     if (!empty($_POST['status']) && $updaterRole !== 'admin') {
-        SystemNotifications::create(
-            'Task Status Updated: ' . $task['title'],
-            "Task status is now '" . $task['status'] . "' for " . $task['assigned_to'],
-            'task_update',
-            'admin',
-            'Admin'
-        );
+        try {
+            $notificationSaved = SystemNotifications::create(
+                'Task Status Updated: ' . $task['title'],
+                "Task status is now '" . $task['status'] . "' for " . $task['assigned_to'],
+                'task_update',
+                'admin',
+                'Admin'
+            );
+            if ($notificationSaved === false) {
+                error_log('Unable to save task status notification for task ' . $id);
+            }
+        } catch (Throwable $notificationError) {
+            error_log('Unable to save task status notification for task ' . $id . ': ' . $notificationError->getMessage());
+        }
     }
     if ($task['assigned_to'] !== '' && $updaterRole !== 'employee') {
         SystemNotifications::create(
