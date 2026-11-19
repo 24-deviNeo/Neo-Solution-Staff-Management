@@ -220,8 +220,29 @@ class ProjectTaskStore
     public function getTasks(array $filters = [])
     {
         $where = [];
-        if (!empty($filters['employee'])) {
-            $employee = $this->connection->real_escape_string($filters['employee']);
+        $employeeName = trim((string)($filters['employee'] ?? ''));
+        $employeeUserId = (int)($filters['employee_user_id'] ?? 0);
+        if ($employeeUserId > 0 && $this->tableExists('employees')
+            && $this->columnExists('employees', 'main_user_login_id')) {
+            $employeeMatch = "EXISTS (
+                SELECT 1
+                FROM `task_employee` te
+                INNER JOIN `employees` e ON e.`id` = te.`employees_id`
+                WHERE te.`id` = `project_tasks`.`task_employee_id`
+                  AND te.`ast` = 1
+                  AND e.`main_user_login_id` = {$employeeUserId}
+            )";
+            if ($employeeName !== '') {
+                $employee = $this->connection->real_escape_string($employeeName);
+                $where[] = "({$employeeMatch} OR (
+                    `project_tasks`.`task_employee_id` IS NULL
+                    AND `project_tasks`.`assigned_to` = '{$employee}'
+                ))";
+            } else {
+                $where[] = $employeeMatch;
+            }
+        } elseif ($employeeName !== '') {
+            $employee = $this->connection->real_escape_string($employeeName);
             $where[] = "`project_tasks`.`assigned_to` = '{$employee}'";
         }
         if (!empty($filters['department']) && $filters['department'] !== 'All') {
@@ -290,17 +311,44 @@ class ProjectTaskStore
         return $row;
     }
 
-    private function findEmployeeId($employeeName)
+    private function findEmployeeId($employeeName, $employeeUserId = 0)
     {
-        if ($employeeName === '' || !$this->tableExists('employees')) {
+        if (!$this->tableExists('employees')) {
             return 0;
         }
-        $name = $this->connection->real_escape_string($employeeName);
-        $result = $this->query("SELECT `id` FROM `employees` WHERE `fullname` = '{$name}' LIMIT 1");
-        if ($result->num_rows === 0) {
-            return 0;
+
+        $employeeUserId = (int)$employeeUserId;
+        if ($employeeUserId > 0 && $this->columnExists('employees', 'main_user_login_id')) {
+            $result = $this->query("SELECT `id` FROM `employees`
+                WHERE `main_user_login_id` = {$employeeUserId} LIMIT 1");
+            return $result->num_rows > 0 ? (int)$result->fetch_assoc()['id'] : 0;
         }
-        return (int)$result->fetch_assoc()['id'];
+
+        if ($employeeName !== '') {
+            $name = $this->connection->real_escape_string($employeeName);
+            if ($this->columnExists('employees', 'fullname')) {
+                $result = $this->query("SELECT `id` FROM `employees` WHERE `fullname` = '{$name}' LIMIT 1");
+                if ($result->num_rows > 0) {
+                    return (int)$result->fetch_assoc()['id'];
+                }
+            }
+
+            if ($this->columnExists('employees', 'main_user_login_id')
+                && $this->tableExists('employee_profiles')
+                && $this->columnExists('employee_profiles', 'user_id')
+                && $this->columnExists('employee_profiles', 'full_name')) {
+                $result = $this->query("SELECT e.`id`
+                    FROM `employees` e
+                    INNER JOIN `employee_profiles` p ON p.`user_id` = e.`main_user_login_id`
+                    WHERE p.`full_name` = '{$name}'
+                    ORDER BY p.`id` DESC LIMIT 1");
+                if ($result->num_rows > 0) {
+                    return (int)$result->fetch_assoc()['id'];
+                }
+            }
+        }
+
+        return 0;
     }
 
     public function saveTask(array $task)
@@ -313,6 +361,7 @@ class ProjectTaskStore
 
         $departmentInput = trim((string)($task['department'] ?? ''));
         $assignedTo = trim((string)($task['assigned_to'] ?? ''));
+        $employeeUserId = (int)($task['employee_user_id'] ?? 0);
         $assignedToSql = $this->connection->real_escape_string($assignedTo);
         $mode = $this->connection->real_escape_string((string)($task['mode'] ?? 'Online'));
         $priority = $this->connection->real_escape_string((string)($task['priority'] ?? 'Medium'));
@@ -325,17 +374,20 @@ class ProjectTaskStore
         $progress = isset($task['progress'])
             ? max(0, min(100, (int)$task['progress']))
             : ($isCompleted ? 100 : ($status === 'in progress' ? 50 : 0));
-        $employeeId = $this->findEmployeeId($assignedTo);
+        $employeeId = $this->findEmployeeId($assignedTo, $employeeUserId);
         $projectId = array_key_exists('project_id', $task) ? (int)$task['project_id'] : null;
 
         $this->connection->begin_transaction();
         try {
             $taskEmployeeId = 0;
+            $currentAssignedTo = '';
             if ($id > 0) {
-                $existing = $this->query("SELECT `task_employee_id`, `project_id` FROM `project_tasks` WHERE `id` = {$id} LIMIT 1");
+                $existing = $this->query("SELECT `task_employee_id`, `project_id`, `assigned_to`
+                    FROM `project_tasks` WHERE `id` = {$id} LIMIT 1");
                 if ($existing->num_rows > 0) {
                     $current = $existing->fetch_assoc();
                     $taskEmployeeId = (int)($current['task_employee_id'] ?? 0);
+                    $currentAssignedTo = (string)($current['assigned_to'] ?? '');
                     if ($projectId === null) {
                         $projectId = isset($current['project_id']) ? (int)$current['project_id'] : null;
                     }
@@ -357,14 +409,16 @@ class ProjectTaskStore
             }
 
             $department = $this->connection->real_escape_string($departmentInput);
-            if ($employeeId > 0 && $taskEmployeeId > 0) {
+            if ($assignedTo === '' && $taskEmployeeId > 0) {
+                $this->query("UPDATE `task_employee` SET `ast` = 0 WHERE `id` = {$taskEmployeeId}");
+                $taskEmployeeId = 0;
+            } elseif ($employeeId > 0 && $taskEmployeeId > 0) {
                 $this->query("UPDATE `task_employee` SET `employees_id` = {$employeeId}, `ast` = 1 WHERE `id` = {$taskEmployeeId}");
             } elseif ($employeeId > 0) {
                 $this->query("INSERT INTO `task_employee` (`employees_id`, `ast`) VALUES ({$employeeId}, 1)");
                 $taskEmployeeId = (int)$this->connection->insert_id;
-            } elseif ($taskEmployeeId > 0) {
-                $this->query("UPDATE `task_employee` SET `ast` = 0 WHERE `id` = {$taskEmployeeId}");
-                $taskEmployeeId = 0;
+            } elseif ($assignedTo !== '' && !($taskEmployeeId > 0 && $assignedTo === $currentAssignedTo)) {
+                throw new InvalidArgumentException('Unable to link this task to the selected employee. Refresh the employee list and select the employee again.');
             }
 
             $taskEmployeeSql = $taskEmployeeId > 0 ? (string)$taskEmployeeId : 'NULL';
