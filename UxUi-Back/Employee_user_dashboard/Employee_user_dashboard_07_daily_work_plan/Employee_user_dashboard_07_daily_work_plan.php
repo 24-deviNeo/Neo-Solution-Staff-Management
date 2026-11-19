@@ -9,7 +9,100 @@
     min-width: 0;
   }
 
+  /* Main Navigation Tabs (Separate Views) */
+  .workplan-main-tabs {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 22px;
+    border-bottom: 2px solid #e2e8f0;
+    padding-bottom: 0;
+    box-sizing: border-box;
+  }
+
+  .workplan-tab-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    font-size: 14.5px;
+    font-weight: 700;
+    color: #64748b;
+    background: transparent;
+    border: none;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-bottom: -2px;
+    border-radius: 8px 8px 0 0;
+    user-select: none;
+  }
+
+  .workplan-tab-btn i, .workplan-tab-btn svg {
+    font-size: 16px;
+    transition: transform 0.2s ease;
+  }
+
+  .workplan-tab-btn:hover {
+    color: #1e293b;
+    background: #f1f5f9;
+  }
+
+  .workplan-tab-btn.active {
+    color: #2563eb;
+    border-bottom-color: #2563eb;
+    background: #eff6ff;
+  }
+
+  .workplan-tab-btn.active i, .workplan-tab-btn.active svg {
+    color: #2563eb;
+    transform: scale(1.08);
+  }
+
+  .workplan-tab-badge {
+    padding: 2px 8px;
+    font-size: 11px;
+    font-weight: 800;
+    border-radius: 999px;
+    background: #e2e8f0;
+    color: #475569;
+  }
+
+  .workplan-tab-btn.active .workplan-tab-badge {
+    background: #2563eb;
+    color: #ffffff;
+  }
+
+  /* Step 2 Locked Overlay / State */
+  .step-2-card.locked {
+    position: relative;
+    opacity: 0.65;
+    pointer-events: none;
+    user-select: none;
+    filter: grayscale(0.2);
+  }
+
+  .step-locked-banner {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    background: #fffbeb;
+    border: 1.5px solid #fde68a;
+    border-radius: 10px;
+    margin-bottom: 14px;
+    color: #b45309;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .step-locked-banner svg {
+    flex-shrink: 0;
+    color: #d97706;
+  }
+
   @media (min-width: 901px) {
+    #Employee_user_dashboard_07_daily_work_plan .workplan-main-tabs,
     #Employee_user_dashboard_07_daily_work_plan .workplan-header-row,
     #Employee_user_dashboard_07_daily_work_plan .workplan-filters,
     #Employee_user_dashboard_07_daily_work_plan .workplan-tasks-grid,
@@ -22,6 +115,7 @@
   }
 
   @media (max-width: 900px) {
+    #Employee_user_dashboard_07_daily_work_plan .workplan-main-tabs,
     #Employee_user_dashboard_07_daily_work_plan .workplan-header-row,
     #Employee_user_dashboard_07_daily_work_plan .workplan-filters,
     #Employee_user_dashboard_07_daily_work_plan .workplan-tasks-grid,
@@ -30,6 +124,13 @@
       padding-left: 0 !important;
       padding-right: 0 !important;
       box-sizing: border-box;
+    }
+
+    .workplan-tab-btn {
+      padding: 10px 14px;
+      font-size: 13px;
+      flex: 1;
+      justify-content: center;
     }
   }
 
@@ -1356,191 +1457,233 @@
       </div>
     </div>
 
-    <!-- 1. My Assigned & Daily Tasks (Upper Section) -->
-    <div class="workplan-header-row">
-      <div class="workplan-head-left">
-        <h1>My Assigned & Daily Tasks</h1>
-        <p id="empActiveTasksCount">Loading tasks from database...</p>
-      </div>
-    </div>
-
-    <!-- Search Bar & Filters -->
-    <div class="workplan-filters">
-      <div class="search-pill-wrap">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="11" cy="11" r="8"/>
-          <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+    <!-- Main Navigation Tabs: Separate Views -->
+    <div class="workplan-main-tabs">
+      <button type="button" class="workplan-tab-btn active" id="tabBtnDailyPlan" onclick="switchWorkplanSectionTab('daily_plan')">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+          <polyline points="10 9 9 9 8 9"></polyline>
         </svg>
-        <input type="text" class="search-pill-input" id="workplanSearch" placeholder="Search tasks..." onkeyup="filterWorkplanTasks()">
-      </div>
+        <span>Daily Work Plan &amp; Updates</span>
+      </button>
 
-      <div class="filter-dropdowns-row">
-        <select class="filter-pill-select" id="workplanCategoryFilter" onchange="filterWorkplanTasks()">
-          <option value="all">All Modes</option>
-          <option value="Online">Online</option>
-          <option value="Onsite">Onsite</option>
-        </select>
-
-        <select class="filter-pill-select" id="workplanStatusFilter" onchange="filterWorkplanTasks()">
-          <option value="all">All Statuses</option>
-          <option value="Pending">Pending</option>
-          <option value="In Progress">In Progress</option>
-          <option value="Completed">Completed</option>
-        </select>
-      </div>
+      <button type="button" class="workplan-tab-btn" id="tabBtnAssignedTasks" onclick="switchWorkplanSectionTab('assigned_tasks')">
+        <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+          <path d="M9 11l3 3L22 4"></path>
+          <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path>
+        </svg>
+        <span>Assigned Tasks &amp; Status Updates</span>
+        <span class="workplan-tab-badge" id="tabBadgeTaskCount">0</span>
+      </button>
     </div>
 
-    <!-- Tasks Grid / Cards List -->
-    <div class="workplan-tasks-grid" id="workplanTasksGrid">
-      <div style="text-align:center; padding: 40px 16px; color:#64748b; background:#fff; border-radius:16px; grid-column: 1 / -1; border:1px solid #e8eaf0;">
-        Loading your tasks...
-      </div>
-    </div>
-
-    <!-- 2. Daily Shift Steps (Lower Section) -->
-    <div class="workplan-shift-title-row" style="margin: 28px 0 16px; padding-top: 20px; border-top: 1.5px solid #e2e8f0; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
-      <div>
-        <h2 style="font-size: 18px; font-weight: 800; color: var(--navy, #14204d); margin: 0 0 4px 0;">Daily Shift Plan &amp; Execution</h2>
-        <p style="font-size: 13px; color: var(--muted, #64748b); margin: 0; font-weight: 500;">Plan your shift tasks in the morning and submit your completed update at end-of-shift</p>
-      </div>
-    </div>
-
-    <div class="workplan-step-container">
-      
-      <section class="workplan-step-card step-1-card">
-        <div class="step-header-wrap">
-          <div class="step-title-group">
-            <span class="step-badge step-1">Step 1</span>
-            <h3>Plan Today's Work</h3>
-          </div>
-          <span id="morningPlanStatusBadge" class="shift-wrapup-badge pending">Shift Not Started</span>
+    <!-- SECTION A: Assigned Tasks View -->
+    <div id="sectionAssignedTasks" style="display: none;">
+      <!-- 1. My Assigned & Daily Tasks (Upper Section) -->
+      <div class="workplan-header-row">
+        <div class="workplan-head-left">
+          <h1>My Assigned Tasks</h1>
+          <p id="empActiveTasksCount">Loading tasks from database...</p>
         </div>
-        <p class="step-subtext">Write down the tasks you plan to accomplish today. Click <b>Start Work</b> to activate your shift for the day.</p>
+      </div>
+
+      <!-- Search Bar & Filters -->
+      <div class="workplan-filters">
+        <div class="search-pill-wrap">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"/>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+          </svg>
+          <input type="text" class="search-pill-input" id="workplanSearch" placeholder="Search tasks..." onkeyup="filterWorkplanTasks()">
+        </div>
+
+        <div class="filter-dropdowns-row">
+          <select class="filter-pill-select" id="workplanCategoryFilter" onchange="filterWorkplanTasks()">
+            <option value="all">All Modes</option>
+            <option value="Online">Online</option>
+            <option value="Onsite">Onsite</option>
+          </select>
+
+          <select class="filter-pill-select" id="workplanStatusFilter" onchange="filterWorkplanTasks()">
+            <option value="all">All Statuses</option>
+            <option value="Pending">Pending</option>
+            <option value="In Progress">In Progress</option>
+            <option value="Completed">Completed</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Tasks Grid / Cards List -->
+      <div class="workplan-tasks-grid" id="workplanTasksGrid">
+        <div style="text-align:center; padding: 40px 16px; color:#64748b; background:#fff; border-radius:16px; grid-column: 1 / -1; border:1px solid #e8eaf0;">
+          Loading your tasks...
+        </div>
+      </div>
+    </div>
+
+    <!-- SECTION B: Daily Work Plan & Updates View -->
+    <div id="sectionDailyWorkPlan">
+      <!-- 2. Daily Shift Steps (Lower Section) -->
+      <div class="workplan-shift-title-row" style="margin: 0 0 16px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+        <div>
+          <h2 style="font-size: 18px; font-weight: 800; color: var(--navy, #14204d); margin: 0 0 4px 0;">Daily Shift Plan &amp; Execution</h2>
+          <p style="font-size: 13px; color: var(--muted, #64748b); margin: 0; font-weight: 500;">Plan your shift tasks in the morning (editable during the day) and submit your completed update at end-of-shift</p>
+        </div>
+      </div>
+
+      <div class="workplan-step-container">
         
-        <textarea id="dailyWorkPlanText" class="daily-plan-input" placeholder="Enter today's planned tasks:"></textarea>
-
-        <!-- Step 1 File Upload Section -->
-        <div class="workplan-upload-section" id="step1UploadSection">
-          <div class="workplan-upload-header">
-            <span class="upload-title">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
-              Plan Documents & Photos (Optional)
-            </span>
-            <span class="upload-hint">Upload task specs, reference docs, or photos (JPG, PNG, PDF, DOCX up to 15MB)</span>
+        <section class="workplan-step-card step-1-card">
+          <div class="step-header-wrap">
+            <div class="step-title-group">
+              <span class="step-badge step-1">Step 1</span>
+              <h3>Plan Today's Work</h3>
+            </div>
+            <span id="morningPlanStatusBadge" class="shift-wrapup-badge pending">Shift Not Started</span>
           </div>
+          <p class="step-subtext">Write down the tasks you plan to accomplish today. You can edit this anytime today. Click <b>Submit Plan / Start Work</b> to activate your shift for the day.</p>
+          
+          <textarea id="dailyWorkPlanText" class="daily-plan-input" placeholder="Enter today's planned tasks:"></textarea>
 
-          <div class="workplan-dropzone" id="step1Dropzone" onclick="document.getElementById('step1FileInput').click()">
-            <input type="file" id="step1FileInput" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,image/*" style="display:none;" onchange="handleStepFileSelect('step1', this.files)">
-            <div class="dropzone-content">
-              <div class="dropzone-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-              </div>
-              <div class="dropzone-text">
-                <strong>Click to browse</strong> or drag &amp; drop plan documents &amp; photos here
+          <!-- Step 1 File Upload Section -->
+          <div class="workplan-upload-section" id="step1UploadSection">
+            <div class="workplan-upload-header">
+              <span class="upload-title">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+                Plan Documents & Photos (Optional)
+              </span>
+              <span class="upload-hint">Upload task specs, reference docs, or photos (JPG, PNG, PDF, DOCX up to 15MB)</span>
+            </div>
+
+            <div class="workplan-dropzone" id="step1Dropzone" onclick="document.getElementById('step1FileInput').click()">
+              <input type="file" id="step1FileInput" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,image/*" style="display:none;" onchange="handleStepFileSelect('step1', this.files)">
+              <div class="dropzone-content">
+                <div class="dropzone-icon">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                </div>
+                <div class="dropzone-text">
+                  <strong>Click to browse</strong> or drag &amp; drop plan documents &amp; photos here
+                </div>
               </div>
             </div>
+
+            <!-- Pending Files Tray -->
+            <div class="workplan-pending-tray" id="step1PendingTray" style="display:none;"></div>
+
+            <!-- Saved Attachments Gallery -->
+            <div class="workplan-saved-gallery" id="step1SavedGallery"></div>
           </div>
-
-          <!-- Pending Files Tray -->
-          <div class="workplan-pending-tray" id="step1PendingTray" style="display:none;"></div>
-
-          <!-- Saved Attachments Gallery -->
-          <div class="workplan-saved-gallery" id="step1SavedGallery"></div>
-        </div>
-        
-        <div class="daily-plan-actions">
-          <button type="button" id="saveDailyPlanBtn" class="save-plan-btn">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-            <span>Save Plan</span>
-          </button>
-          <button type="button" id="startWorkBtn" class="start-work-btn">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-            <span>Start Work — Active Today</span>
-          </button>
-          <span id="dailyPlanStatus" class="daily-plan-status"></span>
-        </div>
-      </section>
-
-      <section class="workplan-step-card step-2-card">
-        <div class="step-header-wrap">
-          <div class="step-title-group">
-            <span class="step-badge step-2">Step 2</span>
-            <h3>Update on Planned Work</h3>
+          
+          <div class="daily-plan-actions">
+            <button type="button" id="saveDailyPlanBtn" class="save-plan-btn">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+              <span id="savePlanBtnText">Save Plan</span>
+            </button>
+            <button type="button" id="startWorkBtn" class="start-work-btn">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              <span>Submit Plan &amp; Start Work</span>
+            </button>
+            <span id="dailyPlanStatus" class="daily-plan-status"></span>
           </div>
-          <span class="shift-wrapup-badge" id="shiftStatusBadge"> Shift In Progress</span>
-        </div>
-        <p class="step-subtext">When ending your shift, review your plan below and provide an update on what was accomplished:</p>
+        </section>
 
-        <div class="plan-ref-box">
-          <div class="plan-ref-title">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-            Today's Plan:
-          </div>
-          <div id="morningPlanPreviewText" class="plan-ref-content">No plan entered yet. Write your plan in Step 1 above.</div>
-        </div>
-
-        <label style="font-size:13px; font-weight:700; color:#334155; display:block; margin-bottom:6px;">
-          What did you complete from this plan?:
-        </label>
-        <textarea id="shiftEndNotes" class="daily-plan-input" placeholder="Write what you finished from the morning plan, what remains pending, or any end-of-shift notes..."></textarea>
-
-        <!-- Step 2 File Upload Section -->
-        <div class="workplan-upload-section" id="step2UploadSection">
-          <div class="workplan-upload-header">
-            <span class="upload-title">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
-              Work Proof, Photos &amp; Documents (Optional)
-            </span>
-            <span class="upload-hint">Upload completed work proof photos, receipts, or summary PDFs</span>
-          </div>
-
-          <div class="workplan-dropzone" id="step2Dropzone" onclick="document.getElementById('step2FileInput').click()">
-            <input type="file" id="step2FileInput" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,image/*" style="display:none;" onchange="handleStepFileSelect('step2', this.files)">
-            <div class="dropzone-content">
-              <div class="dropzone-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-              </div>
-              <div class="dropzone-text">
-                <strong>Click to browse</strong> or drag &amp; drop proof photos &amp; completion documents here
-              </div>
+        <!-- Step 2: Hidden completely until Step 1 plan is submitted -->
+        <section class="workplan-step-card step-2-card" id="step2CardContainer" style="display: none;">
+          <div class="step-header-wrap">
+            <div class="step-title-group">
+              <span class="step-badge step-2">Step 2</span>
+              <h3>Update on Planned Work</h3>
             </div>
+            <span class="shift-wrapup-badge" id="shiftStatusBadge">Shift Not Started</span>
           </div>
 
-          <!-- Pending Files Tray -->
-          <div class="workplan-pending-tray" id="step2PendingTray" style="display:none;"></div>
-
-          <!-- Saved Attachments Gallery -->
-          <div class="workplan-saved-gallery" id="step2SavedGallery"></div>
-        </div>
-
-        <div class="shift-ctrls-row">
-          <div style="display: flex; align-items: center; gap: 8px;">
-            <label style="font-size: 13px; font-weight: 700; color: #334155;">Work Status:</label>
-            <select id="shiftEndTaskStatus" class="filter-pill-select" style="min-width: 150px; font-weight: 700;">
-              <option value="Completed" selected>Completed</option>
-              <option value="Pending">Pending</option>
-            </select>
+          <!-- Lock message if plan not submitted yet -->
+          <div class="step-locked-banner" id="step2LockedBanner">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+            <span>Please submit your daily work plan in Step 1 first to unlock shift update submission.</span>
           </div>
 
-          <button type="button" id="submitShiftEndBtn" class="shift-end-submit-btn">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
-              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-              <polyline points="22 4 12 14.01 9 11.01"/>
-            </svg>
-            <span>Submit Update</span>
-          </button>
+          <div id="step2ActiveContent">
+            <p class="step-subtext">When ending your shift, review your plan below and provide an update on what was accomplished:</p>
 
-          <button type="button" id="viewShiftTaskBtn" class="shift-view-task-btn" style="display: none;" onclick="openShiftWorkTaskModal()">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
-            </svg>
-            <span>View Task</span>
-          </button>
-        </div>
+            <div class="plan-ref-box">
+              <div class="plan-ref-title">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                Today's Plan:
+              </div>
+              <div id="morningPlanPreviewText" class="plan-ref-content">No plan entered yet. Write your plan in Step 1 above.</div>
+            </div>
 
-        <div id="shiftEndStatusMsg" class="shift-status-alert success" style="display: none;"></div>
-      </section>
+            <label style="font-size:13px; font-weight:700; color:#334155; display:block; margin-bottom:6px;">
+              What did you complete from this plan?:
+            </label>
+            <textarea id="shiftEndNotes" class="daily-plan-input" placeholder="Write what you finished from the morning plan, what remains pending, or any end-of-shift notes..."></textarea>
 
+            <!-- Step 2 File Upload Section -->
+            <div class="workplan-upload-section" id="step2UploadSection">
+              <div class="workplan-upload-header">
+                <span class="upload-title">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+                  Work Proof, Photos &amp; Documents (Optional)
+                </span>
+                <span class="upload-hint">Upload completed work proof photos, receipts, or summary PDFs</span>
+              </div>
+
+              <div class="workplan-dropzone" id="step2Dropzone" onclick="document.getElementById('step2FileInput').click()">
+                <input type="file" id="step2FileInput" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,image/*" style="display:none;" onchange="handleStepFileSelect('step2', this.files)">
+                <div class="dropzone-content">
+                  <div class="dropzone-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                  </div>
+                  <div class="dropzone-text">
+                    <strong>Click to browse</strong> or drag &amp; drop proof photos &amp; completion documents here
+                  </div>
+                </div>
+              </div>
+
+              <!-- Pending Files Tray -->
+              <div class="workplan-pending-tray" id="step2PendingTray" style="display:none;"></div>
+
+              <!-- Saved Attachments Gallery -->
+              <div class="workplan-saved-gallery" id="step2SavedGallery"></div>
+            </div>
+
+            <div class="shift-ctrls-row">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <label style="font-size: 13px; font-weight: 700; color: #334155;">Work Status:</label>
+                <select id="shiftEndTaskStatus" class="filter-pill-select" style="min-width: 150px; font-weight: 700;">
+                  <option value="Completed" selected>Completed</option>
+                  <option value="Pending">Pending</option>
+                </select>
+              </div>
+
+              <button type="button" id="submitShiftEndBtn" class="shift-end-submit-btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                  <polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+                <span>Submit Update</span>
+              </button>
+
+              <button type="button" id="viewShiftTaskBtn" class="shift-view-task-btn" style="display: none;" onclick="openShiftWorkTaskModal()">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+                </svg>
+                <span>View Task</span>
+              </button>
+            </div>
+
+            <div id="shiftEndStatusMsg" class="shift-status-alert success" style="display: none;"></div>
+          </div>
+        </section>
+
+      </div>
     </div>
 
   </div>
@@ -1617,6 +1760,26 @@
 (function () {
   let employeeTasks = [];
 
+  // Tab switching between Daily Work Plan and Assigned Tasks
+  window.switchWorkplanSectionTab = function (tab) {
+    const tabDaily = document.getElementById('tabBtnDailyPlan');
+    const tabTasks = document.getElementById('tabBtnAssignedTasks');
+    const secDaily = document.getElementById('sectionDailyWorkPlan');
+    const secTasks = document.getElementById('sectionAssignedTasks');
+
+    if (tab === 'assigned_tasks') {
+      if (tabTasks) tabTasks.classList.add('active');
+      if (tabDaily) tabDaily.classList.remove('active');
+      if (secTasks) secTasks.style.display = 'block';
+      if (secDaily) secDaily.style.display = 'none';
+    } else {
+      if (tabDaily) tabDaily.classList.add('active');
+      if (tabTasks) tabTasks.classList.remove('active');
+      if (secDaily) secDaily.style.display = 'block';
+      if (secTasks) secTasks.style.display = 'none';
+    }
+  };
+
   const dailyPlanUrl = () => (typeof window.pth !== 'undefined' ? window.pth : '../') + 'UxUi-Back/Employee/daily_work_plan/daily_work_plan.php';
   const planText = document.getElementById('dailyWorkPlanText');
   const planStatus = document.getElementById('dailyPlanStatus');
@@ -1630,6 +1793,31 @@
   const submitShiftEndBtn = document.getElementById('submitShiftEndBtn');
   const shiftEndStatusMsg = document.getElementById('shiftEndStatusMsg');
   const shiftStatusBadge = document.getElementById('shiftStatusBadge');
+  const step2CardContainer = document.getElementById('step2CardContainer');
+  const step2LockedBanner = document.getElementById('step2LockedBanner');
+
+  // Controls Step 2 visibility & lock state:
+  // Step 2 (Update on Planned Work) must be completely HIDDEN until Step 1 plan is submitted!
+  function setStep2LockedState(isLocked) {
+    if (step2CardContainer) {
+      if (isLocked) {
+        step2CardContainer.style.display = 'none';
+        step2CardContainer.classList.add('locked');
+      } else {
+        step2CardContainer.style.display = 'block';
+        step2CardContainer.classList.remove('locked');
+      }
+    }
+    if (step2LockedBanner) {
+      step2LockedBanner.style.display = 'none';
+    }
+    if (shiftEndNotes) {
+      shiftEndNotes.disabled = isLocked;
+    }
+    if (submitShiftEndBtn) {
+      submitShiftEndBtn.disabled = isLocked;
+    }
+  }
 
   function escapeHtml(str) {
     return (str || '').toString().replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' })[m]);
@@ -1911,6 +2099,7 @@
           currentShiftAttachments = [];
           renderSavedGallery('step1', []);
           renderSavedGallery('step2', []);
+          setStep2LockedState(true);
           if (morningStatusBadge) {
             morningStatusBadge.className = 'shift-wrapup-badge pending';
             morningStatusBadge.textContent = '⚪ Shift Not Started';
@@ -1919,11 +2108,16 @@
             shiftStatusBadge.className = 'shift-wrapup-badge';
             shiftStatusBadge.textContent = '⏳ Shift Not Started';
           }
+          const saveBtnTextEl = document.getElementById('savePlanBtnText');
+          if (saveBtnTextEl) saveBtnTextEl.textContent = 'Save Plan';
           return;
         }
 
         const currentPlan = res.data.plan_text || '';
-        if (planText) planText.value = currentPlan;
+        if (planText) {
+          planText.value = currentPlan;
+          planText.readOnly = false; // Always editable throughout the day
+        }
         updatePlanPreviewText(currentPlan);
 
         currentPlanAttachments = res.data.plan_attachments || [];
@@ -1931,10 +2125,20 @@
         renderSavedGallery('step1', currentPlanAttachments);
         renderSavedGallery('step2', currentShiftAttachments);
 
+        // If plan is submitted or shift started, unlock Step 2!
+        const hasStartedOrSubmitted = !!(res.data.started_at || (currentPlan && currentPlan.trim().length > 0));
+        setStep2LockedState(!hasStartedOrSubmitted);
+
+        const saveBtnTextEl = document.getElementById('savePlanBtnText');
+        if (saveBtnTextEl) {
+          saveBtnTextEl.textContent = hasStartedOrSubmitted ? 'Update Plan' : 'Save Plan';
+        }
+
         if (res.data.started_at && startWorkBtn) {
           startWorkBtn.textContent = 'Active Today';
           startWorkBtn.classList.add('active');
-          startWorkBtn.disabled = true;
+          startWorkBtn.disabled = false; // Allow re-saving or updating plan
+          startWorkBtn.title = 'Shift is active. You can continue updating your plan throughout the day.';
           if (morningStatusBadge) {
             morningStatusBadge.className = 'shift-wrapup-badge completed';
             morningStatusBadge.innerHTML = '🟢 Active Shift (' + formatTimeStr(res.data.started_at) + ')';
@@ -2026,17 +2230,23 @@
         }
         if (planStatus) {
           planStatus.style.color = '#15803d';
-          planStatus.textContent = startWork ? 'Work started! You are active today.' : 'Daily plan saved.';
+          planStatus.textContent = startWork ? 'Work started! Daily plan updated and active today.' : 'Daily plan updated successfully.';
         }
+        // Unlock Step 2 immediately once plan is saved/started
+        setStep2LockedState(false);
+
+        const saveBtnTextEl = document.getElementById('savePlanBtnText');
+        if (saveBtnTextEl) saveBtnTextEl.textContent = 'Update Plan';
+
         if (startWorkBtn && startWork) {
           startWorkBtn.textContent = 'Active Today';
           startWorkBtn.classList.add('active');
-          startWorkBtn.disabled = true;
+          startWorkBtn.disabled = false; // Still allows updating
           if (morningStatusBadge) {
             morningStatusBadge.className = 'shift-wrapup-badge completed';
             morningStatusBadge.innerHTML = '🟢 Active Shift Today';
           }
-          if (shiftStatusBadge) {
+          if (shiftStatusBadge && !res.data?.shift_ended_at) {
             shiftStatusBadge.className = 'shift-wrapup-badge';
             shiftStatusBadge.textContent = '⏳ Shift In Progress';
           }
@@ -2296,6 +2506,11 @@
 
     if (countEl) {
       countEl.textContent = `${filtered.length} active task${filtered.length === 1 ? '' : 's'}`;
+    }
+
+    const tabBadge = document.getElementById('tabBadgeTaskCount');
+    if (tabBadge) {
+      tabBadge.textContent = employeeTasks.length;
     }
 
     if (filtered.length === 0) {
