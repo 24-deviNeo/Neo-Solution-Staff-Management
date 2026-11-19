@@ -10,6 +10,7 @@ try {
     }
 
     include_once __DIR__ . '/../../../imports/need/DB.php';
+    include_once __DIR__ . '/../../Tasks/ProjectTaskStore.php';
 
 $db = new DataBase();
 
@@ -172,15 +173,8 @@ if ($dRes && $dRes->num_rows > 0) {
 }
 
 // 5. Tasks
-$tasks = [];
-$tRes = $db->get_result("SELECT * FROM `system_tasks` 
-    WHERE `assigned_to` = '{$safeFullName}' 
-    ORDER BY `id` DESC LIMIT 20");
-if ($tRes && $tRes->num_rows > 0) {
-    while ($row = $tRes->fetch_assoc()) {
-        $tasks[] = $row;
-    }
-}
+$taskStore = new ProjectTaskStore();
+$tasks = array_slice($taskStore->getTasks(['employee' => $fullName]), 0, 20);
 
 // 6. Leaves
 $leaves = [];
