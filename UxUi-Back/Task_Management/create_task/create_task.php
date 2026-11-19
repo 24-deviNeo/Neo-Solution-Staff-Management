@@ -15,7 +15,9 @@ $dept      = isset($_POST['dept']) ? trim($_POST['dept']) : (isset($_POST['depar
 $employee  = isset($_POST['employee']) ? trim($_POST['employee']) : (isset($_POST['assigned_employee']) ? trim($_POST['assigned_employee']) : 'Unassigned');
 $mode      = isset($_POST['mode']) ? trim($_POST['mode']) : (isset($_POST['work_mode']) ? trim($_POST['work_mode']) : 'Online');
 $deadline  = isset($_POST['deadline']) ? trim($_POST['deadline']) : date('Y-m-d');
+$priority  = isset($_POST['priority']) ? trim($_POST['priority']) : 'Medium';
 $status    = isset($_POST['status']) ? trim($_POST['status']) : 'Pending';
+$description = isset($_POST['description']) ? trim($_POST['description']) : '';
 
 if (empty($title)) {
     echo json_encode(['status' => 'error', 'message' => 'Task title is required.']);
@@ -23,7 +25,7 @@ if (empty($title)) {
 }
 
 $task_obj = new task_management_ADD_UPDATE();
-$task_obj->set_data($title, $dept, $employee, $mode, $deadline, $status);
+$task_obj->set_data($title, $dept, $employee, $mode, $deadline, $priority, $status, $description);
 $res = $task_obj->process_new_record();
 
 if ($res) {
@@ -36,8 +38,10 @@ if ($res) {
                 'department'  => $dept,
                 'assigned_to' => $employee,
                 'mode'        => $mode,
+                'priority'    => $priority,
                 'status'      => $status,
-                'deadline'    => $deadline
+                'deadline'    => $deadline,
+                'description' => $description
             ]);
         }
     } catch (Exception $e) {}
@@ -51,6 +55,8 @@ if ($res) {
             'dept'      => $dept,
             'employee'  => $employee,
             'mode'      => $mode,
+            'priority'  => $priority,
+            'description' => $description,
             'deadline'  => $deadline,
             'status'    => $status
         ]
