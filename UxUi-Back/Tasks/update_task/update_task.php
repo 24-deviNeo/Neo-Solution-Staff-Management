@@ -33,6 +33,7 @@ try {
         'description' => trim((string)($_POST['description'] ?? $existing['description'])),
         'department' => trim((string)($_POST['dept'] ?? $_POST['department'] ?? (isset($_POST['project_id']) ? '' : $existing['department']))),
         'assigned_to' => trim((string)($_POST['employee'] ?? $_POST['assigned_to'] ?? $existing['assigned_to'])),
+        'employee_user_id' => (int)($_POST['employee_user_id'] ?? 0),
         'mode' => trim((string)($_POST['mode'] ?? $existing['mode'])),
         'priority' => trim((string)($_POST['priority'] ?? $existing['priority'])),
         'status' => trim((string)($_POST['status'] ?? $existing['status'])),
