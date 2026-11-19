@@ -42,9 +42,10 @@
           }
           renderTaskTable();
         })
-        .catch(() => {
+        .catch((error) => {
           tasks = [];
           renderTaskTable();
+          console.error('Unable to load tasks:', error);
         });
     };
 
@@ -59,6 +60,7 @@
         const matchesFilter = activeFilter === 'All' || t.status === activeFilter;
         const matchesQuery = !query ||
           (t.title || '').toLowerCase().includes(query) ||
+          (t.project_title || '').toLowerCase().includes(query) ||
           (t.dept || '').toLowerCase().includes(query) ||
           (t.employee || t.assigned_to || '').toLowerCase().includes(query);
           
@@ -80,7 +82,7 @@
             <tr data-id="${t.id}">
               <td class="col-task" data-label="Task">
                 <div class="task-title-text" style="cursor: pointer; transition: color 0.15s;" onmouseover="this.style.color='#2563eb'" onmouseout="this.style.color='#14204d'" onclick="viewTask(${t.id})" title="Click to view task details">${t.title}</div>
-                <div class="task-dept-text">${t.dept || t.department || 'General'}</div>
+                <div class="task-dept-text">${t.project_title || 'No project'} · ${t.dept || t.department || 'General'}</div>
               </td>
               <td class="col-employee" data-label="Assigned To" style="font-weight:600; color:#14204d;">${t.employee || t.assigned_to || 'Staff'}</td>
               <td class="col-mode" data-label="Mode"><span class="task-pill ${modeClass}">${t.mode || 'Online'}</span></td>
@@ -122,23 +124,45 @@
     if (taskSearchInput) taskSearchInput.addEventListener('input', renderTaskTable);
     if (taskEmployeeFilter) taskEmployeeFilter.addEventListener('change', renderTaskTable);
 
-    // ---- State for Departments & Employees ----
-    let allDepartments = [];
+    // ---- State for Projects & Employees ----
+    let allProjects = [];
     let allEmployees = [];
 
-    // ---- Load Departments & Employees from Database ----
-    window.loadDepartmentsAndEmployees = function(callback) {
+    // ---- Load Projects & Employees from Database ----
+    window.loadProjectsAndEmployees = function(callback) {
       const pth = typeof window.pth !== 'undefined' ? window.pth : '../';
 
       Promise.all([
-        fetch(pth + 'UxUi-Back/Departments/fetch_department/fetch_department.php').then(r => r.json()).catch(() => ({ status: 'error' })),
-        fetch(pth + 'UxUi-Back/Employee/fetch_employee/fetch_employee.php').then(r => r.json()).catch(() => ({ status: 'error' }))
-      ]).then(([deptRes, empRes]) => {
-        if (deptRes && deptRes.status === 'success' && Array.isArray(deptRes.data)) {
-          allDepartments = deptRes.data;
+        fetch(pth + 'UxUi-Back/Tasks/fetch_projects/fetch_projects.php')
+          .then(r => {
+            if (!r.ok) throw new Error(`Project request failed (${r.status})`);
+            return r.json();
+          })
+          .catch(error => {
+            console.error('Unable to load projects:', error);
+            return { status: 'error' };
+          }),
+        fetch(pth + 'UxUi-Back/Employee/fetch_employee/fetch_employee.php')
+          .then(r => {
+            if (!r.ok) throw new Error(`Employee request failed (${r.status})`);
+            return r.json();
+          })
+          .catch(error => {
+            console.error('Unable to load employees:', error);
+            return { status: 'error' };
+          })
+      ]).then(([projectRes, empRes]) => {
+        allProjects = projectRes && projectRes.status === 'success' && Array.isArray(projectRes.data)
+          ? projectRes.data
+          : [];
+        if (!projectRes || projectRes.status !== 'success') {
+          console.error('Unable to load projects:', projectRes?.message || 'Project list request failed.');
         }
         if (empRes && empRes.status === 'success' && Array.isArray(empRes.data)) {
           allEmployees = empRes.data;
+        } else {
+          allEmployees = [];
+          console.error('Unable to load employees:', empRes?.message || 'Employee list request failed.');
         }
 
         // Populate toolbar employee filter
@@ -150,89 +174,81 @@
         }
 
         if (typeof callback === 'function') callback();
-      }).catch(() => {
-        if (typeof callback === 'function') callback();
       });
     };
 
     window.loadTaskFilterEmployees = function() {
-      window.loadDepartmentsAndEmployees();
+      window.loadProjectsAndEmployees();
     };
 
-    // ---- Populate Department Select ----
-    function populateDepartmentSelect(deptSelectId, selectedDept = '') {
-      const el = document.getElementById(deptSelectId);
-      if (!el) return;
-
-      let html = '<option value="">Select Department</option>';
-      allDepartments.forEach(d => {
-        const isSelected = selectedDept && d.name.trim().toLowerCase() === selectedDept.trim().toLowerCase();
-        html += `<option value="${d.name}" ${isSelected ? 'selected' : ''}>${d.name}</option>`;
+    function populateProjectSelect(projectSelectId, selectedProjectId = '') {
+      const select = document.getElementById(projectSelectId);
+      if (!select) return;
+      select.replaceChildren(new Option(allProjects.length ? 'Select Project' : 'No projects available', ''));
+      allProjects.forEach(project => {
+        select.add(new Option(project.title || `Project #${project.id}`, String(project.id)));
       });
-      el.innerHTML = html;
-      if (selectedDept) {
-        el.value = selectedDept;
-      }
+      if (selectedProjectId) select.value = String(selectedProjectId);
     }
 
-    // ---- Filter Employees by Selected Department ----
-    function populateEmployeesByDepartment(deptSelectId, empSelectId, selectedEmp = '') {
-      const deptSelect = document.getElementById(deptSelectId);
+    // ---- Search Employees for the Selected Project ----
+    function populateEmployees(projectSelectId, empSelectId, searchInputId, selectedEmp = '') {
+      const projectSelect = document.getElementById(projectSelectId);
       const empSelect = document.getElementById(empSelectId);
-      if (!deptSelect || !empSelect) return;
+      const searchInput = document.getElementById(searchInputId);
+      const suggestions = document.getElementById(`${empSelectId}Suggestions`);
+      if (!projectSelect || !empSelect) return;
 
-      const currentDept = (deptSelect.value || '').trim().toLowerCase();
-
-      if (!currentDept) {
-        empSelect.innerHTML = '<option value="">-- First Select a Department --</option>';
-        empSelect.value = '';
-        return;
-      }
-
-      // Filter employees matching selected department
-      const matchingEmps = allEmployees.filter(e => {
-        const empDept = (e.dept || '').trim().toLowerCase();
-        return empDept === currentDept;
-      });
+      const query = (searchInput?.value || '').trim().toLowerCase();
+      const matchingEmps = allEmployees.filter(employee =>
+        (employee.name || '').toLowerCase().includes(query) ||
+        (employee.email || '').toLowerCase().includes(query) ||
+        (employee.dept || '').toLowerCase().includes(query)
+      );
 
       if (matchingEmps.length === 0) {
-        empSelect.innerHTML = '<option value="">No employees found in this department</option>';
-        empSelect.value = '';
+        empSelect.replaceChildren(new Option(allEmployees.length ? 'No matching employees' : 'No employees available', ''));
+        suggestions?.replaceChildren();
         return;
       }
 
-      let html = '<option value="">Select Employee</option>';
-      let found = false;
-
-      matchingEmps.forEach(e => {
-        const isSel = selectedEmp && e.name.trim().toLowerCase() === selectedEmp.trim().toLowerCase();
-        if (isSel) found = true;
-        html += `<option value="${e.name}" data-dept="${e.dept || ''}" ${isSel ? 'selected' : ''}>${e.name}</option>`;
+      empSelect.replaceChildren(new Option('Select Employee', ''));
+      suggestions?.replaceChildren();
+      matchingEmps.forEach(employee => {
+        empSelect.add(new Option(employee.name, employee.name));
+        if (suggestions) {
+          const option = document.createElement('option');
+          option.value = employee.name;
+          option.label = [employee.dept, employee.email].filter(Boolean).join(' · ');
+          suggestions.append(option);
+        }
       });
 
-      empSelect.innerHTML = html;
-
-      if (found) {
+      const exactMatch = matchingEmps.find(employee =>
+        (employee.name || '').toLowerCase() === query
+      );
+      if (selectedEmp && matchingEmps.some(employee => employee.name === selectedEmp)) {
         empSelect.value = selectedEmp;
-      } else {
+        if (searchInput) searchInput.value = selectedEmp;
+      } else if (exactMatch) {
+        empSelect.value = exactMatch.name;
+      } else if (selectedEmp === '') {
         empSelect.value = '';
       }
     }
 
-    // Listen for department changes to dynamically filter employees
-    const createTaskDept = document.getElementById('createTaskDept');
-    if (createTaskDept) {
-      createTaskDept.addEventListener('change', function () {
-        populateEmployeesByDepartment('createTaskDept', 'createTaskEmployee');
-      });
-    }
-
-    const editTaskDept = document.getElementById('editTaskDept');
-    if (editTaskDept) {
-      editTaskDept.addEventListener('change', function () {
-        populateEmployeesByDepartment('editTaskDept', 'editTaskEmployee');
-      });
-    }
+    document.getElementById('createTaskEmployeeSearch')?.addEventListener('input', () =>
+      populateEmployees('createTaskProject', 'createTaskEmployee', 'createTaskEmployeeSearch')
+    );
+    document.getElementById('editTaskEmployeeSearch')?.addEventListener('input', () =>
+      populateEmployees('editTaskProject', 'editTaskEmployee', 'editTaskEmployeeSearch')
+    );
+    document.getElementById('createTaskEmployee')?.addEventListener('change', event => {
+      document.getElementById('createTaskEmployeeSearch').value = event.target.value;
+    });
+    document.getElementById('editTaskEmployee')?.addEventListener('change', event => {
+      document.getElementById('editTaskEmployeeSearch').value = event.target.value;
+    });
 
     // ---- Create Task Modal Handler ----
     const openCreateTaskBtn = document.getElementById('openCreateTaskBtn');
@@ -243,17 +259,16 @@
 
     function openCreateModal() { 
       createTaskModal?.classList.add('active'); 
-      window.loadDepartmentsAndEmployees(() => {
-        populateDepartmentSelect('createTaskDept');
-        populateEmployeesByDepartment('createTaskDept', 'createTaskEmployee');
+      window.loadProjectsAndEmployees(() => {
+        populateProjectSelect('createTaskProject');
+        populateEmployees('createTaskProject', 'createTaskEmployee', 'createTaskEmployeeSearch');
       });
     }
 
     function closeCreateModal() { 
       createTaskModal?.classList.remove('active'); 
       createTaskForm?.reset(); 
-      const empSelect = document.getElementById('createTaskEmployee');
-      if (empSelect) empSelect.innerHTML = '<option value="">-- First Select a Department --</option>';
+      populateEmployees('createTaskProject', 'createTaskEmployee', 'createTaskEmployeeSearch');
     }
 
     if (openCreateTaskBtn) openCreateTaskBtn.addEventListener('click', openCreateModal);
@@ -280,13 +295,56 @@
               alert(res.message || 'Error creating task.');
             }
           })
-          .catch(() => {
-            alert('Task saved to database successfully.');
-            closeCreateModal();
-            window.fetchAdminTasks();
+          .catch((error) => {
+            alert('Unable to create task. Please check your connection and try again.');
+            console.error('Unable to create task:', error);
           });
       });
     }
+
+    // ---- Create Project Modal Handler ----
+    const openCreateProjectBtn = document.getElementById('openCreateProjectBtn');
+    const createProjectModal = document.getElementById('createProjectModal');
+    const createProjectForm = document.getElementById('createProjectForm');
+
+    function closeCreateProjectModal() {
+      createProjectModal?.classList.remove('active');
+      createProjectForm?.reset();
+    }
+
+    openCreateProjectBtn?.addEventListener('click', () => {
+      createProjectForm?.reset();
+      createProjectModal?.classList.add('active');
+      createProjectForm?.querySelector('[name="title"]')?.focus();
+    });
+    document.getElementById('closeCreateProjectModal')?.addEventListener('click', closeCreateProjectModal);
+    document.getElementById('cancelCreateProjectModal')?.addEventListener('click', closeCreateProjectModal);
+    createProjectModal?.addEventListener('click', event => {
+      if (event.target === createProjectModal) closeCreateProjectModal();
+    });
+
+    createProjectForm?.addEventListener('submit', event => {
+      event.preventDefault();
+      const createProjectUrl = (typeof window.pth !== 'undefined' ? window.pth : '../') + 'UxUi-Back/Tasks/create_project/create_project.php';
+      fetch(createProjectUrl, { method: 'POST', body: new FormData(createProjectForm) })
+        .then(response => response.json())
+        .then(response => {
+          if (response.status !== 'success' || !response.data?.id) {
+            alert(response.message || 'Unable to create project.');
+            return;
+          }
+          closeCreateProjectModal();
+          window.loadProjectsAndEmployees(() => {
+            populateProjectSelect('createTaskProject', response.data.id);
+            populateEmployees('createTaskProject', 'createTaskEmployee', 'createTaskEmployeeSearch');
+            createTaskForm?.querySelector('[name="title"]')?.focus();
+          });
+        })
+        .catch(error => {
+          alert('Unable to create project. Please check your connection and try again.');
+          console.error('Unable to create project:', error);
+        });
+    });
 
     // ---- Edit Task Modal Handler ----
     const editTaskModal = document.getElementById('editTaskModal');
@@ -297,8 +355,7 @@
     function closeEditModal() { 
       editTaskModal?.classList.remove('active'); 
       editTaskForm?.reset(); 
-      const empSelect = document.getElementById('editTaskEmployee');
-      if (empSelect) empSelect.innerHTML = '<option value="">Select Employee</option>';
+      populateEmployees('editTaskProject', 'editTaskEmployee', 'editTaskEmployeeSearch');
     }
 
     if (closeEditTaskModal) closeEditTaskModal.addEventListener('click', closeEditModal);
@@ -323,10 +380,17 @@
 
       const el = id => document.getElementById(id);
       if (el('viewTaskTitle')) el('viewTaskTitle').textContent = task.title || 'Untitled Task';
+      if (el('viewTaskProject')) el('viewTaskProject').textContent = task.project_title || 'No project';
       if (el('viewTaskEmployee')) el('viewTaskEmployee').textContent = task.employee || task.assigned_to || 'Staff';
       if (el('viewTaskDept')) el('viewTaskDept').textContent = task.dept || task.department || 'General';
       if (el('viewTaskDeadline')) el('viewTaskDeadline').textContent = task.deadline || '—';
       if (el('viewTaskId')) el('viewTaskId').textContent = '#' + (task.id || '—');
+
+      const priorityPill = el('viewTaskPriorityPill');
+      if (priorityPill) {
+        priorityPill.textContent = task.priority || 'Medium';
+        priorityPill.className = 'task-pill pill-' + (task.priority || 'Medium').toLowerCase();
+      }
 
       const statusPill = el('viewTaskStatusPill');
       if (statusPill) {
@@ -363,16 +427,18 @@
       const el = id => document.getElementById(id);
       if (el('editTaskId')) el('editTaskId').value = task.id;
       if (el('editTaskTitle')) el('editTaskTitle').value = task.title || '';
+      if (el('editTaskDescription')) el('editTaskDescription').value = task.description || '';
       if (el('editTaskMode')) el('editTaskMode').value = task.mode || 'Online';
+      if (el('editTaskPriority')) el('editTaskPriority').value = task.priority || 'Medium';
       if (el('editTaskDeadline')) el('editTaskDeadline').value = task.deadline || '';
       if (el('editTaskStatus')) el('editTaskStatus').value = task.status || 'Pending';
 
-      const taskDept = task.dept || task.department || '';
       const taskEmp = task.employee || task.assigned_to || '';
 
-      window.loadDepartmentsAndEmployees(() => {
-        populateDepartmentSelect('editTaskDept', taskDept);
-        populateEmployeesByDepartment('editTaskDept', 'editTaskEmployee', taskEmp);
+      window.loadProjectsAndEmployees(() => {
+        populateProjectSelect('editTaskProject', task.project_id || '');
+        document.getElementById('editTaskEmployeeSearch').value = '';
+        populateEmployees('editTaskProject', 'editTaskEmployee', 'editTaskEmployeeSearch', taskEmp);
       });
 
       editTaskModal?.classList.add('active');
@@ -396,10 +462,9 @@
               alert(res.message || 'Error updating task.');
             }
           })
-          .catch(() => {
-            alert('Task updated successfully.');
-            closeEditModal();
-            window.fetchAdminTasks();
+          .catch((error) => {
+            alert('Unable to update task. Please check your connection and try again.');
+            console.error('Unable to update task:', error);
           });
       });
     }
