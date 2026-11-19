@@ -248,6 +248,7 @@
     .pill-online { background: var(--badge-online-bg); color: var(--badge-online-text); }
     .pill-onsite { background: var(--badge-onsite-bg); color: var(--badge-onsite-text); }
     .pill-high { background: var(--badge-high-bg); color: var(--badge-high-text); }
+    .pill-urgent { background: var(--badge-high-bg); color: var(--badge-high-text); }
     .pill-medium { background: var(--badge-medium-bg); color: var(--badge-medium-text); }
     .pill-low { background: var(--badge-low-bg); color: var(--badge-low-text); }
     .pill-progress { background: var(--badge-progress-bg); color: var(--badge-progress-text); }
@@ -995,20 +996,29 @@
         <form id="createTaskForm" style="display: flex; flex-direction: column; flex: 1; overflow: hidden; margin: 0;">
           <div class="w3-modal-body">
             <div class="w3-form-group">
+              <label>Project</label>
+              <div style="display: flex; gap: 8px; align-items: center;">
+                <select name="project_id" id="createTaskProject" required style="flex: 1;">
+                  <option value="">Select Project</option>
+                </select>
+                <button type="button" class="w3-btn-cancel" id="openCreateProjectBtn" style="white-space: nowrap;">+ Create Project</button>
+              </div>
+            </div>
+            <div class="w3-form-group">
               <label>Task Title</label>
               <input type="text" name="title" required placeholder="e.g. Redesign Employee Portal UI">
             </div>
-            <div class="w3-form-row">
-              <div class="w3-form-group">
-                <label>Department</label>
-                <select name="dept" id="createTaskDept" required>
-                  <option value="">Select Department</option>
-                </select>
-              </div>
-              <div class="w3-form-group">
-                <label>Assigned Employee</label>
-                <select name="employee" id="createTaskEmployee" required>
-                  <option value="">-- First Select a Department --</option>
+            <div class="w3-form-group">
+              <label>Description</label>
+              <textarea name="description" rows="3" placeholder="Task details"></textarea>
+            </div>
+            <div class="w3-form-group">
+              <label>Assign Employee</label>
+              <div style="display: flex; gap: 8px;">
+                <input type="search" id="createTaskEmployeeSearch" list="createTaskEmployeeSuggestions" placeholder="Search employees..." autocomplete="off" style="flex: 1; min-width: 0;">
+                <datalist id="createTaskEmployeeSuggestions"></datalist>
+                <select name="employee" id="createTaskEmployee" required style="flex: 1; min-width: 0;">
+                  <option value="">Select Employee</option>
                 </select>
               </div>
             </div>
@@ -1021,6 +1031,17 @@
                 </select>
               </div>
               <div class="w3-form-group">
+                <label>Priority</label>
+                <select name="priority">
+                  <option value="Low">Low</option>
+                  <option value="Medium" selected>Medium</option>
+                  <option value="High">High</option>
+                  <option value="Urgent">Urgent</option>
+                </select>
+              </div>
+            </div>
+            <div class="w3-form-row">
+              <div class="w3-form-group">
                 <label>Deadline</label>
                 <input type="date" name="deadline" value="<?php echo date('Y-m-d'); ?>">
               </div>
@@ -1030,6 +1051,32 @@
           <div class="w3-modal-footer">
             <button type="button" class="w3-btn-cancel" id="cancelCreateTaskModal">Cancel</button>
             <button type="submit" class="w3-btn-save">Create Task</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Create Project Modal -->
+    <div class="w3-modal-overlay" id="createProjectModal">
+      <div class="w3-modal-card">
+        <div class="w3-modal-header">
+          <h3>Create Project</h3>
+          <button type="button" class="w3-modal-close" id="closeCreateProjectModal">&times;</button>
+        </div>
+        <form id="createProjectForm" style="display: flex; flex-direction: column; flex: 1; overflow: hidden; margin: 0;">
+          <div class="w3-modal-body">
+            <div class="w3-form-group">
+              <label>Project Name</label>
+              <input type="text" name="title" maxlength="100" required placeholder="Enter project name">
+            </div>
+            <div class="w3-form-group">
+              <label>Description</label>
+              <textarea name="description" rows="3" maxlength="250" placeholder="Optional project details"></textarea>
+            </div>
+          </div>
+          <div class="w3-modal-footer">
+            <button type="button" class="w3-btn-cancel" id="cancelCreateProjectModal">Cancel</button>
+            <button type="submit" class="w3-btn-save">Create Project</button>
           </div>
         </form>
       </div>
@@ -1046,20 +1093,26 @@
           <div class="w3-modal-body">
             <input type="hidden" name="id" id="editTaskId">
             <div class="w3-form-group">
+              <label>Project</label>
+              <select name="project_id" id="editTaskProject" required>
+                <option value="">Select Project</option>
+              </select>
+            </div>
+            <div class="w3-form-group">
               <label>Task Title</label>
               <input type="text" name="title" id="editTaskTitle" required placeholder="e.g. Redesign Employee Portal UI">
             </div>
-            <div class="w3-form-row">
-              <div class="w3-form-group">
-                <label>Department</label>
-                <select name="dept" id="editTaskDept" required>
-                  <option value="">Select Department</option>
-                </select>
-              </div>
-              <div class="w3-form-group">
-                <label>Assigned Employee</label>
-                <select name="employee" id="editTaskEmployee" required>
-                  <option value="">-- First Select a Department --</option>
+            <div class="w3-form-group">
+              <label>Description</label>
+              <textarea name="description" id="editTaskDescription" rows="3" placeholder="Task details"></textarea>
+            </div>
+            <div class="w3-form-group">
+              <label>Assign Employee</label>
+              <div style="display: flex; gap: 8px;">
+                <input type="search" id="editTaskEmployeeSearch" list="editTaskEmployeeSuggestions" placeholder="Search employees..." autocomplete="off" style="flex: 1; min-width: 0;">
+                <datalist id="editTaskEmployeeSuggestions"></datalist>
+                <select name="employee" id="editTaskEmployee" required style="flex: 1; min-width: 0;">
+                  <option value="">Select Employee</option>
                 </select>
               </div>
             </div>
@@ -1071,6 +1124,17 @@
                   <option value="Onsite">Onsite</option>
                 </select>
               </div>
+              <div class="w3-form-group">
+                <label>Priority</label>
+                <select name="priority" id="editTaskPriority">
+                  <option value="Low">Low</option>
+                  <option value="Medium">Medium</option>
+                  <option value="High">High</option>
+                  <option value="Urgent">Urgent</option>
+                </select>
+              </div>
+            </div>
+            <div class="w3-form-row">
               <div class="w3-form-group">
                 <label>Deadline</label>
                 <input type="date" name="deadline" id="editTaskDeadline">
@@ -1107,11 +1171,15 @@
 
           <div style="display: flex; gap: 8px; flex-wrap: wrap; align-items: center;">
             <span id="viewTaskStatusPill" class="task-pill pill-pending">Pending</span>
-            <span id="viewTaskPriorityPill" class="task-pill pill-medium">In Progress</span>
+            <span id="viewTaskPriorityPill" class="task-pill pill-medium">Medium</span>
             <span id="viewTaskModePill" class="task-pill pill-online">Completed</span>
           </div>
 
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; background: #f8fafc; padding: 12px 14px; border-radius: 10px; border: 1px solid #f1f5f9;">
+            <div>
+              <span style="display: block; font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase;">Project</span>
+              <span id="viewTaskProject" style="font-size: 13.5px; font-weight: 700; color: #1e293b;"></span>
+            </div>
             <div>
               <span style="display: block; font-size: 11px; font-weight: 700; color: #94a3b8; text-transform: uppercase;">Assigned Employee</span>
               <span id="viewTaskEmployee" style="font-size: 13.5px; font-weight: 700; color: #1e293b;"></span>
