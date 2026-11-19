@@ -32,6 +32,7 @@ try {
         'description' => trim((string)($_POST['description'] ?? '')),
         'department' => trim((string)($_POST['dept'] ?? $_POST['department'] ?? '')),
         'assigned_to' => trim((string)($_POST['employee'] ?? $_POST['assigned_to'] ?? '')),
+        'employee_user_id' => (int)($_POST['employee_user_id'] ?? 0),
         'mode' => trim((string)($_POST['mode'] ?? 'Online')),
         'priority' => trim((string)($_POST['priority'] ?? 'Medium')),
         'status' => trim((string)($_POST['status'] ?? 'Pending')),
@@ -77,6 +78,9 @@ try {
         'message' => 'Task assigned successfully.',
         'data' => $task
     ]);
+} catch (InvalidArgumentException $error) {
+    http_response_code(400);
+    echo json_encode(['status' => 'error', 'message' => $error->getMessage()]);
 } catch (Throwable $error) {
     http_response_code(500);
     echo json_encode(['status' => 'error', 'message' => 'Failed to create task: ' . $error->getMessage()]);
