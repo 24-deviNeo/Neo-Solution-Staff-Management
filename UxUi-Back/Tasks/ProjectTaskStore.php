@@ -456,6 +456,43 @@ class ProjectTaskStore
         }
     }
 
+    public function updateTaskStatus($id, $status)
+    {
+        $id = (int)$id;
+        if ($id <= 0) {
+            throw new InvalidArgumentException('Task ID is required.');
+        }
+
+        $status = strtolower(trim((string)$status));
+        if ($status === 'pending') {
+            $isPending = 1;
+            $isCompleted = 0;
+            $progress = 0;
+        } elseif ($status === 'in progress' || $status === 'in-progress') {
+            $isPending = 0;
+            $isCompleted = 0;
+            $progress = 50;
+        } elseif ($status === 'completed' || $status === 'done') {
+            $isPending = 0;
+            $isCompleted = 1;
+            $progress = 100;
+        } else {
+            throw new InvalidArgumentException('Select a valid task status.');
+        }
+
+        $existing = $this->query("SELECT `id` FROM `project_tasks` WHERE `id` = {$id} LIMIT 1");
+        if ($existing->num_rows === 0) {
+            throw new InvalidArgumentException('Task not found.');
+        }
+
+        $this->query("UPDATE `project_tasks`
+            SET `is_pending` = {$isPending},
+                `is_completed` = {$isCompleted},
+                `progress` = {$progress}
+            WHERE `id` = {$id}");
+        return $this->getTask($id);
+    }
+
     public function deleteTask($id)
     {
         $id = (int)$id;
