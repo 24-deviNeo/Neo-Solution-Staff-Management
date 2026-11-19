@@ -30,6 +30,8 @@ if ($res && $res->num_rows > 0) {
             'dept'      => $row['department'],
             'employee'  => $row['assigned_employee'],
             'mode'      => $row['work_mode'],
+            'priority'  => $row['priority'],
+            'description' => $row['description'],
             'deadline'  => $row['deadline'],
             'status'    => $row['status']
         ];
