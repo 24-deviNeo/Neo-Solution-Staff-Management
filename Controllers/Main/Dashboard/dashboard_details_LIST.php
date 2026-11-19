@@ -1,6 +1,7 @@
 <?php
 
 include_once __DIR__ . '/../../../imports/need/DB.php';
+include_once __DIR__ . '/../../../UxUi-Back/Tasks/ProjectTaskStore.php';
 
 class dashboard_details_LIST
 {
@@ -135,18 +136,13 @@ class dashboard_details_LIST
         $stats['active_employees'] = count($daily);
         $stats['inactive_today'] = max(0, $stats['total_employees'] - $stats['active_employees']);
 
-        // 2. Tasks Count strictly from system_tasks table (fallback to task_management)
-        $tasks_table = "system_tasks";
-        $check_tbl = $data_base_obj->get_result("SHOW TABLES LIKE 'system_tasks'");
-        if (!$check_tbl || $check_tbl->num_rows === 0) {
-            $tasks_table = "task_management";
-        }
-
-        $res = $data_base_obj->get_result("SELECT 
-            SUM(CASE WHEN LOWER(TRIM(COALESCE(NULLIF(status, ''), 'pending'))) = 'pending' THEN 1 ELSE 0 END) AS pending_cnt,
-            SUM(CASE WHEN LOWER(TRIM(status)) = 'completed' OR LOWER(TRIM(status)) = 'done' THEN 1 ELSE 0 END) AS completed_cnt,
-            SUM(CASE WHEN LOWER(TRIM(status)) = 'in progress' OR LOWER(TRIM(status)) = 'in-progress' OR LOWER(TRIM(status)) = 'inprogress' THEN 1 ELSE 0 END) AS in_prog_cnt
-            FROM `$tasks_table`");
+        // 2. Task counts from the normalized project task schema.
+        new ProjectTaskStore();
+        $res = $data_base_obj->get_result("SELECT
+            SUM(CASE WHEN `is_pending` = 1 THEN 1 ELSE 0 END) AS pending_cnt,
+            SUM(CASE WHEN `is_completed` = 1 THEN 1 ELSE 0 END) AS completed_cnt,
+            SUM(CASE WHEN `is_pending` = 0 AND `is_completed` = 0 THEN 1 ELSE 0 END) AS in_prog_cnt
+            FROM `project_tasks`");
         if ($res && $row = $res->fetch_assoc()) {
             $stats['pending_tasks']     = (int)($row['pending_cnt'] ?? 0);
             $stats['completed_tasks']   = (int)($row['completed_cnt'] ?? 0);
@@ -340,26 +336,17 @@ class dashboard_details_LIST
         $monthsList = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
         $currentYear = date('Y');
 
-        $tasks_table = "system_tasks";
-        $check_tbl = $data_base_obj->get_result("SHOW TABLES LIKE 'system_tasks'");
-        if (!$check_tbl || $check_tbl->num_rows === 0) {
-            $tasks_table = "task_management";
-        }
+        new ProjectTaskStore();
 
         foreach ($monthsList as $idx => $m_str) {
             $m_int = $idx + 1;
             $m_num = str_pad($m_int, 2, '0', STR_PAD_LEFT);
 
-            $query = "SELECT 
+            $query = "SELECT
                 COUNT(*) AS total_tasks,
-                SUM(CASE WHEN LOWER(TRIM(status)) = 'completed' OR LOWER(TRIM(status)) = 'done' THEN 1 ELSE 0 END) AS completed_tasks
-                FROM `$tasks_table` 
-                WHERE (
-                    deadline LIKE '%$currentYear-$m_num%' 
-                    OR deadline LIKE '%-$m_num-%' 
-                    OR deadline LIKE '%/$m_num/%'
-                    OR deadline LIKE '%$m_str%'
-                )";
+                SUM(CASE WHEN `is_completed` = 1 THEN 1 ELSE 0 END) AS completed_tasks
+                FROM `project_tasks`
+                WHERE MONTH(`deadline`) = {$m_int} AND YEAR(`deadline`) = {$currentYear}";
 
             $res = $data_base_obj->get_result($query);
 
