@@ -24,6 +24,7 @@
 
     const iconEye = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z"/><circle cx="12" cy="12" r="3"/></svg>`;
     const iconEdit = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4Z"/></svg>`;
+    const iconPlan = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="17" rx="2"/><path d="M16 2v4M8 2v4M3 10h18M8 15l2 2 5-5"/></svg>`;
     const iconRemove = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>`;
     const iconLoginAs = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/><path d="M19 8l2 2-2 2"/><path d="M17 10h4"/></svg>`;
 
@@ -128,6 +129,7 @@
                 <div class="row-actions" style="display:flex; align-items:center; justify-content:center; margin:0 auto; gap:6px;">
                   <button class="action-btn view" title="View Profile" onclick="viewEmp(${e.id})">${iconEye}</button>
                   <button class="action-btn edit" title="Edit Employee" onclick="editEmp(${e.id})">${iconEdit}</button>
+                  <button type="button" class="action-btn plan" title="View Daily Plans" aria-label="View daily plans" onclick="viewEmpDailyPlans(${e.id})">${iconPlan}</button>
                 </div>
               </td>
             </tr>
@@ -172,6 +174,9 @@
                 </button>
                 <button type="button" class="btn-mobile-emp-edit" onclick="editEmp(${e.id})">
                   <i class="fa-solid fa-pen"></i> Edit
+                </button>
+                <button type="button" class="btn-mobile-emp-plan" onclick="viewEmpDailyPlans(${e.id})">
+                  <i class="fa-solid fa-calendar-check"></i> Daily Plans
                 </button>
               </div>
             </div>
@@ -751,23 +756,33 @@
       viewEmpModal.classList.add('active');
     }
 
-    window.viewEmp = function (id) {
+    window.viewEmp = function (id, tabId) {
       const pth = typeof window.pth !== 'undefined' ? window.pth : '../';
+      const openEmployee = (data) => {
+        populateViewModal(data);
+        if (tabId) {
+          window.switchEmpTab(tabId, document.getElementById('btnTabWorkPlan'));
+        }
+      };
       fetch(pth + 'UxUi-Back/Admin_user_dashboard/Admin_user_dashboard_02_employees/fetch_full_employee_account.php?id=' + encodeURIComponent(id))
         .then(res => res.json())
         .then(res => {
           if (res.status === 'success' && res.data) {
-            populateViewModal(res.data);
+            openEmployee(res.data);
           } else {
             // Fallback to local array
             const e = employees.find(emp => Number(emp.id) === Number(id) || Number(emp.account_id) === Number(id));
-            if (e) populateViewModal(e);
+            if (e) openEmployee(e);
           }
         })
         .catch(() => {
           const e = employees.find(emp => Number(emp.id) === Number(id) || Number(emp.account_id) === Number(id));
-          if (e) populateViewModal(e);
+          if (e) openEmployee(e);
         });
+    };
+
+    window.viewEmpDailyPlans = function (id) {
+      window.viewEmp(id, 'tabWorkPlan');
     };
 
     window.editCurrentEmpFromView = function () {
