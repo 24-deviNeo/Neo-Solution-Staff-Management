@@ -215,7 +215,9 @@
       empSelect.replaceChildren(new Option('Select Employee', ''));
       suggestions?.replaceChildren();
       matchingEmps.forEach(employee => {
-        empSelect.add(new Option(employee.name, employee.name));
+        const option = new Option(employee.name, employee.name);
+        option.dataset.employeeUserId = String(employee.account_id || employee.user_id || '');
+        empSelect.add(option);
         if (suggestions) {
           const option = document.createElement('option');
           option.value = employee.name;
@@ -282,6 +284,8 @@
       createTaskForm.addEventListener('submit', (e) => {
         e.preventDefault();
         const formData = new FormData(createTaskForm);
+        const selectedEmployee = document.getElementById('createTaskEmployee')?.selectedOptions[0];
+        formData.set('employee_user_id', selectedEmployee?.dataset.employeeUserId || '');
         const createUrl = (typeof window.pth !== 'undefined' ? window.pth : '../') + 'UxUi-Back/Tasks/create_task/create_task.php';
 
         fetch(createUrl, { method: 'POST', body: formData })
@@ -448,6 +452,8 @@
       editTaskForm.addEventListener('submit', (e) => {
         e.preventDefault();
         const formData = new FormData(editTaskForm);
+        const selectedEmployee = document.getElementById('editTaskEmployee')?.selectedOptions[0];
+        formData.set('employee_user_id', selectedEmployee?.dataset.employeeUserId || '');
         formData.append('updater_role', 'admin');
         const editUrl = (typeof window.pth !== 'undefined' ? window.pth : '../') + 'UxUi-Back/Tasks/update_task/update_task.php';
 
