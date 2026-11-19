@@ -330,6 +330,7 @@
   }
   .action-btn svg { width: 16px; height: 16px; }
   .action-btn.view { background-color: var(--blue-lighter); color: var(--blue); }
+  .action-btn.plan { background-color: var(--green-bg); color: var(--green); }
   .action-btn:hover { filter: brightness(0.92); transform: translateY(-1px); }
 
   /* Selectable Working Day Chips */
@@ -450,6 +451,22 @@
     font-size: 12.5px;
     font-weight: 700;
     border: 1px solid #cbf0d8;
+    border-radius: 8px;
+    padding: 8px 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    cursor: pointer;
+  }
+
+  .btn-mobile-emp-plan {
+    flex: 1;
+    background: #e6f4ea;
+    color: #15803d;
+    font-size: 12.5px;
+    font-weight: 700;
+    border: 1px solid #bbf7d0;
     border-radius: 8px;
     padding: 8px 10px;
     display: flex;
