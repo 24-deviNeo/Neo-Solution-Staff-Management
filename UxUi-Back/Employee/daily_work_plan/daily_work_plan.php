@@ -96,9 +96,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 if (file_exists(__DIR__ . '/../../../imports/need/SystemNotifications.php')) {
     include_once __DIR__ . '/../../../imports/need/SystemNotifications.php';
 }
-if (file_exists(__DIR__ . '/../../../Controllers/Main/Task_Management/task_management_ADD_UPDATE.php')) {
-    include_once __DIR__ . '/../../../Controllers/Main/Task_Management/task_management_ADD_UPDATE.php';
-}
+include_once __DIR__ . '/../../Tasks/ProjectTaskStore.php';
 
 $action = isset($_POST['action']) ? trim((string)$_POST['action']) : '';
 $now = date('Y-m-d H:i:s');
@@ -125,7 +123,6 @@ if ($action === 'shift_end_update' || isset($_POST['evening_update'])) {
 
     $finalEveningText = $eveningUpdate !== '' ? $eveningUpdate : ($existingPlanText ?: 'Shift work wrapped up.');
     $eveningSql = addslashes($finalEveningText);
-    $taskStatusSql = addslashes($taskStatus);
 
     // Derive concise task title from morning plan or default
     $firstLine = '';
@@ -137,10 +134,7 @@ if ($action === 'shift_end_update' || isset($_POST['evening_update'])) {
     if (mb_strlen($taskTitle) > 50) {
         $taskTitle = mb_substr($taskTitle, 0, 47) . '...';
     }
-    $taskTitleSql = addslashes($taskTitle);
-
     $fullDescription = "Plan: " . ($existingPlanText ?: 'Daily Work') . "\n\nShift End Update: " . $finalEveningText;
-    $fullDescSql = addslashes($fullDescription);
 
     // 1. Update or create daily_employee_work_plans record
     if ($planId > 0) {
@@ -163,42 +157,20 @@ if ($action === 'shift_end_update' || isset($_POST['evening_update'])) {
         }
     }
 
-    // 2. Sync to system_tasks
-    $taskId = 0;
-    if ($existingTaskId > 0) {
-        $chk = $db->get_result("SELECT id FROM `system_tasks` WHERE id = {$existingTaskId} LIMIT 1");
-        if ($chk && $chk->num_rows > 0) {
-            $taskId = $existingTaskId;
-            $db->get_result("UPDATE `system_tasks` SET
-                `title` = '{$taskTitleSql}',
-                `description` = '{$fullDescSql}',
-                `department` = '{$deptSql}',
-                `assigned_to` = '{$nameSql}',
-                `status` = '{$taskStatusSql}',
-                `progress` = {$progress}
-                WHERE id = {$taskId}");
-        }
-    }
-
-    if ($taskId === 0) {
-        $insSql = "INSERT INTO `system_tasks`
-            (`title`, `description`, `department`, `assigned_to`, `mode`, `priority`, `status`, `deadline`, `progress`, `created_at`)
-            VALUES
-            ('{$taskTitleSql}', '{$fullDescSql}', '{$deptSql}', '{$nameSql}', 'Online', 'Medium', '{$taskStatusSql}', '{$today}', {$progress}, '{$now}')";
-        if ($db->get_result($insSql)) {
-            $tRes = $db->get_result("SELECT LAST_INSERT_ID() AS id");
-            if ($tRes && $tr = $tRes->fetch_assoc()) {
-                $taskId = (int)$tr['id'];
-            }
-        }
-    }
-
-    // Mirror to task_management
-    if (class_exists('task_management_ADD_UPDATE')) {
-        $taskMgmtObj = new task_management_ADD_UPDATE();
-        $taskMgmtObj->set_data($taskTitle, $profileDept ?: 'Engineering', $profileName, 'Online', $today, 'Medium', $taskStatus);
-        $taskMgmtObj->process_new_record();
-    }
+    // 2. Sync the employee plan with the normalized project task tables.
+    $taskStore = new ProjectTaskStore();
+    $taskId = $taskStore->saveTask([
+        'id' => $existingTaskId,
+        'title' => $taskTitle,
+        'description' => $fullDescription,
+        'department' => $profileDept ?: 'Engineering',
+        'assigned_to' => $profileName,
+        'mode' => 'Online',
+        'priority' => 'Medium',
+        'deadline' => $today,
+        'progress' => $progress,
+        'status' => $taskStatus
+    ]);
 
     // Link task_id in daily_employee_work_plans
     if ($taskId > 0 && $planId > 0) {
