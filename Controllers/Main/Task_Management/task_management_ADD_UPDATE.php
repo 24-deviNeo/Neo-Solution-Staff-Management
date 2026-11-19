@@ -1,28 +1,20 @@
 <?php
-if (!class_exists('DataBase')) {
-    if (file_exists(__DIR__ . '/../../../imports/need/DB.php')) {
-        include_once __DIR__ . '/../../../imports/need/DB.php';
-    } elseif (file_exists(__DIR__ . '/../../../database.php')) {
-        include_once __DIR__ . '/../../../database.php';
-    }
-}
+
+include_once __DIR__ . '/../../../UxUi-Back/Tasks/ProjectTaskStore.php';
 
 class task_management_ADD_UPDATE
 {
-    private $id;
-    private $task_title;
-    private $department;
-    private $assigned_employee;
-    private $work_mode = "Onsite";
-    private $deadline;
-    private $status = "Pending";
-    private $ast = "1";
-    private $error_msg = "";
-    private $sql_update_query = "";
-
-    public function __construct()
-    {
-    }
+    private $id = 0;
+    private $task_title = '';
+    private $description = '';
+    private $department = '';
+    private $assigned_employee = '';
+    private $work_mode = 'Online';
+    private $priority = 'Medium';
+    private $deadline = '';
+    private $status = 'Pending';
+    private $ast = '1';
+    private $error_msg = '';
 
     public function set_id($id)
     {
@@ -38,131 +30,85 @@ class task_management_ADD_UPDATE
         $task_title,
         $department,
         $assigned_employee,
-        $work_mode = "Onsite",
-        $deadline = "",
-        $status = "Pending"
+        $work_mode = 'Online',
+        $deadline = '',
+        $priority_or_status = 'Medium',
+        $status = null,
+        $description = ''
     ) {
-        $this->task_title        = addslashes($task_title);
-        $this->department        = addslashes($department);
-        $this->assigned_employee = addslashes($assigned_employee);
-        $this->work_mode         = addslashes($work_mode);
-        $this->deadline          = addslashes($deadline);
-        $this->status            = addslashes($status);
+        $this->task_title = trim((string)$task_title);
+        $this->department = trim((string)$department);
+        $this->assigned_employee = trim((string)$assigned_employee);
+        $this->work_mode = trim((string)$work_mode);
+        $this->deadline = trim((string)$deadline);
+        $this->description = trim((string)$description);
 
-        $this->sql_update_query .=
-            ", task_title='" . $this->task_title . "'" .
-            ", department='" . $this->department . "'" .
-            ", assigned_employee='" . $this->assigned_employee . "'" .
-            ", work_mode='" . $this->work_mode . "'" .
-            ", deadline='" . $this->deadline . "'" .
-            ", status='" . $this->status . "'";
+        if ($status === null && in_array(strtolower(trim((string)$priority_or_status)), ['pending', 'in progress', 'in-progress', 'completed', 'done'], true)) {
+            $this->priority = 'Medium';
+            $this->status = trim((string)$priority_or_status);
+        } else {
+            $this->priority = trim((string)$priority_or_status) ?: 'Medium';
+            $this->status = $status === null ? 'Pending' : trim((string)$status);
+        }
     }
 
-    public function set_task_title($task_title)
-    {
-        $this->task_title = addslashes($task_title);
-        $this->sql_update_query .= ", task_title='" . $this->task_title . "'";
-    }
+    public function set_task_title($value) { $this->task_title = trim((string)$value); }
+    public function set_description($value) { $this->description = trim((string)$value); }
+    public function set_department($value) { $this->department = trim((string)$value); }
+    public function set_assigned_employee($value) { $this->assigned_employee = trim((string)$value); }
+    public function set_work_mode($value) { $this->work_mode = trim((string)$value); }
+    public function set_priority($value) { $this->priority = trim((string)$value); }
+    public function set_deadline($value) { $this->deadline = trim((string)$value); }
+    public function set_status($value) { $this->status = trim((string)$value); }
+    public function remove() { $this->ast = '0'; }
+    public function get_error() { return $this->error_msg; }
 
-    public function set_department($department)
+    private function save($isNew)
     {
-        $this->department = addslashes($department);
-        $this->sql_update_query .= ", department='" . $this->department . "'";
-    }
-
-    public function set_assigned_employee($assigned_employee)
-    {
-        $this->assigned_employee = addslashes($assigned_employee);
-        $this->sql_update_query .= ", assigned_employee='" . $this->assigned_employee . "'";
-    }
-
-    public function set_work_mode($work_mode)
-    {
-        $this->work_mode = addslashes($work_mode);
-        $this->sql_update_query .= ", work_mode='" . $this->work_mode . "'";
-    }
-
-    public function set_deadline($deadline)
-    {
-        $this->deadline = addslashes($deadline);
-        $this->sql_update_query .= ", deadline='" . $this->deadline . "'";
-    }
-
-    public function set_status($status)
-    {
-        $this->status = addslashes($status);
-        $this->sql_update_query .= ", status='" . $this->status . "'";
-    }
-
-    public function remove()
-    {
-        $this->ast = "0";
-    }
-
-    public function get_error()
-    {
-        return $this->error_msg;
+        try {
+            $store = new ProjectTaskStore();
+            $data = [
+                'id' => $isNew ? 0 : $this->id,
+                'title' => $this->task_title,
+                'description' => $this->description,
+                'department' => $this->department,
+                'assigned_to' => $this->assigned_employee,
+                'mode' => $this->work_mode,
+                'priority' => $this->priority,
+                'deadline' => $this->deadline,
+                'status' => $this->status
+            ];
+            $this->id = $store->saveTask($data);
+            $this->error_msg = '';
+            return true;
+        } catch (Throwable $error) {
+            $this->error_msg = $error->getMessage();
+            return false;
+        }
     }
 
     public function process_new_record()
     {
-        $data_base_obj = new DataBase();
-
-        if (empty($this->id) || $this->id == 0) {
-            $id_res = $data_base_obj->get_result("SELECT COALESCE(MAX(id), 0) + 1 AS next_id FROM task_management");
-            if ($id_res && $row = $id_res->fetch_assoc()) {
-                $this->id = (int)$row['next_id'];
-            } else {
-                $this->id = 1;
-            }
-        }
-
-        $get_sql_query = "
-            INSERT INTO task_management (
-                id,
-                task_title, 
-                department, 
-                assigned_employee,
-                work_mode,
-                deadline,
-                status
-            )
-            VALUES (
-                '" . $this->id . "',
-                '" . $this->task_title . "',
-                '" . $this->department . "',
-                '" . $this->assigned_employee . "',
-                '" . $this->work_mode . "',
-                '" . $this->deadline . "',
-                '" . $this->status . "'
-            )";
-
-        $data_base_obj->get_result($get_sql_query);
-        $this->error_msg = $data_base_obj->get_error();
-        return $data_base_obj->get_error_state_boolean();
+        return $this->save(true);
     }
 
     public function process_update()
     {
-        $data_base_obj = new DataBase();
-
-        if ($this->ast == "0") {
-            $get_sql_query = "DELETE FROM task_management WHERE id='" . $this->id . "'";
-        } else {
-            $update_part = ltrim($this->sql_update_query, ',');
-            if (empty($update_part)) {
-                $update_part = "task_title='" . $this->task_title . "', department='" . $this->department . "', assigned_employee='" . $this->assigned_employee . "', work_mode='" . $this->work_mode . "', deadline='" . $this->deadline . "', status='" . $this->status . "'";
+        if ($this->ast === '0') {
+            try {
+                $store = new ProjectTaskStore();
+                $deleted = $store->deleteTask($this->id);
+                $this->error_msg = $deleted ? '' : 'Task not found.';
+                return $deleted;
+            } catch (Throwable $error) {
+                $this->error_msg = $error->getMessage();
+                return false;
             }
-            $get_sql_query = "UPDATE task_management SET " . $update_part . " WHERE id='" . $this->id . "'";
         }
-
-        $data_base_obj->get_result($get_sql_query);
-        $this->error_msg = $data_base_obj->get_error();
-        return $data_base_obj->get_error_state_boolean();
+        return $this->save(false);
     }
 }
 
-// Backward compatibility class aliases
 if (!class_exists('data_ADD_UPDATE')) {
     class data_ADD_UPDATE extends task_management_ADD_UPDATE {}
 }
