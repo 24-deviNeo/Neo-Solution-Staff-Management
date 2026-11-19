@@ -15,7 +15,9 @@ $dept     = isset($_POST['dept']) ? trim($_POST['dept']) : (isset($_POST['depart
 $employee = isset($_POST['employee']) ? trim($_POST['employee']) : (isset($_POST['assigned_employee']) ? trim($_POST['assigned_employee']) : '');
 $mode     = isset($_POST['mode']) ? trim($_POST['mode']) : (isset($_POST['work_mode']) ? trim($_POST['work_mode']) : 'Online');
 $deadline = isset($_POST['deadline']) ? trim($_POST['deadline']) : date('Y-m-d');
+$priority = isset($_POST['priority']) ? trim($_POST['priority']) : 'Medium';
 $status   = isset($_POST['status']) ? trim($_POST['status']) : 'Pending';
+$description = isset($_POST['description']) ? trim($_POST['description']) : '';
 
 if ($id <= 0 || empty($title)) {
     echo json_encode(['status' => 'error', 'message' => 'Task ID and Title are required.']);
@@ -24,7 +26,7 @@ if ($id <= 0 || empty($title)) {
 
 $task_obj = new task_management_ADD_UPDATE();
 $task_obj->set_id($id);
-$task_obj->set_data($title, $dept, $employee, $mode, $deadline, $status);
+$task_obj->set_data($title, $dept, $employee, $mode, $deadline, $priority, $status, $description);
 $res = $task_obj->process_update();
 
 if ($res) {
@@ -37,6 +39,8 @@ if ($res) {
             'dept'      => $dept,
             'employee'  => $employee,
             'mode'      => $mode,
+            'priority'  => $priority,
+            'description' => $description,
             'deadline'  => $deadline,
             'status'    => $status
         ]
