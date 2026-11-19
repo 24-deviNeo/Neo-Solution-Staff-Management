@@ -31,10 +31,12 @@
         .then(res => res.json())
         .then(res => {
           let activeName = baseEmpName;
+          let activeUserId = Number(window.empSessionUserId || 0);
           if (res.status === 'success' && res.data) {
             const p = res.data;
             const fullName = p.full_name || baseEmpName;
             activeName = fullName;
+            activeUserId = Number(p.user_id || activeUserId);
             const firstName = fullName ? fullName.split(' ')[0] : (window.currentEmployeeFirstName || 'Employee');
             const dept = p.department || window.currentEmployeeDept || 'Engineering';
             const empCode = p.employee_id_code || window.currentEmployeeCode || 'EMP-001';
@@ -92,21 +94,23 @@
             }
           }
 
-          fetchTasksForEmployee(activeName, pth);
+          fetchTasksForEmployee(activeName, pth, activeUserId);
           fetchLeaveRequestsForEmployee(activeName, pth);
         })
         .catch(() => {
-          fetchTasksForEmployee(baseEmpName, pth);
+          fetchTasksForEmployee(baseEmpName, pth, window.empSessionUserId);
           fetchLeaveRequestsForEmployee(baseEmpName, pth);
         });
 
       // 2. Fetch Tasks for KPIs and Today's Work Plan
-      function fetchTasksForEmployee(employeeName, pth) {
+      function fetchTasksForEmployee(employeeName, pth, employeeUserId) {
         const empName = (employeeName || baseEmpName || '').trim();
         let taskUrl = pth + 'UxUi-Back/Tasks/fetch_tasks/fetch_tasks.php';
-        if (empName) {
-            taskUrl += '?employee=' + encodeURIComponent(empName);
-        }
+        const params = new URLSearchParams();
+        if (Number(employeeUserId) > 0) params.set('employee_user_id', String(Number(employeeUserId)));
+        if (empName) params.set('employee', empName);
+        const query = params.toString();
+        if (query) taskUrl += '?' + query;
         
         fetch(taskUrl)
         .then(res => res.json())
