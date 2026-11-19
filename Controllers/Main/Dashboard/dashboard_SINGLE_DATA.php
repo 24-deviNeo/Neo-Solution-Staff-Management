@@ -1,6 +1,7 @@
 <?php
 
 include_once __DIR__ . '/../../../imports/need/DB.php';
+include_once __DIR__ . '/../../../UxUi-Back/Tasks/ProjectTaskStore.php';
 
 class dashboard_SINGLE_DATA
 {
@@ -39,12 +40,13 @@ class dashboard_SINGLE_DATA
             $this->active_employees = (int)($row['active_cnt'] ?: $row['total']);
         }
 
-        // 2. Fetch tasks stats
-        $res = $data_base_obj->get_result("SELECT 
-            SUM(CASE WHEN LOWER(status) = 'pending' THEN 1 ELSE 0 END) AS pending_cnt,
-            SUM(CASE WHEN LOWER(status) = 'completed' OR LOWER(status) = 'done' THEN 1 ELSE 0 END) AS completed_cnt,
-            SUM(CASE WHEN LOWER(status) = 'in progress' OR LOWER(status) = 'in-progress' THEN 1 ELSE 0 END) AS in_prog_cnt
-            FROM task_management");
+        // 2. Fetch task stats from the normalized project task schema.
+        new ProjectTaskStore();
+        $res = $data_base_obj->get_result("SELECT
+            SUM(CASE WHEN `is_pending` = 1 THEN 1 ELSE 0 END) AS pending_cnt,
+            SUM(CASE WHEN `is_completed` = 1 THEN 1 ELSE 0 END) AS completed_cnt,
+            SUM(CASE WHEN `is_pending` = 0 AND `is_completed` = 0 THEN 1 ELSE 0 END) AS in_prog_cnt
+            FROM `project_tasks`");
         if ($res && $row = $res->fetch_assoc()) {
             $this->pending_tasks     = (int)($row['pending_cnt'] ?? 0);
             $this->completed_tasks   = (int)($row['completed_cnt'] ?? 0);
@@ -72,11 +74,15 @@ class dashboard_SINGLE_DATA
         // If a specific user ID is passed, fetch user-specific metrics
         if (!empty($this->user_id)) {
             $user_id_escaped = (int)$this->user_id;
-            $res = $data_base_obj->get_result("SELECT 
+            $res = $data_base_obj->get_result("SELECT
                 COUNT(*) AS total,
-                SUM(CASE WHEN LOWER(status) = 'completed' OR LOWER(status) = 'done' THEN 1 ELSE 0 END) AS completed_cnt,
-                SUM(CASE WHEN LOWER(status) = 'pending' THEN 1 ELSE 0 END) AS pending_cnt
-                FROM task_management WHERE assigned_employee = '$user_id_escaped' OR assigned_employee LIKE '%$user_id_escaped%'");
+                SUM(CASE WHEN p.`is_completed` = 1 THEN 1 ELSE 0 END) AS completed_cnt,
+                SUM(CASE WHEN p.`is_pending` = 1 THEN 1 ELSE 0 END) AS pending_cnt
+                FROM `project_tasks` p
+                LEFT JOIN `task_employee` te ON te.`id` = p.`task_employee_id` AND te.`ast` = 1
+                LEFT JOIN `employees` e ON e.`id` = te.`employees_id`
+                WHERE e.`main_user_login_id` = {$user_id_escaped}
+                   OR p.`assigned_to` = '{$user_id_escaped}'");
             if ($res && $row = $res->fetch_assoc()) {
                 $this->user_assigned_tasks  = (int)$row['total'];
                 $this->user_completed_tasks = (int)$row['completed_cnt'];
