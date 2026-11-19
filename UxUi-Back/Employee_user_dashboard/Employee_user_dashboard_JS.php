@@ -1,6 +1,6 @@
 <script type="text/javascript">
   // Expose session user_id for document request filtering
-  window.empSessionUserId = <?php echo isset($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : 0; ?>;
+  window.empSessionUserId = <?php echo (int)(!empty($_SESSION['main_user_login_id']) ? $_SESSION['main_user_login_id'] : ($_SESSION['user_id'] ?? 0)); ?>;
 
   function setEmployeeSidebarActive(pageName) {
 
