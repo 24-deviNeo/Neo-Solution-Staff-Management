@@ -1,18 +1,10 @@
 <script type="text/javascript">
  function setSidebarActive(pageName) {
-   document.querySelectorAll('.wwjm-sidebar-nav-item, .sidebar-link, .sidebar-sublink, .mobile-nav-item').forEach(function(item){
+   document.querySelectorAll('.wwjm-sidebar-nav-item, .sidebar-link, .sidebar-sublink').forEach(function(item){
      var isMatch = item.getAttribute('data-page') === pageName;
      item.classList.toggle('active', isMatch);
      item.classList.toggle('wwjm-sidebar-active', isMatch);
    });
-
-   // If a sub-page of Staff Info is opened, also highlight staff_info in mobile bottom nav
-   var staffInfoPages = ['documents', 'bank_details', 'departments', 'job_roles', 'leave_requests', 'staff_info'];
-   if (staffInfoPages.indexOf(pageName) !== -1) {
-     document.querySelectorAll('.mobile-nav-item[data-page="staff_info"]').forEach(function(el) {
-       el.classList.add('active');
-     });
-   }
 
    sessionStorage.setItem('adminPortalActivePage', pageName);
  }
