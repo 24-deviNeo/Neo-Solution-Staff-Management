@@ -2253,9 +2253,14 @@
       || (document.getElementById('empSidebarName') && document.getElementById('empSidebarName').textContent.trim()) 
       || (document.getElementById('dashTopEmpName') && document.getElementById('dashTopEmpName').textContent.trim()) 
       || '';
+    const employeeUserId = Number(window.userProfileData?.user_id || window.empSessionUserId || 0);
+    const params = new URLSearchParams();
+    if (employeeUserId > 0) params.set('employee_user_id', String(employeeUserId));
     if (empName && empName !== 'Loading...' && empName !== 'Employee') {
-      fetchUrl += '?employee=' + encodeURIComponent(empName);
+      params.set('employee', empName);
     }
+    const query = params.toString();
+    if (query) fetchUrl += '?' + query;
 
     fetch(fetchUrl)
       .then(res => res.json())
