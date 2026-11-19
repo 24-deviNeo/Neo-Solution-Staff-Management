@@ -2367,13 +2367,21 @@
     formData.append('updater_role', 'employee');
 
     fetch(updateUrl, { method: 'POST', body: formData })
-      .then(res => res.json())
-      .then(res => {
-        if (res.status === 'success') {
-          window.fetchEmployeeWorkplanTasks();
+      .then(async res => {
+        const result = await res.json();
+        if (!res.ok || result.status !== 'success') {
+          throw new Error(result.message || 'Unable to update the task.');
         }
+        return result;
       })
-      .catch(() => window.fetchEmployeeWorkplanTasks());
+      .then(res => {
+        window.fetchEmployeeWorkplanTasks();
+      })
+      .catch(error => {
+        console.error('Unable to update task status:', error);
+        window.alert(error.message || 'Unable to update the task. Please try again.');
+        window.fetchEmployeeWorkplanTasks();
+      });
   };
 
   window.setWorkplanView = function (view, btn) {
