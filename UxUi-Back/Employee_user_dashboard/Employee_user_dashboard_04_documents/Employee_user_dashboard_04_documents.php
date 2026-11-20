@@ -982,6 +982,7 @@
       }
     });
   }
+  window.loadUploadedEmployeeDocs = loadUploadedEmployeeDocs;
 
   function previewDocFile(input, key) {
     if (!input.files || !input.files[0]) return;
