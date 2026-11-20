@@ -355,6 +355,7 @@ require_login();
             display: flex;
         }
 
+        /* ===== MOBILE / APP VIEW (≤ 900px) ===== */
         @media (max-width: 900px) {
             #employeeSidebar,
             #employeeSidebarOverlay,
@@ -408,17 +409,58 @@ require_login();
             .employee-info-hub-container {
                 padding: 0 0 28px;
             }
+
+            /* ---- Profile hub inner panes ---- */
+            #Employee_user_dashboard_profile_hub .employee-hub-back {
+                position: sticky;
+                top: 0;
+                z-index: 50;
+                width: 100%;
+                border-radius: 0;
+                border: none;
+                border-bottom: 1px solid #e2e8f0;
+                background: #ffffff;
+                padding: 10px 14px;
+                margin: 0 0 10px;
+                box-sizing: border-box;
+            }
+
+            /* Leave pane mobile fixes inside profile hub */
+            #employeeProfileLeavePane #Employee_user_dashboard_08_leave_request {
+                padding: 0 !important;
+            }
+
+            #employeeProfileLeavePane .emp-leave-container {
+                padding: 0 !important;
+            }
+
+            #employeeProfileLeavePane .leave-form-card {
+                border-radius: 14px;
+                margin-bottom: 16px;
+            }
+
+            #employeeProfileLeavePane .leave-table-card {
+                display: none !important;
+            }
+
+            #employeeProfileLeavePane .mobile-leave-emp-cards {
+                display: flex !important;
+            }
         }
 
         @media (max-width: 700px) {
             .employee-info-hero {
                 align-items: flex-start;
                 flex-direction: column;
-                padding: 22px 20px;
+                padding: 20px 16px;
             }
 
             .employee-info-hero h1 {
-                font-size: 21px;
+                font-size: 20px;
+            }
+
+            .employee-info-hero p {
+                font-size: 13px;
             }
 
             .employee-info-grid {
@@ -426,7 +468,17 @@ require_login();
             }
 
             .employee-info-card {
-                min-height: 220px;
+                min-height: 200px;
+                padding: 18px 16px;
+            }
+
+            .employee-info-count {
+                font-size: 12px;
+                padding: 7px 12px;
+            }
+
+            .employee-info-section-bar h3 {
+                font-size: 15px;
             }
         }
 
@@ -436,7 +488,25 @@ require_login();
             }
 
             .employee-info-card {
-                padding: 18px 16px;
+                padding: 16px 14px;
+                min-height: 180px;
+            }
+
+            .employee-info-card-body h4 {
+                font-size: 15px;
+            }
+
+            .employee-info-card-body p {
+                font-size: 12px;
+            }
+
+            .employee-info-hero h1 {
+                font-size: 18px;
+            }
+
+            .employee-info-hero {
+                padding: 16px 14px;
+                border-radius: 12px;
             }
         }
     </style>
