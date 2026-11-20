@@ -268,6 +268,11 @@ require_login();
             color: #059669;
         }
 
+        .employee-info-card.leave .employee-info-card-icon {
+            background: #fff7ed;
+            color: #ea580c;
+        }
+
         .employee-info-card-body h4 {
             margin: 0 0 8px;
             color: #14204d;
@@ -324,8 +329,7 @@ require_login();
             background: #f8fafc;
         }
 
-        .employee-bottom-nav,
-        .employee-more-menu {
+        .employee-bottom-nav {
             display: none;
         }
 
@@ -338,7 +342,8 @@ require_login();
         #employeeProfileDocumentsPane .topbar,
         #employeeProfileDocumentsPane .docs-page-head,
         #employeeProfileBankPane .topbar,
-        #employeeProfileBankPane .bank-page-header {
+        #employeeProfileBankPane .bank-page-header,
+        #employeeProfileLeavePane #Employee_user_dashboard_08_leave_request > .topbar {
             display: none !important;
         }
 
@@ -398,44 +403,6 @@ require_login();
             .employee-bottom-nav-link i {
                 font-size: 17px;
                 line-height: 1;
-            }
-
-            .employee-more-menu {
-                position: fixed;
-                z-index: 1001;
-                right: 10px;
-                bottom: calc(76px + env(safe-area-inset-bottom));
-                display: none;
-                min-width: 190px;
-                padding: 6px;
-                border: 1px solid #e2e8f0;
-                border-radius: 12px;
-                background: #ffffff;
-                box-shadow: 0 12px 30px rgba(15,23,42,.18);
-            }
-
-            .employee-more-menu.open {
-                display: block;
-            }
-
-            .employee-more-menu button {
-                display: flex;
-                width: 100%;
-                align-items: center;
-                gap: 10px;
-                padding: 10px 12px;
-                border: 0;
-                border-radius: 8px;
-                background: transparent;
-                color: #334155;
-                font: inherit;
-                font-size: 13px;
-                text-align: left;
-                cursor: pointer;
-            }
-
-            .employee-more-menu button:hover {
-                background: #f1f5f9;
             }
 
             .employee-info-hub-container {
@@ -503,11 +470,11 @@ require_login();
             <div class="employee-info-hero">
                 <div>
                     <h1>My Information &amp; Records</h1>
-                    <p>Manage your personal profile, employment documents, and bank information from one place.</p>
+                    <p>Manage your profile, employment documents, bank information, and leave requests from one place.</p>
                 </div>
                 <div class="employee-info-count">
                     <i class="fa-solid fa-layer-group"></i>
-                    <span>3 Core Sections</span>
+                    <span>4 Core Sections</span>
                 </div>
             </div>
 
@@ -561,6 +528,21 @@ require_login();
                         <span class="employee-info-open">Open Category <i class="fa-solid fa-arrow-right"></i></span>
                     </span>
                 </button>
+
+                <button type="button" class="employee-info-card leave" onclick="switchEmployeeProfileTab('leave')">
+                    <span class="employee-info-card-top">
+                        <span class="employee-info-card-icon"><i class="fa-solid fa-calendar-check"></i></span>
+                        <span class="employee-info-card-arrow"><i class="fa-solid fa-arrow-right"></i></span>
+                    </span>
+                    <span class="employee-info-card-body">
+                        <h4>Leave Requests</h4>
+                        <p>Submit leave requests and review their approval status and history.</p>
+                    </span>
+                    <span class="employee-info-card-footer">
+                        <span class="employee-info-tag">Time Off</span>
+                        <span class="employee-info-open">Open Category <i class="fa-solid fa-arrow-right"></i></span>
+                    </span>
+                </button>
             </div>
         </div>
 
@@ -590,6 +572,14 @@ require_login();
             include_once __DIR__ . '/../UxUi-Back/Employee_user_dashboard/Employee_user_dashboard_05_bank_details/Employee_user_dashboard_05_bank_details.php';
             ?>
         </div>
+        <div id="employeeProfileLeavePane" class="employee-info-pane employee-profile-module" style="display:none;">
+            <button type="button" class="employee-hub-back" onclick="switchEmployeeProfileTab('hub')">
+                <i class="fa-solid fa-arrow-left"></i> Back to My Information Hub
+            </button>
+            <?php
+            include_once __DIR__ . '/../UxUi-Back/Employee_user_dashboard/Employee_user_dashboard_08_leave_request/Employee_user_dashboard_08_leave_request.php';
+            ?>
+        </div>
     </div>
 
     <?php
@@ -603,9 +593,6 @@ require_login();
     // 07 Daily Work Plan
     include_once __DIR__ . '/../UxUi-Back/Employee_user_dashboard/Employee_user_dashboard_07_daily_work_plan/Employee_user_dashboard_07_daily_work_plan.php';
 
-    // 08 Leave Requests
-    include_once __DIR__ . '/../UxUi-Back/Employee_user_dashboard/Employee_user_dashboard_08_leave_request/Employee_user_dashboard_08_leave_request.php';
-
     // 09 Notifications
     include_once __DIR__ . '/../UxUi-Back/Employee_user_dashboard/Employee_user_dashboard_09_notifications/Employee_user_dashboard_09_notifications.php';
 
@@ -614,35 +601,26 @@ require_login();
     ?>
     </main>
 
-    <div id="employeeMoreMenu" class="employee-more-menu" aria-label="More navigation">
-        <button type="button" onclick="Employee_user_dashboard_10_OPEN(); closeEmployeeMoreMenu();">
-            <i class="fa-solid fa-gear"></i> Settings
-        </button>
-        <button type="button" onclick="closeEmployeeMoreMenu(); logoutUser();">
-            <i class="fa-solid fa-arrow-right-from-bracket"></i> Log Out
-        </button>
-    </div>
-
     <nav class="employee-bottom-nav" aria-label="Primary navigation">
         <button type="button" class="employee-bottom-nav-link" data-page="dashboard"
-            onclick="Employee_user_dashboard_01_OPEN(); closeEmployeeMoreMenu();">
+            onclick="Employee_user_dashboard_01_OPEN();">
             <i class="fa-solid fa-house"></i><span>Home</span>
         </button>
         <button type="button" class="employee-bottom-nav-link" data-page="my_profile"
-            onclick="Employee_user_dashboard_02_OPEN(); closeEmployeeMoreMenu();">
+            onclick="Employee_user_dashboard_02_OPEN();">
             <i class="fa-solid fa-id-card"></i><span>My Info</span>
         </button>
         <button type="button" class="employee-bottom-nav-link" data-page="daily_work_plan"
-            onclick="Employee_user_dashboard_07_OPEN(); closeEmployeeMoreMenu();">
+            onclick="Employee_user_dashboard_07_OPEN();">
             <i class="fa-solid fa-list-check"></i><span>Work Plan</span>
         </button>
-        <button type="button" class="employee-bottom-nav-link" data-page="leave_requests"
-            onclick="Employee_user_dashboard_08_OPEN(); closeEmployeeMoreMenu();">
-            <i class="fa-solid fa-calendar-check"></i><span>Leave</span>
+        <button type="button" class="employee-bottom-nav-link" data-page="settings"
+            onclick="Employee_user_dashboard_10_OPEN();">
+            <i class="fa-solid fa-gear"></i><span>Settings</span>
         </button>
-        <button type="button" class="employee-bottom-nav-link" data-page="more" aria-expanded="false"
-            onclick="toggleEmployeeMoreMenu();">
-            <i class="fa-solid fa-ellipsis"></i><span>More</span>
+        <button type="button" class="employee-bottom-nav-link" data-page="logout"
+            onclick="logoutUser();">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i><span>Log Out</span>
         </button>
     </nav>
 
