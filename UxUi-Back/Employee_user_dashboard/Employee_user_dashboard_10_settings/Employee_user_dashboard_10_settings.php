@@ -227,16 +227,20 @@
     transform: translateY(0);
   }
 
+  /* ===== MOBILE / APP VIEW (≤ 900px) ===== */
   @media (max-width: 900px) {
     #Employee_user_dashboard_10_settings {
-      padding: 0 12px calc(88px + env(safe-area-inset-bottom)) !important;
+      padding: 0 !important;
+      padding-bottom: calc(88px + env(safe-area-inset-bottom)) !important;
+      overflow-x: hidden !important;
     }
 
     #Employee_user_dashboard_10_settings > .main {
       width: 100% !important;
       max-width: 100% !important;
       margin: 0 !important;
-      padding: 0 !important;
+      padding: 0 12px !important;
+      box-sizing: border-box !important;
     }
 
     #Employee_user_dashboard_10_settings .settings-wrapper {
@@ -250,6 +254,7 @@
 
     #Employee_user_dashboard_10_settings .topbar-left {
       flex: 1 1 auto;
+      min-width: 0;
     }
 
     #Employee_user_dashboard_10_settings .topbar-left h2 {
@@ -273,25 +278,30 @@
       margin-bottom: 16px;
     }
 
+    #Employee_user_dashboard_10_settings .settings-page-head h1 {
+      font-size: 20px;
+    }
+
     #Employee_user_dashboard_10_settings .settings-page-head p {
       font-size: 13px;
       line-height: 1.45;
     }
 
     #Employee_user_dashboard_10_settings .settings-box-card {
-      padding: 20px 18px;
+      padding: 18px 16px;
       margin-bottom: 16px;
       border-radius: 14px;
     }
 
     #Employee_user_dashboard_10_settings .settings-box-card h3 {
-      font-size: 16px;
-      margin-bottom: 16px;
+      font-size: 15px;
+      margin-bottom: 14px;
     }
 
     #Employee_user_dashboard_10_settings .setting-toggle-item {
-      align-items: flex-start;
-      gap: 12px;
+      flex-direction: column;
+      align-items: stretch;
+      gap: 10px;
       padding: 13px 0;
     }
 
@@ -299,18 +309,31 @@
       flex: 1 1 auto;
     }
 
+    #Employee_user_dashboard_10_settings .setting-toggle-info strong {
+      font-size: 13.5px;
+    }
+
     #Employee_user_dashboard_10_settings .setting-toggle-info span {
       display: block;
       line-height: 1.4;
+      font-size: 12px;
     }
 
     #Employee_user_dashboard_10_settings .account-info-grid {
-      grid-template-columns: 1fr;
-      gap: 12px;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
     }
 
     #Employee_user_dashboard_10_settings .account-info-box {
       padding: 12px 14px;
+    }
+
+    #Employee_user_dashboard_10_settings .account-info-box .label {
+      font-size: 11px;
+    }
+
+    #Employee_user_dashboard_10_settings .account-info-box .value {
+      font-size: 13.5px;
     }
 
     #Employee_user_dashboard_10_settings .settings-save-btn {
@@ -334,7 +357,7 @@
 
     #Employee_user_dashboard_10_settings .settings-two-factor-controls {
       flex-wrap: wrap;
-      justify-content: flex-end;
+      justify-content: flex-start;
     }
 
     #Employee_user_dashboard_10_settings .settings-password-grid {
@@ -345,28 +368,44 @@
       width: 100%;
       min-height: 44px;
     }
+
+    #Employee_user_dashboard_10_settings #two_factor_verify_box {
+      padding: 12px 14px;
+    }
+
+    /* Security section heading */
+    #Employee_user_dashboard_10_settings #empSecuritySection > div:first-child p {
+      font-size: 12px;
+      line-height: 1.4;
+    }
   }
 
+  /* ===== SMALL PHONES (≤ 480px) ===== */
   @media (max-width: 480px) {
+    #Employee_user_dashboard_10_settings > .main {
+      padding: 0 8px !important;
+    }
+
     #Employee_user_dashboard_10_settings .topbar {
       padding-left: 10px;
       padding-right: 10px;
     }
 
     #Employee_user_dashboard_10_settings .settings-box-card {
-      padding: 15px 14px;
+      padding: 14px 12px;
+      border-radius: 12px;
     }
 
     #Employee_user_dashboard_10_settings .setting-toggle-item {
-      gap: 9px;
+      gap: 8px;
     }
 
     #Employee_user_dashboard_10_settings .setting-toggle-info strong {
-      font-size: 13.5px;
+      font-size: 13px;
     }
 
     #Employee_user_dashboard_10_settings .setting-toggle-info span {
-      font-size: 12px;
+      font-size: 11.5px;
     }
 
     #Employee_user_dashboard_10_settings .switch-pill {
@@ -381,6 +420,15 @@
 
     #Employee_user_dashboard_10_settings .switch-pill input:checked + .switch-slider:before {
       transform: translateX(18px);
+    }
+
+    #Employee_user_dashboard_10_settings .account-info-grid {
+      grid-template-columns: 1fr;
+      gap: 8px;
+    }
+
+    #Employee_user_dashboard_10_settings .settings-page-head h1 {
+      font-size: 18px;
     }
   }
 </style>
