@@ -51,25 +51,8 @@ $current_page = basename($_SERVER['PHP_SELF']);
            data-page="my_profile"
            class="sidebar-link">
             <i class="fa-solid fa-circle-user"></i>
-            <span>My Profile</span>
+            <span>My Information Hub</span>
         </a>
-
-
-        <a role="button" tabindex="0" onclick="if(typeof Employee_user_dashboard_04_OPEN==='function'){ Employee_user_dashboard_04_OPEN(); } if(typeof closeEmployeeSidebar==='function'){ closeEmployeeSidebar(); }"
-           data-page="documents"
-           class="sidebar-link">
-            <i class="fa-solid fa-folder-open"></i>
-            <span>Documents</span>
-        </a>
-
-        <a role="button" tabindex="0" onclick="if(typeof Employee_user_dashboard_05_OPEN==='function'){ Employee_user_dashboard_05_OPEN(); } if(typeof closeEmployeeSidebar==='function'){ closeEmployeeSidebar(); }"
-           data-page="bank_details"
-           class="sidebar-link">
-            <i class="fa-solid fa-building-columns"></i>
-            <span>Bank Details</span>
-        </a>
-
-
         <a role="button" tabindex="0" onclick="if(typeof Employee_user_dashboard_07_OPEN==='function'){ Employee_user_dashboard_07_OPEN(); } if(typeof closeEmployeeSidebar==='function'){ closeEmployeeSidebar(); }"
            data-page="daily_work_plan"
            class="sidebar-link">
@@ -82,13 +65,6 @@ $current_page = basename($_SERVER['PHP_SELF']);
            class="sidebar-link">
             <i class="fa-solid fa-calendar-check"></i>
             <span>Leave Requests</span>
-        </a>
-
-        <a role="button" tabindex="0" onclick="if(typeof Employee_user_dashboard_09_OPEN==='function'){ Employee_user_dashboard_09_OPEN(); } if(typeof closeEmployeeSidebar==='function'){ closeEmployeeSidebar(); }"
-           data-page="notifications"
-           class="sidebar-link">
-            <i class="fa-solid fa-bell"></i>
-            <span>Notifications</span>
         </a>
 
         <a role="button" tabindex="0" onclick="if(typeof Employee_user_dashboard_10_OPEN==='function'){ Employee_user_dashboard_10_OPEN(); } if(typeof closeEmployeeSidebar==='function'){ closeEmployeeSidebar(); }"
