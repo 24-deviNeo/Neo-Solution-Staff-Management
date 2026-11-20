@@ -82,6 +82,13 @@
         }
     }
 
+    /* Hide footer on employee portal mobile (bottom nav takes its place) */
+    @media (max-width: 900px) {
+        body:has(.employee-bottom-nav) .erp-footer {
+            display: none !important;
+        }
+    }
+
     @media print {
         .erp-footer {
             display: none !important;
