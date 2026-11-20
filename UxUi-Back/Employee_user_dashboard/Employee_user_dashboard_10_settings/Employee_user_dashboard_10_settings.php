@@ -9,7 +9,16 @@
     min-width: 0;
   }
 
-  #Employee_user_dashboard_10_settings,
+  #Employee_user_dashboard_10_settings {
+    margin: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    padding: 0 !important;
+    overflow-x: hidden;
+    box-sizing: border-box !important;
+  }
+
   #Employee_user_dashboard_10_settings .main,
   #Employee_user_dashboard_10_settings .topbar-left,
   #Employee_user_dashboard_10_settings .topbar-right,
@@ -23,20 +32,16 @@
   }
 
   @media (min-width: 901px) {
-    #Employee_user_dashboard_10_settings {
-      margin-left: 260px !important;
-      width: calc(100% - 260px) !important;
-      max-width: calc(100% - 260px) !important;
-      padding: 0 24px 80px !important;
-      box-sizing: border-box !important;
-    }
-
     #Employee_user_dashboard_10_settings > .main {
       width: 100% !important;
       max-width: 100% !important;
       margin-left: 0 !important;
       padding: 0 !important;
       box-sizing: border-box !important;
+    }
+
+    #Employee_user_dashboard_10_settings .settings-wrapper {
+      padding: 0 24px 36px;
     }
   }
 
@@ -223,6 +228,21 @@
   }
 
   @media (max-width: 900px) {
+    #Employee_user_dashboard_10_settings {
+      padding: 0 12px calc(88px + env(safe-area-inset-bottom)) !important;
+    }
+
+    #Employee_user_dashboard_10_settings > .main {
+      width: 100% !important;
+      max-width: 100% !important;
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+
+    #Employee_user_dashboard_10_settings .settings-wrapper {
+      padding: 0;
+    }
+
     #Employee_user_dashboard_10_settings .topbar {
       gap: 10px;
       padding: 12px 14px;
@@ -294,6 +314,35 @@
     }
 
     #Employee_user_dashboard_10_settings .settings-save-btn {
+      min-height: 44px;
+    }
+
+    #Employee_user_dashboard_10_settings .settings-phone-row,
+    #Employee_user_dashboard_10_settings .settings-otp-row {
+      max-width: none !important;
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    #Employee_user_dashboard_10_settings .settings-phone-row input,
+    #Employee_user_dashboard_10_settings .settings-phone-row button,
+    #Employee_user_dashboard_10_settings .settings-otp-row input,
+    #Employee_user_dashboard_10_settings .settings-otp-row button {
+      width: 100%;
+      min-width: 0;
+    }
+
+    #Employee_user_dashboard_10_settings .settings-two-factor-controls {
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    #Employee_user_dashboard_10_settings .settings-password-grid {
+      grid-template-columns: minmax(0, 1fr) !important;
+    }
+
+    #Employee_user_dashboard_10_settings .settings-password-submit {
+      width: 100%;
       min-height: 44px;
     }
   }
@@ -468,7 +517,7 @@
             <strong>Phone Number</strong>
             <span>Used for system alerts, emergency verification, and Two-Factor SMS OTP</span>
           </div>
-          <div style="display: flex; gap: 8px; max-width: 320px; width: 100%;">
+          <div class="settings-phone-row" style="display: flex; gap: 8px; max-width: 320px; width: 100%;">
             <input type="tel" id="sec_phone_number" class="w3-input w3-border w3-round-large" placeholder="0771234567" style="flex: 1; padding: 8px 12px; font-size: 13.5px;">
             <button type="button" class="w3-button w3-blue w3-round-large" id="btnSavePhone" style="white-space: nowrap; font-size: 13px; font-weight: 600; padding: 8px 14px;">
               Save
@@ -482,7 +531,7 @@
             <strong>Two-Factor Authentication (2FA)</strong>
             <span>Enhance account security by requiring an OTP code during sign-in</span>
           </div>
-          <div style="display: flex; align-items: center; gap: 12px;">
+          <div class="settings-two-factor-controls" style="display: flex; align-items: center; gap: 12px;">
             <span id="two_factor_badge" style="font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 20px; background: #fef2f2; color: #dc2626;">Disabled</span>
             <label class="switch-pill" title="Enable or Disable Two-Factor Authentication">
               <input type="checkbox" id="sec_two_factor_toggle">
@@ -495,7 +544,7 @@
         <div id="two_factor_verify_box" style="display: none; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px 18px; margin-bottom: 16px;">
           <div id="two_factor_alert" style="display: none; padding: 8px 12px; border-radius: 8px; font-size: 13px; margin-bottom: 10px;"></div>
           <div style="font-size: 13px; font-weight: 600; color: #0f172a; margin-bottom: 6px;">Verify Phone Number with OTP:</div>
-          <div style="display: flex; gap: 8px; max-width: 360px; width: 100%;">
+          <div class="settings-otp-row" style="display: flex; gap: 8px; max-width: 360px; width: 100%;">
             <input type="text" id="two_factor_otp_input" class="w3-input w3-border w3-round-large" placeholder="6-digit OTP" maxlength="6" style="letter-spacing: 2px; font-weight: 700; text-align: center; padding: 8px 12px; font-size: 13.5px;">
             <button type="button" class="w3-button w3-blue w3-round-large" id="btnVerify2faOtp" style="white-space: nowrap; font-size: 13px; font-weight: 600; padding: 8px 14px;">Verify & Enable</button>
             <button type="button" class="w3-button w3-light-grey w3-round-large" id="btnResend2faOtp" style="white-space: nowrap; font-size: 13px; font-weight: 600; padding: 8px 12px;">Resend</button>
@@ -509,7 +558,7 @@
 
           <div id="change_password_alert" style="display: none; padding: 8px 12px; border-radius: 8px; font-size: 13px; margin-bottom: 12px;"></div>
 
-          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 14px;">
+          <div class="settings-password-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 14px;">
             <div>
               <label style="display: block; font-size: 12px; font-weight: 600; color: #334155; margin-bottom: 4px;">Current Password</label>
               <input type="password" id="sec_current_password" class="w3-input w3-border w3-round-large" placeholder="••••••••" style="padding: 8px 12px; font-size: 13px;">
@@ -524,7 +573,7 @@
             </div>
           </div>
 
-          <button type="button" class="w3-button w3-blue w3-round-large" id="btnSubmitChangePassword" style="font-size: 13.5px; font-weight: 600; padding: 8px 18px;">
+          <button type="button" class="settings-password-submit w3-button w3-blue w3-round-large" id="btnSubmitChangePassword" style="font-size: 13.5px; font-weight: 600; padding: 8px 18px;">
             <i class="fa-solid fa-key" style="margin-right: 6px;"></i> Update Password
           </button>
         </div>
