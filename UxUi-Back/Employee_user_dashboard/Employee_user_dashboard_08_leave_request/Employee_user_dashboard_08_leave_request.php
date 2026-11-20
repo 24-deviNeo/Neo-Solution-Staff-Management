@@ -358,6 +358,11 @@
 
   /* Responsive Breakpoints */
   @media (max-width: 768px) {
+    #Employee_user_dashboard_08_leave_request {
+      padding: 0 !important;
+      overflow-x: hidden !important;
+    }
+
     #Employee_user_dashboard_08_leave_request .topbar {
       gap: 10px;
       padding: 0 12px;
@@ -412,9 +417,9 @@
     }
 
     #Employee_user_dashboard_08_leave_request .leave-form-card {
-      padding: 18px 16px;
+      padding: 16px 14px;
       border-radius: 14px;
-      margin-bottom: 22px;
+      margin-bottom: 20px;
     }
 
     #Employee_user_dashboard_08_leave_request .leave-form-card h3 {
@@ -430,6 +435,12 @@
     #Employee_user_dashboard_08_leave_request .leave-form-control {
       min-width: 0;
       font-size: 13px;
+      padding: 10px 12px;
+    }
+
+    #Employee_user_dashboard_08_leave_request .leave-submit-btn {
+      min-height: 44px;
+      font-size: 13.5px;
     }
 
     #Employee_user_dashboard_08_leave_request .leave-history-section h3 {
@@ -460,6 +471,10 @@
     #Employee_user_dashboard_08_leave_request .mobile-leave-emp-row > span:last-child {
       max-width: 65%;
     }
+
+    #Employee_user_dashboard_08_leave_request .emp-leave-container {
+      padding: 0 !important;
+    }
   }
 
   @media (max-width: 480px) {
@@ -469,11 +484,17 @@
     }
 
     #Employee_user_dashboard_08_leave_request .leave-form-card {
-      padding: 14px;
+      padding: 12px;
+      border-radius: 12px;
     }
 
     #Employee_user_dashboard_08_leave_request .leave-info-note {
-      padding: 11px 12px;
+      padding: 10px 11px;
+      border-radius: 10px;
+    }
+
+    #Employee_user_dashboard_08_leave_request .leave-info-note span {
+      font-size: 12px;
     }
 
     #Employee_user_dashboard_08_leave_request .mobile-leave-emp-card {
@@ -488,6 +509,14 @@
     #Employee_user_dashboard_08_leave_request .mobile-leave-emp-row > span:last-child {
       max-width: 100%;
       text-align: left;
+    }
+
+    #Employee_user_dashboard_08_leave_request .leave-history-section h3 {
+      font-size: 15px;
+    }
+
+    #Employee_user_dashboard_08_leave_request .leave-form-card h3 {
+      font-size: 15px;
     }
   }
 </style>
