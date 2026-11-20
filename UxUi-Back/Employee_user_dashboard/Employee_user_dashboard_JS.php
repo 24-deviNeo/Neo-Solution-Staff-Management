@@ -7,7 +7,7 @@
     document.querySelectorAll('.sidebar-link, .employee-bottom-nav-link').forEach(function(item){
       var itemPage = item.getAttribute('data-page');
       var isMatch = itemPage === pageName
-        || (itemPage === 'my_profile' && pageName === 'leave_requests' && window.matchMedia('(max-width: 900px)').matches);
+        || (itemPage === 'my_profile' && (pageName === 'leave_requests' || pageName === 'profile_sub' || pageName === 'documents_sub' || pageName === 'bank_sub' || pageName === 'leave_sub') && window.matchMedia('(max-width: 900px)').matches);
       item.classList.toggle('active', isMatch);
     });
   }
@@ -184,6 +184,10 @@
         pane: 'employeeProfileLeavePane',
         section: 'Employee_user_dashboard_08_leave_request',
         load: function() {
+          // Show the leave request div
+          var leaveEl = document.getElementById('Employee_user_dashboard_08_leave_request');
+          if (leaveEl) leaveEl.style.display = 'block';
+          
           if (typeof window.initLeaveDateConstraints === 'function') {
             window.initLeaveDateConstraints();
           }
@@ -200,7 +204,7 @@
       var section = tabs[key].section ? document.getElementById(tabs[key].section) : null;
       var isActive = key === activeTab;
       if (pane) pane.style.display = isActive ? (key === 'hub' ? 'flex' : 'block') : 'none';
-      if (section) section.style.display = isActive ? 'block' : 'none';
+      if (section && key !== activeTab) section.style.display = 'none';
     });
 
     if (tabs[activeTab].load && typeof tabs[activeTab].load === 'function') {
@@ -208,6 +212,11 @@
     }
     if (activeTab === 'documents' && typeof window.loadEmpPendingDocRequests === 'function') {
       window.loadEmpPendingDocRequests();
+    }
+
+    // Update bottom nav active state on mobile for sub-pages
+    if (window.matchMedia('(max-width: 900px)').matches) {
+      setEmployeeSidebarActive(activeTab === 'hub' ? 'my_profile' : 'my_profile');
     }
   };
 
