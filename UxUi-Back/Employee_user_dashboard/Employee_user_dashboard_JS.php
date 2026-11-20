@@ -7,25 +7,10 @@
     document.querySelectorAll('.sidebar-link, .employee-bottom-nav-link').forEach(function(item){
       var itemPage = item.getAttribute('data-page');
       var isMatch = itemPage === pageName
-        || (itemPage === 'more' && pageName === 'settings');
+        || (itemPage === 'my_profile' && pageName === 'leave_requests' && window.matchMedia('(max-width: 900px)').matches);
       item.classList.toggle('active', isMatch);
     });
   }
-
-  window.closeEmployeeMoreMenu = function() {
-    var menu = document.getElementById('employeeMoreMenu');
-    var button = document.querySelector('.employee-bottom-nav-link[data-page="more"]');
-    if (menu) menu.classList.remove('open');
-    if (button) button.setAttribute('aria-expanded', 'false');
-  };
-
-  window.toggleEmployeeMoreMenu = function() {
-    var menu = document.getElementById('employeeMoreMenu');
-    var button = document.querySelector('.employee-bottom-nav-link[data-page="more"]');
-    if (!menu) return;
-    var isOpen = menu.classList.toggle('open');
-    if (button) button.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-  };
 
   function Employee_user_dashboard_close_all() {
     var ids = [
@@ -194,6 +179,18 @@
         pane: 'employeeProfileBankPane',
         section: 'Employee_user_dashboard_05_bank_details',
         load: window.loadEmployeeBankDetails
+      },
+      leave: {
+        pane: 'employeeProfileLeavePane',
+        section: 'Employee_user_dashboard_08_leave_request',
+        load: function() {
+          if (typeof window.initLeaveDateConstraints === 'function') {
+            window.initLeaveDateConstraints();
+          }
+          if (typeof window.fetchEmpLeaveHistory === 'function') {
+            window.fetchEmpLeaveHistory();
+          }
+        }
       }
     };
     var activeTab = tabs[tabName] ? tabName : 'profile';
@@ -245,17 +242,8 @@
   }
 
   function Employee_user_dashboard_08_OPEN() {
-    Employee_user_dashboard_close_all();
-    var el = document.getElementById("Employee_user_dashboard_08_leave_request");
-    if (el) el.style.display = "";
+    openEmployeeProfileHub('leave');
     setEmployeeSidebarActive('leave_requests');
-    window.syncGlobalEmployeeData();
-    if (typeof window.initLeaveDateConstraints === 'function') {
-      window.initLeaveDateConstraints();
-    }
-    if (typeof window.fetchEmpLeaveHistory === 'function') {
-      window.fetchEmpLeaveHistory();
-    }
   }
 
   function Employee_user_dashboard_09_OPEN() {
