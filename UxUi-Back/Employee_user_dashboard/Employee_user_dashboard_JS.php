@@ -4,15 +4,33 @@
 
   function setEmployeeSidebarActive(pageName) {
 
-    document.querySelectorAll('.sidebar-link').forEach(function(item){
-      var isMatch = item.getAttribute('data-page') === pageName;
+    document.querySelectorAll('.sidebar-link, .employee-bottom-nav-link').forEach(function(item){
+      var itemPage = item.getAttribute('data-page');
+      var isMatch = itemPage === pageName
+        || (itemPage === 'more' && pageName === 'settings');
       item.classList.toggle('active', isMatch);
     });
   }
 
+  window.closeEmployeeMoreMenu = function() {
+    var menu = document.getElementById('employeeMoreMenu');
+    var button = document.querySelector('.employee-bottom-nav-link[data-page="more"]');
+    if (menu) menu.classList.remove('open');
+    if (button) button.setAttribute('aria-expanded', 'false');
+  };
+
+  window.toggleEmployeeMoreMenu = function() {
+    var menu = document.getElementById('employeeMoreMenu');
+    var button = document.querySelector('.employee-bottom-nav-link[data-page="more"]');
+    if (!menu) return;
+    var isOpen = menu.classList.toggle('open');
+    if (button) button.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+  };
+
   function Employee_user_dashboard_close_all() {
     var ids = [
       "Employee_user_dashboard_01",
+      "Employee_user_dashboard_profile_hub",
       "Employee_user_dashboard_02_my_profile",
       "Employee_user_dashboard_03_personal_details",
       "Employee_user_dashboard_04_documents",
@@ -144,41 +162,68 @@
     }
   }
 
-  function Employee_user_dashboard_02_OPEN() {
+  function openEmployeeProfileHub(tabName) {
     Employee_user_dashboard_close_all();
-    var el = document.getElementById("Employee_user_dashboard_02_my_profile");
+    var el = document.getElementById("Employee_user_dashboard_profile_hub");
     if (el) el.style.display = "";
     setEmployeeSidebarActive('my_profile');
     window.syncGlobalEmployeeData();
-    if (typeof window.fetchEmployeeProfileData === 'function') {
-      window.fetchEmployeeProfileData();
-    }
+    window.switchEmployeeProfileTab(tabName);
   }
+
+  function Employee_user_dashboard_02_OPEN() {
+    openEmployeeProfileHub('hub');
+  }
+
+  window.switchEmployeeProfileTab = function(tabName) {
+    var tabs = {
+      hub: {
+        pane: 'employeeProfileCategoriesPane'
+      },
+      profile: {
+        pane: 'employeeProfilePane',
+        section: 'Employee_user_dashboard_02_my_profile',
+        load: window.fetchEmployeeProfileData
+      },
+      documents: {
+        pane: 'employeeProfileDocumentsPane',
+        section: 'Employee_user_dashboard_04_documents',
+        load: window.loadUploadedEmployeeDocs
+      },
+      bank: {
+        pane: 'employeeProfileBankPane',
+        section: 'Employee_user_dashboard_05_bank_details',
+        load: window.loadEmployeeBankDetails
+      }
+    };
+    var activeTab = tabs[tabName] ? tabName : 'profile';
+
+    Object.keys(tabs).forEach(function(key) {
+      var pane = document.getElementById(tabs[key].pane);
+      var section = tabs[key].section ? document.getElementById(tabs[key].section) : null;
+      var isActive = key === activeTab;
+      if (pane) pane.style.display = isActive ? (key === 'hub' ? 'flex' : 'block') : 'none';
+      if (section) section.style.display = isActive ? 'block' : 'none';
+    });
+
+    if (tabs[activeTab].load && typeof tabs[activeTab].load === 'function') {
+      tabs[activeTab].load();
+    }
+    if (activeTab === 'documents' && typeof window.loadEmpPendingDocRequests === 'function') {
+      window.loadEmpPendingDocRequests();
+    }
+  };
 
   function Employee_user_dashboard_03_OPEN() {
     Employee_user_dashboard_02_OPEN();
   }
 
   function Employee_user_dashboard_04_OPEN() {
-    Employee_user_dashboard_close_all();
-    var el = document.getElementById("Employee_user_dashboard_04_documents");
-    if (el) el.style.display = "";
-    setEmployeeSidebarActive('documents');
-    window.syncGlobalEmployeeData();
-    if (typeof window.fetchEmployeeDocumentsList === 'function') {
-      window.fetchEmployeeDocumentsList();
-    }
+    openEmployeeProfileHub('documents');
   }
 
   function Employee_user_dashboard_05_OPEN() {
-    Employee_user_dashboard_close_all();
-    var el = document.getElementById("Employee_user_dashboard_05_bank_details");
-    if (el) el.style.display = "";
-    setEmployeeSidebarActive('bank_details');
-    window.syncGlobalEmployeeData();
-    if (typeof window.loadEmployeeBankDetails === 'function') {
-      window.loadEmployeeBankDetails();
-    }
+    openEmployeeProfileHub('bank');
   }
 
   function Employee_user_dashboard_06_OPEN() {
