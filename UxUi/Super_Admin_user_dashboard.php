@@ -77,6 +77,33 @@ require_login(['superadmin', 'super admin', 'super_admin', 'admin']);
 
             include_once __DIR__ . '/../UxUi-Back/Super_Admin_user_dashboard/Super_Admin_user_dashboard_12_staff_info/Super_Admin_user_dashboard_12_staff_info.php';
       ?>
+
+    <nav class="admin-bottom-nav" aria-label="Super Admin primary navigation">
+        <button type="button" class="admin-bottom-nav-link" data-page="dashboard"
+            onclick="Super_Admin_user_dashboard_01_OPEN();">
+            <i class="fa-solid fa-gauge-high"></i><span>Dashboard</span>
+        </button>
+        <button type="button" class="admin-bottom-nav-link" data-page="employees"
+            onclick="Super_Admin_user_dashboard_02_OPEN();">
+            <i class="fa-solid fa-users"></i><span>Employees</span>
+        </button>
+        <button type="button" class="admin-bottom-nav-link" data-page="task_management"
+            onclick="Super_Admin_user_dashboard_07_OPEN();">
+            <i class="fa-solid fa-clipboard-check"></i><span>Tasks</span>
+        </button>
+        <button type="button" class="admin-bottom-nav-link" data-page="staff_info"
+            onclick="Super_Admin_user_dashboard_12_OPEN();">
+            <i class="fa-solid fa-id-card-clip"></i><span>Staff Info</span>
+        </button>
+        <button type="button" class="admin-bottom-nav-link" data-page="settings"
+            onclick="Super_Admin_user_dashboard_10_OPEN();">
+            <i class="fa-solid fa-gear"></i><span>Settings</span>
+        </button>
+        <button type="button" class="admin-bottom-nav-link" data-page="logout"
+            onclick="logoutUser();">
+            <i class="fa-solid fa-arrow-right-from-bracket"></i><span>Log Out</span>
+        </button>
+    </nav>
  
         <?php 
         
