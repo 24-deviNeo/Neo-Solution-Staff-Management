@@ -1,6 +1,6 @@
 <script type="text/javascript">
  function setSidebarActive(pageName) {
-   document.querySelectorAll('.wwjm-sidebar-nav-item, .sidebar-link, .sidebar-sublink').forEach(function(item){
+   document.querySelectorAll('.wwjm-sidebar-nav-item, .sidebar-link, .sidebar-sublink, .admin-bottom-nav-link').forEach(function(item){
      var isMatch = item.getAttribute('data-page') === pageName;
      item.classList.toggle('active', isMatch);
      item.classList.toggle('wwjm-sidebar-active', isMatch);
