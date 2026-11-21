@@ -60,20 +60,69 @@ require_login();
         .employee-info-hub-container {
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 18px;
             width: 100%;
             box-sizing: border-box;
-            padding: 0 20px 36px;
+            padding: 0 0 36px;
         }
 
         .employee-info-hub-topbar {
             margin-bottom: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .employee-info-hub-topbar .topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 0;
+            flex: 1;
+        }
+
+        .employee-hub-topbar-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            height: 38px;
+            padding: 0 14px;
+            border-radius: 10px;
+            border: 1px solid #dbe3ee;
+            background: #ffffff;
+            color: #1e293b;
+            font-family: inherit;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
+            flex-shrink: 0;
+        }
+
+        .employee-hub-topbar-back:hover {
+            background: #eff6ff;
+            border-color: #bfdbfe;
+            color: #2563eb;
+        }
+
+        .employee-hub-topbar-back i {
+            font-size: 13px;
+            line-height: 1;
         }
 
         .employee-info-hub-topbar h2 {
             color: #14204d;
             font-size: 20px;
             font-weight: 800;
+            margin: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            letter-spacing: -0.3px;
         }
 
         .employee-info-hub-topbar .topbar-right {
@@ -338,13 +387,64 @@ require_login();
             color: #2563eb;
         }
 
+        /* Strictly hide duplicate topbars from all inside profile modules across all views */
         #employeeProfilePane .topbar,
         #employeeProfileDocumentsPane .topbar,
-        #employeeProfileDocumentsPane .docs-page-head,
         #employeeProfileBankPane .topbar,
-        #employeeProfileBankPane .bank-page-header,
-        #employeeProfileLeavePane #Employee_user_dashboard_08_leave_request > .topbar {
+        #employeeProfileLeavePane .topbar,
+        #Employee_user_dashboard_profile_hub .employee-profile-module .topbar,
+        #Employee_user_dashboard_profile_hub #Employee_user_dashboard_02_my_profile .topbar,
+        #Employee_user_dashboard_profile_hub #Employee_user_dashboard_04_documents .topbar,
+        #Employee_user_dashboard_profile_hub #Employee_user_dashboard_05_bank_details .topbar,
+        #Employee_user_dashboard_profile_hub #Employee_user_dashboard_08_leave_request .topbar {
             display: none !important;
+        }
+
+        /* Hide duplicate standalone back button across all views (now integrated into topbar) */
+        .employee-hub-back,
+        #Employee_user_dashboard_profile_hub .employee-hub-back {
+            display: none !important;
+        }
+
+        /* Normalization for Profile Hub and its inside panes across Web & Mobile: eliminate double side gaps */
+        #Employee_user_dashboard_profile_hub .employee-info-hub-container {
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+        }
+
+        #Employee_user_dashboard_profile_hub .employee-profile-module,
+        #Employee_user_dashboard_profile_hub .employee-info-pane {
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            box-sizing: border-box !important;
+        }
+
+        #Employee_user_dashboard_profile_hub [id^="Employee_user_dashboard_"] {
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            box-sizing: border-box !important;
+        }
+
+        #Employee_user_dashboard_profile_hub .emp-prof-container,
+        #Employee_user_dashboard_profile_hub .docs-container,
+        #Employee_user_dashboard_profile_hub .docs-wrapper,
+        #Employee_user_dashboard_profile_hub .main,
+        #Employee_user_dashboard_profile_hub .emp-leave-container {
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+            width: 100% !important;
+            max-width: 100% !important;
+            box-sizing: border-box !important;
         }
 
         #Employee_user_dashboard_profile_hub .employee-info-pane {
@@ -410,28 +510,85 @@ require_login();
                 padding: 0 0 28px;
             }
 
-            /* ---- Profile hub inner panes ---- */
-            #Employee_user_dashboard_profile_hub .employee-hub-back {
-                position: sticky;
-                top: 0;
-                z-index: 50;
-                width: 100%;
-                border-radius: 0;
-                border: none;
-                border-bottom: 1px solid #e2e8f0;
-                background: #ffffff;
-                padding: 10px 14px;
-                margin: 0 0 10px;
-                box-sizing: border-box;
+            /* Topbar mobile/app view optimizations */
+            .employee-info-hub-topbar {
+                margin-bottom: 14px;
             }
 
-            /* Leave pane mobile fixes inside profile hub */
-            #employeeProfileLeavePane #Employee_user_dashboard_08_leave_request {
-                padding: 0 !important;
+            .employee-hub-topbar-back {
+                height: 36px;
+                padding: 0 10px;
+                gap: 6px;
+                font-size: 12px;
+                border-radius: 8px;
             }
 
+            .employee-info-hub-topbar h2 {
+                font-size: 18px;
+            }
+
+            /* Inside panes mobile / app view: normalize margin & padding to match other pages */
+            #Employee_user_dashboard_profile_hub .employee-profile-module,
+            #Employee_user_dashboard_profile_hub .employee-info-pane {
+                padding-left: 0 !important;
+                padding-right: 0 !important;
+                margin-left: 0 !important;
+                margin-right: 0 !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                box-sizing: border-box !important;
+            }
+
+            /* 02 My Profile inside hub */
+            #employeeProfilePane #Employee_user_dashboard_02_my_profile,
+            #employeeProfilePane #Employee_user_dashboard_02_my_profile.w3-container,
+            #employeeProfilePane .emp-prof-container {
+                padding-left: 0 !important;
+                padding-right: 0 !important;
+                margin-left: 0 !important;
+                margin-right: 0 !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                box-sizing: border-box !important;
+            }
+
+            /* 04 Documents inside hub */
+            #employeeProfileDocumentsPane #Employee_user_dashboard_04_documents,
+            #employeeProfileDocumentsPane #Employee_user_dashboard_04_documents.emp-main,
+            #employeeProfileDocumentsPane .docs-container,
+            #employeeProfileDocumentsPane .docs-wrapper,
+            #employeeProfileDocumentsPane .docs-wrapper.w3-container {
+                padding-left: 0 !important;
+                padding-right: 0 !important;
+                margin-left: 0 !important;
+                margin-right: 0 !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                box-sizing: border-box !important;
+            }
+
+            /* 05 Bank Details inside hub */
+            #employeeProfileBankPane #Employee_user_dashboard_05_bank_details,
+            #employeeProfileBankPane .main {
+                padding-left: 0 !important;
+                padding-right: 0 !important;
+                margin-left: 0 !important;
+                margin-right: 0 !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                box-sizing: border-box !important;
+            }
+
+            /* 08 Leave pane mobile fixes inside profile hub */
+            #employeeProfileLeavePane #Employee_user_dashboard_08_leave_request,
             #employeeProfileLeavePane .emp-leave-container {
-                padding: 0 !important;
+                padding-left: 0 !important;
+                padding-right: 0 !important;
+                margin-left: 0 !important;
+                margin-right: 0 !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                box-sizing: border-box !important;
             }
 
             #employeeProfileLeavePane .leave-form-card {
@@ -482,9 +639,31 @@ require_login();
             }
         }
 
+        @media (max-width: 600px) {
+            .employee-hub-topbar-back {
+                width: 36px;
+                height: 36px;
+                padding: 0;
+                justify-content: center;
+                border-radius: 50%;
+            }
+
+            .employee-hub-topbar-back .hub-back-text {
+                display: none;
+            }
+
+            .employee-info-hub-topbar h2 {
+                font-size: 16px;
+            }
+        }
+
         @media (max-width: 480px) {
             .employee-info-hub-topbar .admin-pill span {
                 display: none;
+            }
+
+            .employee-info-hub-topbar h2 {
+                font-size: 15px;
             }
 
             .employee-info-card {
@@ -512,7 +691,7 @@ require_login();
     </style>
 
     <div id="Employee_user_dashboard_profile_hub" style="display:none;">
-        <div class="topbar employee-info-hub-topbar">
+        <div class="topbar employee-info-hub-topbar" id="employeeProfileHubTopbar">
             <div class="topbar-left">
                 <button class="menu-btn" id="menuBtn_ProfileHub" aria-label="Open menu"
                     onclick="if(typeof openEmployeeSidebar==='function'){ openEmployeeSidebar(); }">
@@ -520,7 +699,12 @@ require_login();
                         <path d="M3 12h18"/><path d="M3 6h18"/><path d="M3 18h18"/>
                     </svg>
                 </button>
-                <h2>My Information Hub</h2>
+                <button type="button" class="employee-hub-topbar-back" id="employeeHubBackBtn"
+                    onclick="switchEmployeeProfileTab('hub')" title="Back to My Information Hub" style="display:none;">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    <span class="hub-back-text">Back to Hub</span>
+                </button>
+                <h2 id="employeeProfileHubTitle">My Information Hub</h2>
             </div>
             <div class="topbar-right">
                 <div class="icon-btn" onclick="if(typeof Employee_user_dashboard_09_OPEN==='function'){ Employee_user_dashboard_09_OPEN(); }" title="Notifications">
@@ -530,8 +714,8 @@ require_login();
                     <span class="dot"></span>
                 </div>
                 <div class="admin-pill" onclick="Employee_user_dashboard_02_OPEN()" title="My Information Hub">
-                    <div class="avatar"><?php echo htmlspecialchars(!empty($logged_user_initials) ? $logged_user_initials : 'EM'); ?></div>
-                    <span><?php echo htmlspecialchars(!empty($logged_user_first_name) && $logged_user_first_name !== 'Guest' ? $logged_user_first_name : 'Employee'); ?></span>
+                    <div class="avatar" id="empProfileHubTopAvatar"><?php echo htmlspecialchars(!empty($logged_user_initials) ? $logged_user_initials : 'EM'); ?></div>
+                    <span id="empProfileHubTopName"><?php echo htmlspecialchars(!empty($logged_user_first_name) && $logged_user_first_name !== 'Guest' ? $logged_user_first_name : 'Employee'); ?></span>
                 </div>
             </div>
         </div>
