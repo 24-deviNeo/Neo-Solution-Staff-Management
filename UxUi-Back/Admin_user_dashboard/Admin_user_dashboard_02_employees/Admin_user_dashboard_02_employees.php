@@ -674,7 +674,7 @@
     #Admin_user_dashboard_02_employees {
       width: 100% !important;
       max-width: 100vw !important;
-      padding: 0 10px 72px !important;
+      padding: 0 var(--erp-page-gutter, 12px) 72px !important;
       overflow-x: hidden !important;
     }
     .main, .w3-main-content {
