@@ -358,6 +358,20 @@ body :is([id^="Employee_user_dashboard_"]):not(#_) .settings-card {
         overflow-x: hidden !important;
     }
 
+    /* Prevent nested submodules in profile hub from duplicating horizontal page padding */
+    #Employee_user_dashboard_profile_hub [id^="Employee_user_dashboard_"],
+    #Employee_user_dashboard_profile_hub .emp-main,
+    #Employee_user_dashboard_profile_hub .main,
+    #Employee_user_dashboard_profile_hub .emp-prof-container,
+    #Employee_user_dashboard_profile_hub .docs-container {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
     .menu-btn,
     .toggle-menu {
         display: inline-flex !important;
@@ -658,6 +672,17 @@ body :is([id^="Employee_user_dashboard_"]):not(#_) {
 }
 
 body :is([id^="Employee_user_dashboard_"]):not(#_) .emp-leave-container {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+/* Prevent nested submodules and containers in profile hub from duplicating web view gutter */
+body #Employee_user_dashboard_profile_hub :is([id^="Employee_user_dashboard_"]),
+body #Employee_user_dashboard_profile_hub .employee-info-hub-container,
+body #Employee_user_dashboard_profile_hub .employee-profile-module,
+body #Employee_user_dashboard_profile_hub .emp-prof-container,
+body #Employee_user_dashboard_profile_hub .docs-container,
+body #Employee_user_dashboard_profile_hub .main {
     padding-left: 0 !important;
     padding-right: 0 !important;
 }
