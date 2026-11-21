@@ -58,6 +58,23 @@ try {
         KEY `idx_user_id` (`user_id`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci");
 
+    // Keep administrator accounts out of employee pickers, including legacy
+    // profile and employee-table rows linked to an administrator login.
+    $adminAccountIds = [];
+    try {
+        $adminAccounts = $db->get_result("SELECT l.`id`
+            FROM `main_user_login` l
+            LEFT JOIN `main_user_account_access_level_list` a
+                ON a.`id` = l.`main_user_account_access_level_list_id`
+            WHERE LOWER(TRIM(COALESCE(a.`type_of_access`, ''))) LIKE '%admin%'
+               OR LOWER(TRIM(COALESCE(l.`ac_type`, ''))) LIKE '%admin%'");
+        if ($adminAccounts) {
+            while ($adminAccount = $adminAccounts->fetch_assoc()) {
+                $adminAccountIds[(int)$adminAccount['id']] = true;
+            }
+        }
+    } catch (\Throwable $e) {}
+
     $employees = [];
     $seenAccountIds = [];
     $seenEmails = [];
@@ -74,6 +91,7 @@ try {
             if (empty($name)) continue;
 
             $uId = (int)($p['user_id'] ?? 0);
+            if ($uId > 0 && isset($adminAccountIds[$uId])) continue;
             $emailVal = !empty($p['email']) ? trim($p['email']) : '';
             if (($uId > 0 && isset($seenAccountIds[$uId])) ||
                 (!empty($emailVal) && isset($seenEmails[strtolower($emailVal)])) ||
@@ -180,6 +198,7 @@ try {
                     $email = trim((string)(isset($row['email_address']) ? $row['email_address'] : (isset($row['email']) ? $row['email'] : '')));
                     $uid = (int)($row['main_user_login_id'] ?? 0);
 
+                    if ($uid > 0 && isset($adminAccountIds[$uid])) continue;
                     if (empty($fullname) && empty($email)) continue;
                     if ($uid > 0 && isset($seenAccountIds[$uid])) continue;
                     if (!empty($email) && isset($seenEmails[strtolower($email)])) continue;
@@ -267,8 +286,8 @@ try {
                 ON a.id = l.main_user_account_access_level_list_id
             WHERE l.id != 1
               AND (
-                  LOWER(TRIM(COALESCE(a.type_of_access, ''))) != 'admin'
-                  AND LOWER(TRIM(COALESCE(l.ac_type, ''))) != 'admin'
+                  LOWER(TRIM(COALESCE(a.type_of_access, ''))) NOT LIKE '%admin%'
+                  AND LOWER(TRIM(COALESCE(l.ac_type, ''))) NOT LIKE '%admin%'
               )
             ORDER BY l.id ASC");
 
