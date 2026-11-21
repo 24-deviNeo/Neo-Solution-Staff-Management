@@ -377,6 +377,40 @@
       border-color: #3b5bdb; 
       box-shadow: 0 0 0 3px rgba(59,91,219,0.12); 
     }
+    .employee-search-control { position: relative; width: 100%; }
+    .employee-search-results {
+      position: absolute;
+      top: calc(100% + 4px);
+      right: 0;
+      left: 0;
+      z-index: 1200;
+      max-height: 220px;
+      overflow-y: auto;
+      padding: 4px;
+      border: 1px solid #dbe3ef;
+      border-radius: 10px;
+      background: #ffffff;
+      box-shadow: 0 10px 24px rgba(15, 23, 42, .14);
+    }
+    .employee-search-results[hidden] { display: none !important; }
+    .employee-search-option {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      width: 100%;
+      padding: 9px 10px;
+      border: 0;
+      border-radius: 7px;
+      background: #ffffff;
+      color: #1e293b;
+      font: inherit;
+      text-align: left;
+      cursor: pointer;
+    }
+    .employee-search-option:hover,
+    .employee-search-option:focus { background: #eff6ff; outline: none; }
+    .employee-search-option span { color: #64748b; font-size: 12px; }
     .w3-form-row { 
       display: grid; 
       grid-template-columns: 1fr 1fr; 
@@ -948,7 +982,7 @@
         <div class="task-controls-row">
           <div class="task-search-box">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-            <input type="text" id="taskSearchInput" placeholder="Search tasks by title, department, or employee...">
+            <input type="search" id="taskSearchInput" name="portal_task_lookup" autocomplete="new-password" autocorrect="off" spellcheck="false" readonly placeholder="Search tasks by title, department, or employee...">
           </div>
 
           <div class="task-filter-group" id="taskFilterGroup">
@@ -956,7 +990,7 @@
             <button class="filter-pill" data-filter="Pending">Pending</button>
             <button class="filter-pill" data-filter="In Progress">In Progress</button>
             <button class="filter-pill" data-filter="Completed">Completed</button>
-            <select id="taskEmployeeFilter" class="filter-pill" style="padding: 7px 14px; outline: none; margin-left: auto; cursor: pointer; background-color: #fff; border: 1px solid #e2e8f0; border-radius: 999px;">
+            <select id="taskEmployeeFilter" class="filter-pill" style="display: block; appearance: auto; pointer-events: auto; position: relative; z-index: 2; padding: 7px 14px; outline: none; margin-left: auto; cursor: pointer; background-color: #fff; border: 1px solid #e2e8f0; border-radius: 999px;">
               <option value="All">All Employees</option>
             </select>
           </div>
@@ -1014,12 +1048,9 @@
             </div>
             <div class="w3-form-group">
               <label>Assign Employee</label>
-              <div style="display: flex; gap: 8px;">
-                <input type="search" id="createTaskEmployeeSearch" list="createTaskEmployeeSuggestions" placeholder="Search employees..." autocomplete="off" style="flex: 1; min-width: 0;">
-                <datalist id="createTaskEmployeeSuggestions"></datalist>
-                <select name="employee" id="createTaskEmployee" required style="flex: 1; min-width: 0;">
-                  <option value="">Select Employee</option>
-                </select>
+              <div class="employee-search-control">
+                <input type="search" name="employee" id="createTaskEmployeeSearch" placeholder="Search employees..." autocomplete="off" required>
+                <div class="employee-search-results" id="createTaskEmployeeResults" role="listbox" hidden></div>
               </div>
             </div>
             <div class="w3-form-row">
@@ -1108,12 +1139,9 @@
             </div>
             <div class="w3-form-group">
               <label>Assign Employee</label>
-              <div style="display: flex; gap: 8px;">
-                <input type="search" id="editTaskEmployeeSearch" list="editTaskEmployeeSuggestions" placeholder="Search employees..." autocomplete="off" style="flex: 1; min-width: 0;">
-                <datalist id="editTaskEmployeeSuggestions"></datalist>
-                <select name="employee" id="editTaskEmployee" required style="flex: 1; min-width: 0;">
-                  <option value="">Select Employee</option>
-                </select>
+              <div class="employee-search-control">
+                <input type="search" name="employee" id="editTaskEmployeeSearch" placeholder="Search employees..." autocomplete="off" required>
+                <div class="employee-search-results" id="editTaskEmployeeResults" role="listbox" hidden></div>
               </div>
             </div>
             <div class="w3-form-row">
