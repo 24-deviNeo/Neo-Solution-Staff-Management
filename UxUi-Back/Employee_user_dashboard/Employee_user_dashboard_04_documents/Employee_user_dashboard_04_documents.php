@@ -335,7 +335,7 @@
     }
 
     #Employee_user_dashboard_04_documents .docs-container {
-      padding: 0 10px 64px !important;
+      padding: 0 0 64px !important;
     }
 
     #Employee_user_dashboard_04_documents .topbar {
