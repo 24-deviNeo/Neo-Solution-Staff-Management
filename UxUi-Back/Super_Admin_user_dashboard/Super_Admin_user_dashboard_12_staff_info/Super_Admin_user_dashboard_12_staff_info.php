@@ -44,7 +44,7 @@
 
   @media (min-width: 901px) {
     .staff-info-hub-container {
-      padding: 0 20px 36px 20px;
+      padding: 0 0 36px 0;
     }
   }
 
@@ -303,7 +303,7 @@
 
   @media (max-width: 600px) {
     #Super_Admin_user_dashboard_12_staff_info {
-      padding: 0 10px 40px !important;
+      padding: 0 0 40px !important;
     }
     .staff-info-hero-text h1 {
       font-size: 20px;
