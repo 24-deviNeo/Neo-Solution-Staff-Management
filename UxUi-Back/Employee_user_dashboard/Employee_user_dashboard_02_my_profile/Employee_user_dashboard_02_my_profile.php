@@ -637,7 +637,7 @@
     }
 
     #Employee_user_dashboard_02_my_profile .emp-prof-container {
-      padding: 0 10px 64px !important;
+      padding: 0 0 64px !important;
     }
 
     #Employee_user_dashboard_02_my_profile .topbar {
