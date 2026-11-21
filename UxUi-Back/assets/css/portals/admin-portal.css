@@ -441,7 +441,9 @@ header.topbar p,
     max-width: 100% !important;
     margin-left: 0 !important;
     margin-right: auto !important;
-    padding: 0 20px 36px 20px !important;
+    /* The portal section already owns the page gutter. Keep inner wrappers from
+       adding a second 20px inset (most visible on Settings). */
+    padding: 0 0 36px 0 !important;
     box-sizing: border-box !important;
 }
 
@@ -1169,6 +1171,27 @@ body #Super_Admin_user_dashboard_01 {
     box-sizing: border-box !important;
 }
 
+/* The Dashboard and Employees modules contain legacy page-level resets.
+   Reapply the shared outer gutter after those module styles are loaded. */
+body #Admin_user_dashboard_01,
+body #Admin_user_dashboard_02_employees {
+    padding-left: var(--erp-page-gutter) !important;
+    padding-right: var(--erp-page-gutter) !important;
+    box-sizing: border-box !important;
+}
+
+body #Admin_user_dashboard_01 > .main,
+body #Admin_user_dashboard_02_employees > .main,
+body #Admin_user_dashboard_02_employees > .w3-main-content {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin-left: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    box-sizing: border-box !important;
+}
+
 body :is(
     [id^="Admin_user_dashboard_"],
     [id^="Super_Admin_user_dashboard_"]
@@ -1212,6 +1235,44 @@ body :is(
     [id^="Super_Admin_user_dashboard_"]
 ):not(#_) .banner {
     padding: 18px 22px !important;
+}
+
+/* Keep Admin and Super Admin content aligned to one shared page gutter and
+   give their bordered data surfaces the same edge treatment on every page. */
+body :is([id^="Admin_user_dashboard_"], [id^="Super_Admin_user_dashboard_"]):not(#_) :is(
+    .table-card,
+    .table-wrap,
+    .table-container,
+    .table-responsive,
+    .settings-card,
+    .card
+) {
+    box-sizing: border-box !important;
+    max-width: 100% !important;
+    border: 1px solid var(--erp-border, #e2e8f0) !important;
+}
+
+/* Match Dashboard and Employees card interiors to the shared portal card
+   spacing, including the legacy module styles loaded with each page. */
+body #Admin_user_dashboard_01 :is(.card, .active-members-card, .daily-plans-card),
+body #Admin_user_dashboard_02_employees .mobile-emp-card {
+    padding: var(--erp-card-padding) !important;
+    box-sizing: border-box !important;
+}
+
+body #Admin_user_dashboard_01 .stat-card,
+body #Admin_user_dashboard_02_employees .onboarding-stat-card {
+    padding: var(--erp-stat-card-padding) !important;
+    box-sizing: border-box !important;
+}
+
+/* These two legacy modules apply 20px padding to each direct content block.
+   Their section wrapper already supplies the page gutter, so clear that
+   second inset and let the cards keep only their own internal padding. */
+body #Admin_user_dashboard_01 .main > *:not(.topbar):not(.overlay):not(.w3-modal-overlay):not(.w3-modal):not(.modal):not(.modal-overlay),
+body #Admin_user_dashboard_02_employees .main > *:not(.topbar):not(.overlay):not(.w3-modal-overlay):not(.w3-modal):not(.modal):not(.modal-overlay) {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
 }
 
 body :is(
@@ -1276,7 +1337,19 @@ body :is(
     box-sizing: border-box !important;
 }
 
-/* Prevent double padding when containers/submodules are nested inside Admin/Super Admin sections */
+/* Ensure dashboard pages (admin & super admin) have single gutter like other pages */
+body :is([id^="Admin_user_dashboard_"], [id^="Super_Admin_user_dashboard_"]) :is(
+    .main,
+    .main-wrapper,
+    .content-wrapper,
+    .dashboard-content,
+    .content
+) {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    box-sizing: border-box !important;
+}
+
 body :is([id^="Admin_user_dashboard_"], [id^="Super_Admin_user_dashboard_"]) :is(
     [id^="Admin_user_dashboard_"],
     [id^="Super_Admin_user_dashboard_"],
