@@ -505,8 +505,8 @@
 <div id="Employee_user_dashboard_04_documents" class="emp-main" style="display:none; padding:0;">
   <div class="docs-container" style="width:100%; box-sizing:border-box;">
 
-    <!-- Topbar -->
-    <div class="topbar">
+    <!-- Topbar (hidden to avoid duplicate headers) -->
+    <div class="topbar" style="display: none !important;">
       <div class="topbar-left">
         <button class="menu-btn" id="menuBtn_04" aria-label="Open menu" onclick="if(typeof openEmployeeSidebar==='function'){ openEmployeeSidebar(); }">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
