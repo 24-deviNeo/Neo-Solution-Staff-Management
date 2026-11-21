@@ -195,6 +195,10 @@
   .staff-info-card-btn.theme-roles:hover { border-color: #fde68a; }
   .staff-info-card-btn.theme-roles .hub-icon-wrap { background: #fffbe3; color: #d97706; }
 
+  .staff-info-card-btn.theme-leave:hover::before { background: #0ea5e9; }
+  .staff-info-card-btn.theme-leave:hover { border-color: #bae6fd; }
+  .staff-info-card-btn.theme-leave .hub-icon-wrap { background: #f0f9ff; color: #0284c7; }
+
   .staff-info-card-top {
     display: flex;
     align-items: flex-start;
@@ -341,11 +345,11 @@
     <div class="staff-info-hero">
       <div class="staff-info-hero-text">
         <h1>Staff Information & Operations</h1>
-        <p>Central management directory for employee credentials, financial account setups, and organizational structures.</p>
+        <p>Central management directory for employee credentials, financial account setups, organizational structures, and leave requests.</p>
       </div>
       <div class="staff-info-hero-badge">
         <i class="fa-solid fa-layer-group"></i>
-        <span>4 Core Sections</span>
+        <span>5 Core Sections</span>
       </div>
     </div>
 
@@ -434,6 +438,26 @@
         </div>
         <div class="staff-info-card-footer">
           <span class="hub-status-pill">Designations</span>
+          <span class="hub-open-label">Open Module <i class="fa-solid fa-arrow-right" style="font-size:10px;"></i></span>
+        </div>
+      </div>
+
+      <!-- 5. Leave Requests Button -->
+      <div class="staff-info-card-btn theme-leave" role="button" tabindex="0" onclick="if(typeof Super_Admin_user_dashboard_08_OPEN==='function'){ Super_Admin_user_dashboard_08_OPEN(); } else if(typeof Admin_user_dashboard_08_OPEN==='function'){ Admin_user_dashboard_08_OPEN(); }">
+        <div class="staff-info-card-top">
+          <div class="hub-icon-wrap">
+            <i class="fa-solid fa-calendar-check"></i>
+          </div>
+          <div class="hub-action-arrow">
+            <i class="fa-solid fa-arrow-right"></i>
+          </div>
+        </div>
+        <div class="staff-info-card-body">
+          <h4>Leave Requests</h4>
+          <p>Review and approve employee leave submissions, evaluate time-off quotas, track pending absence requests and status updates.</p>
+        </div>
+        <div class="staff-info-card-footer">
+          <span class="hub-status-pill">Time-off & Approvals</span>
           <span class="hub-open-label">Open Module <i class="fa-solid fa-arrow-right" style="font-size:10px;"></i></span>
         </div>
       </div>
