@@ -536,6 +536,65 @@ CREATE TABLE IF NOT EXISTS `task_management` (
 -- --------------------------------------------------------
 
 --
+-- Project and normalized task tables
+--
+
+CREATE TABLE IF NOT EXISTS `project` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `title` varchar(100) DEFAULT NULL,
+  `description` varchar(250) DEFAULT NULL,
+  `department` varchar(250) DEFAULT NULL,
+  `deadline` timestamp NULL DEFAULT NULL,
+  `ast` tinyint(1) DEFAULT 1,
+  `sdt` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `is_temp_locked` tinyint(1) DEFAULT 0,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE IF NOT EXISTS `project_employee` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `ast` tinyint(1) DEFAULT 1,
+  `sdt` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `project_id` int NOT NULL,
+  `employees_id` int NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_project_employee_project` (`project_id`),
+  KEY `idx_project_employee_employee` (`employees_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE IF NOT EXISTS `task_employee` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `ast` tinyint(1) DEFAULT 1,
+  `sdt` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `employees_id` int DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_task_employee_employee` (`employees_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+CREATE TABLE IF NOT EXISTS `project_tasks` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `title` varchar(255) NOT NULL,
+  `description` text,
+  `department` varchar(100) DEFAULT '',
+  `assigned_to` varchar(255) DEFAULT '',
+  `mode` varchar(50) DEFAULT 'Online',
+  `priority` varchar(50) DEFAULT 'Medium',
+  `deadline` date DEFAULT NULL,
+  `progress` int DEFAULT 0,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `is_pending` tinyint(1) DEFAULT 1,
+  `is_completed` tinyint(1) DEFAULT 0,
+  `project_id` int DEFAULT NULL,
+  `task_employee_id` int DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `idx_project_tasks_project` (`project_id`),
+  KEY `idx_project_tasks_employee` (`task_employee_id`),
+  KEY `idx_project_tasks_deadline` (`deadline`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `system_notifications`
 --
 
