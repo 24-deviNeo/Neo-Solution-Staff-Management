@@ -1294,3 +1294,81 @@ body :is(
 ):not(#_) .topbar + * {
     margin-top: 12px !important;
 }
+
+/* =========================================================
+   ADMIN & SUPER ADMIN MOBILE BOTTOM NAVIGATION
+   ========================================================= */
+.admin-bottom-nav {
+    display: none;
+}
+
+.admin-bottom-nav-link.active {
+    background: #eff6ff;
+    color: #2563eb;
+}
+
+@media (max-width: 900px) {
+    #adminSidebar,
+    #sidebarOverlay,
+    .menu-btn,
+    .admin-sidebar {
+        display: none !important;
+    }
+
+    [id^="Admin_user_dashboard_"]:not([style*="display: none"]):not([style*="display:none"]),
+    [id^="Super_Admin_user_dashboard_"]:not([style*="display: none"]):not([style*="display:none"]) {
+        padding-bottom: calc(78px + env(safe-area-inset-bottom)) !important;
+    }
+
+    .admin-bottom-nav {
+        position: fixed;
+        z-index: 1000;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        display: grid;
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        gap: 2px;
+        padding: 7px 6px calc(7px + env(safe-area-inset-bottom));
+        border-top: 1px solid #e2e8f0;
+        background: rgba(255, 255, 255, 0.97);
+        box-shadow: 0 -6px 20px rgba(15, 23, 42, 0.08);
+        backdrop-filter: blur(12px);
+    }
+
+    .admin-bottom-nav-link {
+        display: flex;
+        min-width: 0;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 3px;
+        padding: 5px 2px;
+        border: 0;
+        border-radius: 9px;
+        background: transparent;
+        color: #64748b;
+        font: inherit;
+        font-size: 10px;
+        font-weight: 700;
+        cursor: pointer;
+        text-decoration: none;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .admin-bottom-nav-link i {
+        font-size: 16px;
+        line-height: 1;
+    }
+
+    .admin-bottom-nav-link span {
+        display: block;
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+}
+
