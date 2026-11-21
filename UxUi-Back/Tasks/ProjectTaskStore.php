@@ -321,7 +321,9 @@ class ProjectTaskStore
         if ($employeeUserId > 0 && $this->columnExists('employees', 'main_user_login_id')) {
             $result = $this->query("SELECT `id` FROM `employees`
                 WHERE `main_user_login_id` = {$employeeUserId} LIMIT 1");
-            return $result->num_rows > 0 ? (int)$result->fetch_assoc()['id'] : 0;
+            if ($result->num_rows > 0) {
+                return (int)$result->fetch_assoc()['id'];
+            }
         }
 
         if ($employeeName !== '') {
@@ -417,8 +419,14 @@ class ProjectTaskStore
             } elseif ($employeeId > 0) {
                 $this->query("INSERT INTO `task_employee` (`employees_id`, `ast`) VALUES ({$employeeId}, 1)");
                 $taskEmployeeId = (int)$this->connection->insert_id;
-            } elseif ($assignedTo !== '' && !($taskEmployeeId > 0 && $assignedTo === $currentAssignedTo)) {
-                throw new InvalidArgumentException('Unable to link this task to the selected employee. Refresh the employee list and select the employee again.');
+            } elseif ($assignedTo !== '' && $taskEmployeeId > 0
+                && strcasecmp(trim($assignedTo), trim($currentAssignedTo)) !== 0) {
+                // Keep the display-name assignment when an employee record is
+                // unavailable, but retire a previous link so it cannot point
+                // at the wrong employee. Tasks without a link still filter by
+                // `assigned_to` in getTasks().
+                $this->query("UPDATE `task_employee` SET `ast` = 0 WHERE `id` = {$taskEmployeeId}");
+                $taskEmployeeId = 0;
             }
 
             $taskEmployeeSql = $taskEmployeeId > 0 ? (string)$taskEmployeeId : 'NULL';
