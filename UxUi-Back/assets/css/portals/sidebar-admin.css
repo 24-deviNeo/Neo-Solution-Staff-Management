@@ -472,24 +472,15 @@
 }
 
 @media (max-width: 900px) {
-    .admin-sidebar {
-        width: 290px;
-        max-width: 84vw;
-        height: 100vh;
-        max-height: 100vh;
-        transform: translateX(-100%);
-        overflow: hidden !important;
-        z-index: 999999;
-        box-shadow: 10px 0 40px -10px rgba(15, 23, 42, 0.25);
-        border-radius: 0 20px 20px 0;
-    }
-
-    .admin-sidebar.mobile-open {
-        transform: translateX(0);
-    }
-
-    .sidebar-close-btn {
-        display: inline-flex;
+    /* Hide admin sidebar, overlay and sidebar toggle buttons on mobile/app view — bottom nav is used instead */
+    .admin-sidebar,
+    #sidebarOverlay,
+    .sidebar-overlay,
+    .menu-btn,
+    .sidebar-close-btn,
+    .erp-open-sidebar-btn,
+    .mobile-menu-btn {
+        display: none !important;
     }
 
     .sidebar-brand {
