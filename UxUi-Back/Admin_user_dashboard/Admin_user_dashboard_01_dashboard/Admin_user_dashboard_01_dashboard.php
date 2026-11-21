@@ -730,6 +730,8 @@
     #Admin_user_dashboard_01 {
       width: 100% !important;
       max-width: 100vw !important;
+      padding-left: var(--erp-page-gutter, 12px) !important;
+      padding-right: var(--erp-page-gutter, 12px) !important;
       overflow-x: hidden !important;
     }
     #Admin_user_dashboard_01 .main {
