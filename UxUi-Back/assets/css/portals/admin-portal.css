@@ -1271,9 +1271,24 @@ body :is(
     [id^="Admin_user_dashboard_"],
     [id^="Super_Admin_user_dashboard_"]
 ) #Employee_user_dashboard_03_personal_details {
-    padding-left: var(--erp-page-gutter) !important;
-    padding-right: var(--erp-page-gutter) !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
     box-sizing: border-box !important;
+}
+
+/* Prevent double padding when containers/submodules are nested inside Admin/Super Admin sections */
+body :is([id^="Admin_user_dashboard_"], [id^="Super_Admin_user_dashboard_"]) :is(
+    [id^="Admin_user_dashboard_"],
+    [id^="Super_Admin_user_dashboard_"],
+    [id^="Employee_user_dashboard_"],
+    .staff-info-hub-container,
+    .emp-pd-container,
+    .main,
+    .main-wrapper,
+    .content-wrapper
+) {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
 }
 
 body :is(
