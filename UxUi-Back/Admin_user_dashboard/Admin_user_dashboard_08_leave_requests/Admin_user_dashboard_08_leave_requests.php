@@ -8,7 +8,7 @@
   .leave-main-wrapper {
     width: 100%;
     box-sizing: border-box;
-    padding: 0 20px 36px 20px;
+    padding: 0 0 36px 0;
   }
 
   /* Topbar */
