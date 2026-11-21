@@ -34,16 +34,9 @@
     box-sizing: border-box;
   }
 
-  /* Standardized Topbar */
+  /* Standardized Topbar - Hidden as main dashboard profile hub handles the unified topbar */
   #Employee_user_dashboard_02_my_profile .topbar {
-    width: 100% !important;
-    max-width: 100% !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: space-between !important;
-    margin: 0 0 16px 0 !important;
-    padding: 0 !important;
-    box-sizing: border-box !important;
+    display: none !important;
   }
   #Employee_user_dashboard_02_my_profile .topbar-left {
     display: flex !important;
@@ -746,8 +739,8 @@
 <div id="Employee_user_dashboard_02_my_profile" class="w3-container tab-content" style="display: none; padding: 0;">
   <div class="emp-prof-container">
 
-    <!-- Standard Topbar -->
-    <div class="topbar">
+    <!-- Standard Topbar (hidden to avoid duplicate headers) -->
+    <div class="topbar" style="display: none !important;">
       <div class="topbar-left">
         <button class="menu-btn" id="menuBtn_02" aria-label="Open menu" onclick="if(typeof openEmployeeSidebar==='function'){ openEmployeeSidebar(); }">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
