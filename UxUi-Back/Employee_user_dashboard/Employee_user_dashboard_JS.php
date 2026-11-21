@@ -161,6 +161,18 @@
   }
 
   window.switchEmployeeProfileTab = function(tabName) {
+    var titles = {
+      hub: 'My Information Hub',
+      profile: 'My Profile',
+      documents: 'Documents',
+      bank: (window.innerWidth <= 600) ? 'Bank Details' : 'Bank Details & Payment Receipts',
+      leave: 'Leave Requests'
+    };
+
+    var titleEl = document.getElementById('employeeProfileHubTitle');
+    var backBtn = document.getElementById('employeeHubBackBtn');
+    var menuBtn = document.getElementById('menuBtn_ProfileHub');
+
     var tabs = {
       hub: {
         pane: 'employeeProfileCategoriesPane'
@@ -219,6 +231,18 @@
     };
     var activeTab = tabs[tabName] ? tabName : 'profile';
 
+    if (titleEl) {
+      titleEl.textContent = titles[activeTab] || 'My Information';
+    }
+
+    if (activeTab === 'hub') {
+      if (backBtn) backBtn.style.display = 'none';
+      if (menuBtn) menuBtn.style.display = '';
+    } else {
+      if (backBtn) backBtn.style.display = 'inline-flex';
+      if (menuBtn) menuBtn.style.display = 'none';
+    }
+
     Object.keys(tabs).forEach(function(key) {
       var pane = document.getElementById(tabs[key].pane);
       var section = tabs[key].section ? document.getElementById(tabs[key].section) : null;
@@ -234,9 +258,15 @@
       window.loadEmpPendingDocRequests();
     }
 
+    // Smooth scroll to top of profile hub
+    var hubContainer = document.getElementById('Employee_user_dashboard_profile_hub');
+    if (hubContainer && typeof hubContainer.scrollIntoView === 'function') {
+      hubContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
     // Update bottom nav active state on mobile for sub-pages
     if (window.matchMedia('(max-width: 900px)').matches) {
-      setEmployeeSidebarActive(activeTab === 'hub' ? 'my_profile' : 'my_profile');
+      setEmployeeSidebarActive(activeTab === 'hub' ? 'my_profile' : (activeTab === 'leave' ? 'leave_requests' : 'my_profile'));
     }
   };
 
