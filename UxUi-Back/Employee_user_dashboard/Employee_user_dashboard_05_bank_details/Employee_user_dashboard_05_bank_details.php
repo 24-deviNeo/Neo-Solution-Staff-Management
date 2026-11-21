@@ -403,6 +403,12 @@
     #Employee_user_dashboard_05_bank_details {
       width: 100%;
       overflow-x: hidden;
+      padding: 0 !important;
+    }
+
+    #Employee_user_dashboard_05_bank_details .main {
+      padding-left: 0 !important;
+      padding-right: 0 !important;
     }
 
     #Employee_user_dashboard_05_bank_details .topbar {
