@@ -46,7 +46,7 @@
 
     @media (min-width: 901px) {
       #Super_Admin_user_dashboard_07_task_management .main-task-wrapper {
-        padding: 0 20px 36px 20px;
+        padding: 0 0 36px 0;
         box-sizing: border-box;
       }
     }
