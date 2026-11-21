@@ -18,6 +18,16 @@
 
     // ---- Tasks Live Data State (Pure MySQL Driven) ----
     let tasks = [];
+    let taskFetchSequence = 0;
+
+    function uniqueTasksById(rows) {
+      const byId = new Map();
+      rows.forEach(task => {
+        const id = String(task?.id ?? '').trim();
+        if (id) byId.set(id, task);
+      });
+      return Array.from(byId.values());
+    }
 
     const tableBody = document.getElementById('taskTableBody');
     const taskCount = document.getElementById('taskCount');
@@ -31,18 +41,22 @@
 
     // ---- Fetch Tasks Live from MySQL Database ----
     window.fetchAdminTasks = function() {
+      const requestSequence = ++taskFetchSequence;
       const fetchUrl = (typeof window.pth !== 'undefined' ? window.pth : '../') + 'UxUi-Back/Tasks/fetch_tasks/fetch_tasks.php';
       fetch(fetchUrl)
         .then(res => res.json())
         .then(res => {
+          if (requestSequence !== taskFetchSequence) return;
           if (res.status === 'success' && Array.isArray(res.data)) {
-            tasks = res.data;
+            tasks = uniqueTasksById(res.data);
           } else {
             tasks = [];
           }
+          populateTaskEmployeeFilter();
           renderTaskTable();
         })
         .catch((error) => {
+          if (requestSequence !== taskFetchSequence) return;
           tasks = [];
           renderTaskTable();
           console.error('Unable to load tasks:', error);
@@ -64,8 +78,9 @@
           (t.dept || '').toLowerCase().includes(query) ||
           (t.employee || t.assigned_to || '').toLowerCase().includes(query);
           
-        const empName = t.employee || t.assigned_to || '';
-        const matchesEmp = activeEmployeeFilter === 'All' || empName === activeEmployeeFilter;
+        const empName = String(t.employee || t.assigned_to || '').trim().toLocaleLowerCase();
+        const matchesEmp = activeEmployeeFilter === 'All' ||
+          empName === String(activeEmployeeFilter).trim().toLocaleLowerCase();
         
         return matchesFilter && matchesQuery && matchesEmp;
       });
@@ -121,12 +136,59 @@
       });
     }
 
-    if (taskSearchInput) taskSearchInput.addEventListener('input', renderTaskTable);
+    if (taskSearchInput) {
+      // Browsers sometimes autofill a saved email into unrelated search fields.
+      taskSearchInput.value = '';
+      const clearAutofilledEmail = () => {
+        const value = taskSearchInput.value.trim();
+        if (!taskSearchInput.matches(':focus') && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+          taskSearchInput.value = '';
+          renderTaskTable();
+        }
+      };
+      taskSearchInput.addEventListener('focus', () => {
+        taskSearchInput.removeAttribute('readonly');
+        if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(taskSearchInput.value.trim())) {
+          taskSearchInput.value = '';
+          renderTaskTable();
+        }
+      }, { once: true });
+      window.setTimeout(clearAutofilledEmail, 300);
+      window.setTimeout(clearAutofilledEmail, 1000);
+      taskSearchInput.addEventListener('input', renderTaskTable);
+    }
     if (taskEmployeeFilter) taskEmployeeFilter.addEventListener('change', renderTaskTable);
 
     // ---- State for Projects & Employees ----
     let allProjects = [];
     let allEmployees = [];
+
+    function populateTaskEmployeeFilter() {
+      if (!taskEmployeeFilter) return;
+
+      const selectedValue = taskEmployeeFilter.value || 'All';
+      const employeesByName = new Map();
+      const addEmployee = value => {
+        const name = String(value || '').trim();
+        const key = name.toLocaleLowerCase();
+        if (name && !employeesByName.has(key)) employeesByName.set(key, name);
+      };
+
+      allEmployees.forEach(employee => addEmployee(
+        employee?.name || employee?.full_name || employee?.fullname
+      ));
+      tasks.forEach(task => addEmployee(task?.employee || task?.assigned_to));
+
+      const options = [new Option('All Employees', 'All')];
+      Array.from(employeesByName.values())
+        .sort((a, b) => a.localeCompare(b))
+        .forEach(name => options.push(new Option(name, name)));
+      taskEmployeeFilter.replaceChildren(...options);
+
+      const selectedOption = Array.from(taskEmployeeFilter.options)
+        .find(option => option.value.toLocaleLowerCase() === selectedValue.toLocaleLowerCase());
+      taskEmployeeFilter.value = selectedOption ? selectedOption.value : 'All';
+    }
 
     // ---- Load Projects & Employees from Database ----
     window.loadProjectsAndEmployees = function(callback) {
@@ -165,13 +227,7 @@
           console.error('Unable to load employees:', empRes?.message || 'Employee list request failed.');
         }
 
-        // Populate toolbar employee filter
-        if (taskEmployeeFilter && allEmployees.length > 0) {
-          const currentFilterVal = taskEmployeeFilter.value || 'All';
-          const options = allEmployees.map(e => `<option value="${e.name}">${e.name}</option>`).join('');
-          taskEmployeeFilter.innerHTML = '<option value="All">All Employees</option>' + options;
-          taskEmployeeFilter.value = currentFilterVal;
-        }
+        populateTaskEmployeeFilter();
 
         if (typeof callback === 'function') callback();
       });
@@ -194,64 +250,84 @@
     // ---- Search Employees for the Selected Project ----
     function populateEmployees(projectSelectId, empSelectId, searchInputId, selectedEmp = '') {
       const projectSelect = document.getElementById(projectSelectId);
-      const empSelect = document.getElementById(empSelectId);
       const searchInput = document.getElementById(searchInputId);
-      const suggestions = document.getElementById(`${empSelectId}Suggestions`);
-      if (!projectSelect || !empSelect) return;
+      const resultsId = searchInputId.replace('Search', 'Results');
+      const results = document.getElementById(resultsId);
+      if (!projectSelect || !searchInput) return;
 
-      const query = (searchInput?.value || '').trim().toLowerCase();
+      const normalize = value => String(value || '').trim().toLocaleLowerCase();
+      const selectedEmployee = selectedEmp
+        ? allEmployees.find(employee =>
+            normalize(employee.name) === normalize(selectedEmp) ||
+            normalize(employee.email) === normalize(selectedEmp)
+          )
+        : null;
+      const selectedEmployeeName = selectedEmployee?.name || selectedEmp;
+      if (selectedEmployeeName && searchInput) searchInput.value = selectedEmployeeName;
+
+      const query = normalize(searchInput?.value);
       const matchingEmps = allEmployees.filter(employee =>
-        (employee.name || '').toLowerCase().includes(query) ||
-        (employee.email || '').toLowerCase().includes(query) ||
-        (employee.dept || '').toLowerCase().includes(query)
+        normalize(employee.name).includes(query)
       );
 
-      if (matchingEmps.length === 0) {
-        empSelect.replaceChildren(new Option(allEmployees.length ? 'No matching employees' : 'No employees available', ''));
-        suggestions?.replaceChildren();
-        return;
-      }
-
-      empSelect.replaceChildren(new Option('Select Employee', ''));
-      suggestions?.replaceChildren();
+      results?.replaceChildren();
       matchingEmps.forEach(employee => {
-        const option = new Option(employee.name, employee.name);
-        option.dataset.employeeUserId = String(employee.account_id || employee.user_id || '');
-        empSelect.add(option);
-        if (suggestions) {
-          const option = document.createElement('option');
-          option.value = employee.name;
-          option.label = [employee.dept, employee.email].filter(Boolean).join(' · ');
-          suggestions.append(option);
+        if (results) {
+          const option = document.createElement('button');
+          option.type = 'button';
+          option.className = 'employee-search-option';
+          option.dataset.employeeName = employee.name || '';
+          option.textContent = employee.name || '';
+          if (employee.dept) {
+            const detail = document.createElement('span');
+            detail.textContent = employee.dept;
+            option.append(detail);
+          }
+          results.append(option);
         }
       });
+      if (results) results.hidden = !searchInput.matches(':focus') && !query;
 
-      const exactMatch = matchingEmps.find(employee =>
-        (employee.name || '').toLowerCase() === query
+      const exactMatch = matchingEmps.find(employee => normalize(employee.name) === query);
+      const selectedMatch = matchingEmps.find(employee =>
+        normalize(employee.name) === normalize(selectedEmployeeName)
       );
-      if (selectedEmp && matchingEmps.some(employee => employee.name === selectedEmp)) {
-        empSelect.value = selectedEmp;
-        if (searchInput) searchInput.value = selectedEmp;
+      if (selectedEmployeeName && selectedMatch) {
+        searchInput.value = selectedMatch.name;
       } else if (exactMatch) {
-        empSelect.value = exactMatch.name;
-      } else if (selectedEmp === '') {
-        empSelect.value = '';
+        searchInput.value = exactMatch.name;
+      } else if (selectedEmployeeName && results && !matchingEmps.length) {
+        const option = document.createElement('button');
+        option.type = 'button';
+        option.className = 'employee-search-option';
+        option.dataset.employeeName = selectedEmployeeName;
+        option.textContent = selectedEmployeeName;
+        results.append(option);
+        searchInput.value = selectedEmployeeName;
       }
     }
 
-    document.getElementById('createTaskEmployeeSearch')?.addEventListener('input', () =>
-      populateEmployees('createTaskProject', 'createTaskEmployee', 'createTaskEmployeeSearch')
-    );
-    document.getElementById('editTaskEmployeeSearch')?.addEventListener('input', () =>
-      populateEmployees('editTaskProject', 'editTaskEmployee', 'editTaskEmployeeSearch')
-    );
-    document.getElementById('createTaskEmployee')?.addEventListener('change', event => {
-      document.getElementById('createTaskEmployeeSearch').value = event.target.value;
-    });
-    document.getElementById('editTaskEmployee')?.addEventListener('change', event => {
-      document.getElementById('editTaskEmployeeSearch').value = event.target.value;
-    });
+    function bindEmployeePicker(projectSelectId, searchInputId) {
+      const searchInput = document.getElementById(searchInputId);
+      const results = document.getElementById(searchInputId.replace('Search', 'Results'));
+      if (!searchInput || !results) return;
+      const updateResults = () => populateEmployees(projectSelectId, '', searchInputId);
+      searchInput.addEventListener('input', updateResults);
+      searchInput.addEventListener('focus', updateResults);
+      results.addEventListener('mousedown', event => event.preventDefault());
+      results.addEventListener('click', event => {
+        const option = event.target.closest('.employee-search-option');
+        if (!option) return;
+        searchInput.value = option.dataset.employeeName || '';
+        results.hidden = true;
+      });
+      searchInput.addEventListener('blur', () => window.setTimeout(() => {
+        results.hidden = true;
+      }, 120));
+    }
 
+    bindEmployeePicker('createTaskProject', 'createTaskEmployeeSearch');
+    bindEmployeePicker('editTaskProject', 'editTaskEmployeeSearch');
     // ---- Create Task Modal Handler ----
     const openCreateTaskBtn = document.getElementById('openCreateTaskBtn');
     const createTaskModal = document.getElementById('createTaskModal');
@@ -260,6 +336,9 @@
     const createTaskForm = document.getElementById('createTaskForm');
 
     function openCreateModal() { 
+      createTaskForm?.reset();
+      const employeeSearch = document.getElementById('createTaskEmployeeSearch');
+      if (employeeSearch) employeeSearch.value = '';
       createTaskModal?.classList.add('active'); 
       window.loadProjectsAndEmployees(() => {
         populateProjectSelect('createTaskProject');
@@ -284,8 +363,16 @@
       createTaskForm.addEventListener('submit', (e) => {
         e.preventDefault();
         const formData = new FormData(createTaskForm);
-        const selectedEmployee = document.getElementById('createTaskEmployee')?.selectedOptions[0];
-        formData.set('employee_user_id', selectedEmployee?.dataset.employeeUserId || '');
+        const employeeName = String(document.getElementById('createTaskEmployeeSearch')?.value || '').trim();
+        const selectedEmployee = allEmployees.find(employee =>
+          String(employee.name || '').trim().toLocaleLowerCase() === employeeName.toLocaleLowerCase()
+        );
+        if (!selectedEmployee) {
+          alert('Choose an employee from the search suggestions.');
+          return;
+        }
+        formData.set('employee', selectedEmployee.name);
+        formData.set('employee_user_id', selectedEmployee.account_id || selectedEmployee.user_id || '');
         const createUrl = (typeof window.pth !== 'undefined' ? window.pth : '../') + 'UxUi-Back/Tasks/create_task/create_task.php';
 
         fetch(createUrl, { method: 'POST', body: formData })
@@ -438,10 +525,21 @@
       if (el('editTaskStatus')) el('editTaskStatus').value = task.status || 'Pending';
 
       const taskEmp = task.employee || task.assigned_to || '';
+      const employeeSearch = document.getElementById('editTaskEmployeeSearch');
+      if (employeeSearch) employeeSearch.value = String(taskEmp).includes('@') ? '' : taskEmp;
 
       window.loadProjectsAndEmployees(() => {
-        populateProjectSelect('editTaskProject', task.project_id || '');
-        document.getElementById('editTaskEmployeeSearch').value = '';
+        const matchingProject = allProjects.find(project =>
+          String(project.title || '').trim().toLocaleLowerCase() ===
+          String(task.project_title || '').trim().toLocaleLowerCase()
+        );
+        populateProjectSelect('editTaskProject', task.project_id || matchingProject?.id || '');
+        const projectSelect = document.getElementById('editTaskProject');
+        if (projectSelect && !projectSelect.value && task.project_id) {
+          projectSelect.add(new Option(task.project_title || `Project #${task.project_id}`, String(task.project_id)));
+          projectSelect.value = String(task.project_id);
+        }
+        if (employeeSearch) employeeSearch.value = String(taskEmp).includes('@') ? '' : taskEmp;
         populateEmployees('editTaskProject', 'editTaskEmployee', 'editTaskEmployeeSearch', taskEmp);
       });
 
@@ -451,9 +549,23 @@
     if (editTaskForm) {
       editTaskForm.addEventListener('submit', (e) => {
         e.preventDefault();
+        if (editTaskForm.dataset.submitting === 'true') return;
+        const taskId = String(document.getElementById('editTaskId')?.value || '').trim();
+        if (!taskId) {
+          alert('The task ID is missing. Close this form and open the task again.');
+          return;
+        }
+        editTaskForm.dataset.submitting = 'true';
+        const submitButton = editTaskForm.querySelector('[type="submit"]');
+        if (submitButton) submitButton.disabled = true;
         const formData = new FormData(editTaskForm);
-        const selectedEmployee = document.getElementById('editTaskEmployee')?.selectedOptions[0];
-        formData.set('employee_user_id', selectedEmployee?.dataset.employeeUserId || '');
+        formData.set('id', taskId);
+        const employeeName = String(document.getElementById('editTaskEmployeeSearch')?.value || '').trim();
+        const selectedEmployee = allEmployees.find(employee =>
+          String(employee.name || '').trim().toLocaleLowerCase() === employeeName.toLocaleLowerCase()
+        );
+        formData.set('employee', employeeName);
+        formData.set('employee_user_id', selectedEmployee?.account_id || selectedEmployee?.user_id || '');
         formData.append('updater_role', 'admin');
         const editUrl = (typeof window.pth !== 'undefined' ? window.pth : '../') + 'UxUi-Back/Tasks/update_task/update_task.php';
 
@@ -471,6 +583,10 @@
           .catch((error) => {
             alert('Unable to update task. Please check your connection and try again.');
             console.error('Unable to update task:', error);
+          })
+          .finally(() => {
+            editTaskForm.dataset.submitting = 'false';
+            if (submitButton) submitButton.disabled = false;
           });
       });
     }
