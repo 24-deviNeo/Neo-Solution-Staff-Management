@@ -573,8 +573,8 @@ $emp_session_uid  = isset($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : 0;
 <div id="Employee_user_dashboard_05_bank_details" style="display:none;">
   <main class="main">
 
-    <!-- Standard Topbar -->
-    <div class="topbar">
+    <!-- Standard Topbar (hidden to avoid duplicate headers) -->
+    <div class="topbar" style="display: none !important;">
       <div class="topbar-left">
         <button class="menu-btn" id="menuBtn_05" aria-label="Open menu" onclick="typeof openEmployeeSidebar==='function'? openEmployeeSidebar() : null">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
