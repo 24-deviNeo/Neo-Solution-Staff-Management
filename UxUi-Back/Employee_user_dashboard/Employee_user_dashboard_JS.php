@@ -168,23 +168,43 @@
       profile: {
         pane: 'employeeProfilePane',
         section: 'Employee_user_dashboard_02_my_profile',
-        load: window.fetchEmployeeProfileData
+        load: function() {
+          var el = document.getElementById('Employee_user_dashboard_02_my_profile');
+          if (el) el.style.display = 'block';
+          if (typeof window.fetchEmployeeProfileData === 'function') {
+            window.fetchEmployeeProfileData();
+          }
+        }
       },
       documents: {
         pane: 'employeeProfileDocumentsPane',
         section: 'Employee_user_dashboard_04_documents',
-        load: window.loadUploadedEmployeeDocs
+        load: function() {
+          var el = document.getElementById('Employee_user_dashboard_04_documents');
+          if (el) el.style.display = 'block';
+          if (typeof window.loadUploadedEmployeeDocs === 'function') {
+            window.loadUploadedEmployeeDocs();
+          }
+          if (typeof window.loadEmpPendingDocRequests === 'function') {
+            window.loadEmpPendingDocRequests();
+          }
+        }
       },
       bank: {
         pane: 'employeeProfileBankPane',
         section: 'Employee_user_dashboard_05_bank_details',
-        load: window.loadEmployeeBankDetails
+        load: function() {
+          var el = document.getElementById('Employee_user_dashboard_05_bank_details');
+          if (el) el.style.display = 'block';
+          if (typeof window.loadEmployeeBankDetails === 'function') {
+            window.loadEmployeeBankDetails();
+          }
+        }
       },
       leave: {
         pane: 'employeeProfileLeavePane',
         section: 'Employee_user_dashboard_08_leave_request',
         load: function() {
-          // Show the leave request div
           var leaveEl = document.getElementById('Employee_user_dashboard_08_leave_request');
           if (leaveEl) leaveEl.style.display = 'block';
           
