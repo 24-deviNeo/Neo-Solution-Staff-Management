@@ -34,11 +34,158 @@
     const taskSearchInput = document.getElementById('taskSearchInput');
     const filterPills = document.querySelectorAll('#taskFilterGroup .filter-pill:not(select)');
     const taskEmployeeFilter = document.getElementById('taskEmployeeFilter');
+    const assignedTasksTab = document.getElementById('assignedTasksTab');
+    const dailyWorkActivityTab = document.getElementById('dailyWorkActivityTab');
+    const dailyWorkActivityPanel = document.getElementById('dailyWorkActivityPanel');
+    const dailyWorkActivityBoard = document.getElementById('dailyWorkActivityBoard');
+    const dailyWorkActivityCount = document.getElementById('dailyWorkActivityCount');
+    const dailyWorkActivitySearch = document.getElementById('dailyWorkActivitySearch');
+    const dailyWorkEmployeeFilter = document.getElementById('dailyWorkEmployeeFilter');
+    const dailyWorkDateFilter = document.getElementById('dailyWorkDateFilter');
+    const taskControlsRow = document.querySelector('.task-controls-row');
+    const taskHeaderRow = document.querySelector('.task-header-row');
+    const taskTableContainer = document.querySelector('.task-table-container');
+    const taskBoardContainer = document.getElementById('taskBoardContainer');
+    const taskBoardColumns = document.getElementById('taskBoardColumns');
+    const taskProjectFilter = document.getElementById('taskProjectFilter');
+    const taskLayoutToolbar = document.getElementById('assignedTaskLayoutToolbar');
+    const taskTableViewTab = document.getElementById('taskTableViewTab');
+    const taskKanbanViewTab = document.getElementById('taskKanbanViewTab');
+    let activeTaskLayout = 'kanban';
+    let dailyWorkActivities = [];
+    let dailyPlanTaskIds = new Set();
     let activeFilter = 'All';
+
+    function getAssignedProjectTasks() {
+      return tasks.filter(task => !dailyPlanTaskIds.has(Number(task.id)));
+    }
 
     const iconEdit = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>`;
     const iconDelete = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>`;
 
+    function escapeActivityText(value) {
+      return String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' })[char]);
+    }
+
+    function activityDateTimeCell(value) {
+      const raw = String(value || '').trim();
+      if (!raw) return '<span class="daily-work-date-time">—</span>';
+      const parts = raw.split(/[ T]/);
+      const date = escapeActivityText(parts[0] || raw);
+      const time = escapeActivityText(parts[1] || '');
+      return `<span class="daily-work-date-time"><strong>${date}</strong>${time ? `<span>${time}</span>` : ''}</span>`;
+    }
+
+    function renderDailyWorkActivities() {
+      if (!dailyWorkActivityBoard) return;
+      const query = String(dailyWorkActivitySearch?.value || '').trim().toLowerCase();
+      const employeeFilter = String(dailyWorkEmployeeFilter?.value || '').trim().toLowerCase();
+      const dateFilter = String(dailyWorkDateFilter?.value || '').trim();
+      const visibleWorkPlans = dailyWorkActivities.filter(row => String(row.status || 'draft').toLowerCase() !== 'draft');
+      const filtered = visibleWorkPlans.filter(row => [
+        row.employee_name, row.department, row.job_title, row.plan_date, row.submitted_at, row.plan_text,
+        row.evening_update, row.status, row.task_status, row.assigned_task_title
+      ].join(' ').toLowerCase().includes(query)
+        && (!employeeFilter || String(row.employee_name || '').trim().toLowerCase() === employeeFilter)
+        && (!dateFilter || String(row.plan_date || '').slice(0, 10) === dateFilter));
+
+      if (dailyWorkActivityCount) {
+        const hasFilters = Boolean(query || employeeFilter || dateFilter);
+        dailyWorkActivityCount.textContent = hasFilters
+          ? 'Showing ' + filtered.length + ' of ' + visibleWorkPlans.length + ' records'
+          : visibleWorkPlans.length + ' daily work record' + (visibleWorkPlans.length === 1 ? '' : 's');
+      }
+      if (!filtered.length) {
+        dailyWorkActivityBoard.innerHTML = '<div class="daily-work-board-empty">No daily work plans or updates match these filters.</div>';
+        return;
+      }
+
+      dailyWorkActivityBoard.innerHTML = filtered.map(row => {
+          const name = escapeActivityText(row.employee_name || 'Employee');
+          const meta = [row.department, row.job_title].filter(Boolean).map(escapeActivityText).join(' · ');
+          const plan = escapeActivityText(row.plan_text || 'No plan submitted.');
+          const update = escapeActivityText(row.evening_update || 'No shift update submitted yet.');
+          const updateClass = row.evening_update ? '' : ' is-empty';
+          return '<article class="task-board-card daily-work-board-card">' +
+            '<header class="daily-work-card-header"><div><h3 class="task-board-card-title">' + name + '</h3><span class="daily-work-card-employee-meta">' + (meta || 'Employee') + '</span></div><span class="daily-work-card-date">' + escapeActivityText(row.plan_date || 'No date') + '</span></header>' +
+            '<section class="daily-work-card-section"><h4>Daily work plan</h4><p>' + plan + '</p></section>' +
+            '<section class="daily-work-card-section daily-work-update-section"><h4>Shift update</h4><p class="' + updateClass + '">' + update + '</p></section>' +
+            '<div class="daily-work-card-times"><div><span>Plan first submitted</span>' + activityDateTimeCell(row.started_at) + '</div><div><span>Work update submitted</span>' + activityDateTimeCell(row.shift_ended_at) + '</div></div>' +
+          '</article>';
+      }).join('');
+    }
+
+    window.fetchDailyWorkActivities = function() {
+      if (dailyWorkActivityBoard) dailyWorkActivityBoard.innerHTML = '<div class="daily-work-board-loading">Loading daily work plans...</div>';
+      const url = (typeof window.pth !== 'undefined' ? window.pth : '../') + 'View-List/Task_management/daily_work_activity_LIST.php';
+      return fetch(url, { credentials: 'same-origin' })
+        .then(response => response.json())
+        .then(response => {
+          dailyWorkActivities = response.status === 'success' && Array.isArray(response.data) ? response.data : [];
+          dailyPlanTaskIds = new Set(dailyWorkActivities.map(row => Number(row.task_id)).filter(id => id > 0));
+          if (dailyWorkEmployeeFilter) {
+            const selectedEmployee = dailyWorkEmployeeFilter.value;
+            const names = [...new Set(dailyWorkActivities.filter(row => String(row.status || 'draft').toLowerCase() !== 'draft').map(row => String(row.employee_name || '').trim()).filter(Boolean))].sort((a, b) => a.localeCompare(b));
+            dailyWorkEmployeeFilter.innerHTML = '<option value="">All employees</option>' + names.map(name => `<option value="${escapeActivityText(name)}">${escapeActivityText(name)}</option>`).join('');
+            dailyWorkEmployeeFilter.value = names.includes(selectedEmployee) ? selectedEmployee : '';
+          }
+          renderDailyWorkActivities();
+          renderTaskTable();
+          renderTaskBoard();
+        })
+        .catch(error => {
+          dailyWorkActivities = [];
+          if (dailyWorkActivityBoard) dailyWorkActivityBoard.innerHTML = '<div class="daily-work-board-loading is-error">Unable to load daily work plans. Please refresh.</div>';
+          console.error('Unable to load daily work activity:', error);
+        });
+    };
+
+    function showTaskManagementView(view) {
+      const showActivity = view === 'daily-work';
+      if (assignedTasksTab) {
+        assignedTasksTab.classList.toggle('active', !showActivity);
+        assignedTasksTab.setAttribute('aria-selected', String(!showActivity));
+      }
+      if (dailyWorkActivityTab) {
+        dailyWorkActivityTab.classList.toggle('active', showActivity);
+        dailyWorkActivityTab.setAttribute('aria-selected', String(showActivity));
+      }
+      taskControlsRow?.classList.toggle('task-view-content-hidden', showActivity);
+      taskHeaderRow?.classList.toggle('task-view-content-hidden', showActivity);
+      if (taskHeaderRow) {
+        if (showActivity) taskHeaderRow.style.setProperty('display', 'none', 'important');
+        else taskHeaderRow.style.removeProperty('display');
+      }
+      taskLayoutToolbar?.classList.toggle('task-view-content-hidden', showActivity);
+      taskTableContainer?.classList.toggle('task-view-content-hidden', showActivity || activeTaskLayout !== 'table');
+      taskBoardContainer?.classList.toggle('task-view-content-hidden', showActivity || activeTaskLayout !== 'kanban');
+      if (dailyWorkActivityPanel) dailyWorkActivityPanel.style.display = showActivity ? 'block' : 'none';
+      if (showActivity) window.fetchDailyWorkActivities();
+    }
+
+    assignedTasksTab?.addEventListener('click', () => showTaskManagementView('assigned'));
+    dailyWorkActivityTab?.addEventListener('click', () => showTaskManagementView('daily-work'));
+    dailyWorkActivitySearch?.addEventListener('input', renderDailyWorkActivities);
+    dailyWorkEmployeeFilter?.addEventListener('change', renderDailyWorkActivities);
+    dailyWorkDateFilter?.addEventListener('change', renderDailyWorkActivities);
+    document.getElementById('clearDailyWorkActivityFilters')?.addEventListener('click', () => {
+      if (dailyWorkActivitySearch) dailyWorkActivitySearch.value = '';
+      if (dailyWorkEmployeeFilter) dailyWorkEmployeeFilter.value = '';
+      if (dailyWorkDateFilter) dailyWorkDateFilter.value = '';
+      renderDailyWorkActivities();
+    });
+    function setTaskLayout(layout) {
+      activeTaskLayout = layout === 'kanban' ? 'kanban' : 'table';
+      taskTableViewTab?.classList.toggle('active', activeTaskLayout === 'table');
+      taskKanbanViewTab?.classList.toggle('active', activeTaskLayout === 'kanban');
+      taskTableViewTab?.setAttribute('aria-selected', String(activeTaskLayout === 'table'));
+      taskKanbanViewTab?.setAttribute('aria-selected', String(activeTaskLayout === 'kanban'));
+      showTaskManagementView('assigned');
+      renderTaskBoard();
+    }
+    taskTableViewTab?.addEventListener('click', () => setTaskLayout('table'));
+    taskKanbanViewTab?.addEventListener('click', () => setTaskLayout('kanban'));
+    taskProjectFilter?.addEventListener('change', renderTaskTable);
     // ---- Fetch Tasks Live from MySQL Database ----
     window.fetchAdminTasks = function() {
       const requestSequence = ++taskFetchSequence;
@@ -53,6 +200,7 @@
             tasks = [];
           }
           populateTaskEmployeeFilter();
+          populateTaskProjectFilter();
           renderTaskTable();
         })
         .catch((error) => {
@@ -69,8 +217,9 @@
 
       const query = taskSearchInput ? taskSearchInput.value.trim().toLowerCase() : '';
       const activeEmployeeFilter = taskEmployeeFilter ? taskEmployeeFilter.value : 'All';
+      const activeProjectFilter = taskProjectFilter ? taskProjectFilter.value : 'all';
 
-      const filtered = tasks.filter(t => {
+      const filtered = getAssignedProjectTasks().filter(t => {
         const matchesFilter = activeFilter === 'All' || t.status === activeFilter;
         const matchesQuery = !query ||
           (t.title || '').toLowerCase().includes(query) ||
@@ -81,8 +230,11 @@
         const empName = String(t.employee || t.assigned_to || '').trim().toLocaleLowerCase();
         const matchesEmp = activeEmployeeFilter === 'All' ||
           empName === String(activeEmployeeFilter).trim().toLocaleLowerCase();
+        const projectId = String(t.project_id || '');
+        const matchesProject = activeProjectFilter === 'all' ||
+          (activeProjectFilter === 'none' ? !projectId : projectId === activeProjectFilter);
         
-        return matchesFilter && matchesQuery && matchesEmp;
+        return matchesFilter && matchesQuery && matchesEmp && matchesProject;
       });
 
       if (filtered.length > 0) {
@@ -120,8 +272,64 @@
       }
 
       if (taskCount) {
-        taskCount.textContent = `${tasks.length} total task${tasks.length === 1 ? '' : 's'}`;
+        taskCount.textContent = `${filtered.length} task${filtered.length === 1 ? '' : 's'}`;
       }
+      renderTaskBoard();
+    }
+
+    function renderTaskBoard() {
+      if (!taskBoardColumns) return;
+      const query = taskSearchInput ? taskSearchInput.value.trim().toLowerCase() : '';
+      const employee = taskEmployeeFilter ? taskEmployeeFilter.value : 'All';
+      const project = taskProjectFilter ? taskProjectFilter.value : 'all';
+      const visibleTasks = getAssignedProjectTasks().filter(task => {
+        const matchesStatus = activeFilter === 'All' || task.status === activeFilter;
+        const matchesQuery = !query || [task.title, task.project_title, task.dept, task.employee, task.assigned_to]
+          .some(value => String(value || '').toLowerCase().includes(query));
+        const employeeName = String(task.employee || task.assigned_to || '').trim().toLowerCase();
+        const matchesEmployee = employee === 'All' || employeeName === String(employee).trim().toLowerCase();
+        const projectId = String(task.project_id || '');
+        const matchesProject = project === 'all' || (project === 'none' ? !projectId : projectId === project);
+        return matchesStatus && matchesQuery && matchesEmployee && matchesProject;
+      });
+      const lanes = [
+        { status: 'Pending', title: 'To do' },
+        { status: 'In Progress', title: 'In progress' },
+        { status: 'Completed', title: 'Completed' }
+      ];
+      const lanesWithTasks = lanes.filter(lane => visibleTasks.some(task => (task.status || 'Pending') === lane.status));
+      const visibleLanes = activeFilter === 'All'
+        ? (lanesWithTasks.length ? lanesWithTasks : lanes)
+        : lanes.filter(lane => lane.status === activeFilter);
+      taskBoardColumns.classList.toggle('is-single-lane', visibleLanes.length === 1);
+      taskBoardColumns.classList.toggle('is-two-lanes', visibleLanes.length === 2);
+      taskBoardColumns.innerHTML = visibleLanes.map(lane => {
+        const laneTasks = visibleTasks.filter(task => (task.status || 'Pending') === lane.status);
+        const laneClass = lane.status === 'Pending' ? 'pending' : (lane.status === 'In Progress' ? 'progress' : 'completed');
+        const cards = laneTasks.length ? laneTasks.map(task => {
+          const progress = Math.max(0, Math.min(100, Number(task.progress) || 0));
+          const description = String(task.description || '').trim();
+          return `
+          <article class="task-board-card" data-task-id="${Number(task.id)}">
+            <div class="task-board-card-project">${escapeActivityText(task.project_title || 'No project')} · Task #${Number(task.id)}</div>
+            <h3 class="task-board-card-title">${escapeActivityText(task.title || 'Untitled task')}</h3>
+            ${description ? `<p class="task-board-card-description">${escapeActivityText(description)}</p>` : ''}
+            <div class="task-board-card-meta">
+              <span>Assigned to: ${escapeActivityText(task.employee || task.assigned_to || 'Unassigned')}</span>
+              <span>Deadline: ${escapeActivityText(task.deadline || 'Not set')}</span>
+              <span>Priority: ${escapeActivityText(task.priority || 'Medium')}</span>
+              <span>Mode: ${escapeActivityText(task.mode || 'Online')}</span>
+            </div>
+            <div class="task-board-progress-label"><span>Progress</span><strong>${progress}%</strong></div>
+            <div class="task-board-progress-track"><span style="width:${progress}%"></span></div>
+            <div class="task-board-card-footer">
+              <span class="task-pill ${lane.status === 'Completed' ? 'pill-completed' : (lane.status === 'In Progress' ? 'pill-progress' : 'pill-pending')}">${escapeActivityText(lane.status)}</span>
+              <div class="task-board-card-actions"><button type="button" onclick="viewTask(${Number(task.id)})">View</button><button type="button" onclick="editTask(${Number(task.id)})">Edit</button></div>
+            </div>
+          </article>`;
+        }).join('') : '<div class="task-board-empty">No tasks in this status.</div>';
+        return `<section class="task-board-lane lane-${laneClass}" data-status="${lane.status}"><header class="task-board-lane-header"><span class="task-board-lane-title"><i class="task-board-lane-dot"></i>${lane.title}</span><span class="task-board-lane-count">${laneTasks.length}</span></header><div class="task-board-lane-items">${cards}</div></section>`;
+      }).join('');
     }
 
     // ---- Filter & Search Listeners ----
@@ -177,7 +385,7 @@
       allEmployees.forEach(employee => addEmployee(
         employee?.name || employee?.full_name || employee?.fullname
       ));
-      tasks.forEach(task => addEmployee(task?.employee || task?.assigned_to));
+      getAssignedProjectTasks().forEach(task => addEmployee(task?.employee || task?.assigned_to));
 
       const options = [new Option('All Employees', 'All')];
       Array.from(employeesByName.values())
@@ -188,6 +396,25 @@
       const selectedOption = Array.from(taskEmployeeFilter.options)
         .find(option => option.value.toLocaleLowerCase() === selectedValue.toLocaleLowerCase());
       taskEmployeeFilter.value = selectedOption ? selectedOption.value : 'All';
+    }
+
+    function populateTaskProjectFilter() {
+      if (!taskProjectFilter) return;
+      const selectedValue = taskProjectFilter.value || 'all';
+      const projectsById = new Map();
+      allProjects.forEach(project => {
+        const id = String(project.id || '');
+        if (id) projectsById.set(id, String(project.title || `Project #${id}`));
+      });
+      getAssignedProjectTasks().forEach(task => {
+        const id = String(task.project_id || '');
+        if (id && !projectsById.has(id)) projectsById.set(id, String(task.project_title || `Project #${id}`));
+      });
+      const options = [new Option('All projects', 'all'), new Option('No project', 'none')];
+      Array.from(projectsById.entries()).sort((a, b) => a[1].localeCompare(b[1]))
+        .forEach(([id, title]) => options.push(new Option(title, id)));
+      taskProjectFilter.replaceChildren(...options);
+      taskProjectFilter.value = Array.from(taskProjectFilter.options).some(option => option.value === selectedValue) ? selectedValue : 'all';
     }
 
     // ---- Load Projects & Employees from Database ----
@@ -228,6 +455,7 @@
         }
 
         populateTaskEmployeeFilter();
+        populateTaskProjectFilter();
 
         if (typeof callback === 'function') callback();
       });
@@ -615,7 +843,7 @@
 
     // Initial Load from DB
     window.loadTaskFilterEmployees();
-    window.fetchAdminTasks();
+    window.fetchDailyWorkActivities().finally(() => window.fetchAdminTasks());
   };
 
   if (document.readyState === 'loading') {
