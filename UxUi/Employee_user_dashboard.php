@@ -9,6 +9,17 @@ require_login();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script>
+        (function () {
+            const params = new URLSearchParams(window.location.search);
+            const standalone = window.navigator.standalone === true ||
+                (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches);
+            const embedded = /; wv\)/i.test(navigator.userAgent || '') ||
+                !!window.ReactNativeWebView || !!window.flutter_inappwebview ||
+                !!(window.webkit && window.webkit.messageHandlers);
+            document.documentElement.classList.toggle('app-view', standalone || embedded || params.get('app') === '1' || params.get('view') === 'app');
+        })();
+    </script>
     <title>Employee Portal | NEO Solution</title>
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -457,14 +468,34 @@ require_login();
 
         /* ===== MOBILE / APP VIEW (≤ 900px) ===== */
         @media (max-width: 900px) {
-            #employeeSidebar,
-            #employeeSidebarOverlay,
-            .employee-dashboard-content .menu-btn {
+            html.app-view #employeeSidebar,
+            html.app-view #employeeSidebarOverlay,
+            html.app-view .employee-dashboard-content .menu-btn {
                 display: none !important;
             }
 
-            .employee-dashboard-content {
+            html.app-view .employee-dashboard-content {
                 padding-bottom: calc(78px + env(safe-area-inset-bottom)) !important;
+            }
+
+            .employee-bottom-nav {
+                display: none !important;
+            }
+
+            html.app-view .employee-bottom-nav {
+                display: grid !important;
+            }
+
+            html:not(.app-view) #employeeSidebar {
+                display: flex !important;
+            }
+
+            html:not(.app-view) .employee-dashboard-content .menu-btn {
+                display: inline-flex !important;
+            }
+
+            html:not(.app-view) .employee-dashboard-content {
+                padding-bottom: 0 !important;
             }
 
             .employee-bottom-nav {
