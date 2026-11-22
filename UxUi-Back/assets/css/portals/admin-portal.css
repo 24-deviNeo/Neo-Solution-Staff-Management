@@ -1442,19 +1442,23 @@ body :is(
 }
 
 @media (max-width: 900px) {
-    #adminSidebar,
-    #sidebarOverlay,
-    .menu-btn,
-    .admin-sidebar {
+    html.app-view #adminSidebar,
+    html.app-view #sidebarOverlay,
+    html.app-view .menu-btn,
+    html.app-view .admin-sidebar {
         display: none !important;
     }
 
-    [id^="Admin_user_dashboard_"]:not([style*="display: none"]):not([style*="display:none"]),
-    [id^="Super_Admin_user_dashboard_"]:not([style*="display: none"]):not([style*="display:none"]) {
+    html.app-view [id^="Admin_user_dashboard_"]:not([style*="display: none"]):not([style*="display:none"]),
+    html.app-view [id^="Super_Admin_user_dashboard_"]:not([style*="display: none"]):not([style*="display:none"]) {
         padding-bottom: calc(78px + env(safe-area-inset-bottom)) !important;
     }
 
     .admin-bottom-nav {
+        display: none;
+    }
+
+    html.app-view .admin-bottom-nav {
         position: fixed;
         z-index: 1000;
         right: 0;
@@ -1468,6 +1472,23 @@ body :is(
         background: rgba(255, 255, 255, 0.97);
         box-shadow: 0 -6px 20px rgba(15, 23, 42, 0.08);
         backdrop-filter: blur(12px);
+    }
+
+    html:not(.app-view) :is(.admin-sidebar, #adminSidebar) {
+        display: flex !important;
+    }
+
+    html:not(.app-view) .admin-bottom-nav {
+        display: none !important;
+    }
+
+    html:not(.app-view) [id^="Admin_user_dashboard_"],
+    html:not(.app-view) [id^="Super_Admin_user_dashboard_"] {
+        padding-bottom: 0 !important;
+    }
+
+    html:not(.app-view) :is(.topbar .menu-btn, .topbar .erp-open-sidebar-btn, .topbar .mobile-menu-btn) {
+        display: inline-flex !important;
     }
 
     .admin-bottom-nav-link {
