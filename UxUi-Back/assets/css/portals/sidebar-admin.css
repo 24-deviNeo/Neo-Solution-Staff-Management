@@ -471,15 +471,52 @@
     font-size: 1rem;
 }
 
+.admin-sidebar-edge-trigger {
+    display: none;
+}
+
 @media (max-width: 900px) {
-    /* Hide admin sidebar, overlay and sidebar toggle buttons on mobile/app view — bottom nav is used instead */
-    .admin-sidebar,
-    #sidebarOverlay,
-    .sidebar-overlay,
-    .menu-btn,
-    .sidebar-close-btn,
-    .erp-open-sidebar-btn,
-    .mobile-menu-btn {
+    /* Mobile web keeps the sidebar as a slide-in drawer. App shells use bottom navigation. */
+    html:not(.app-view) .admin-sidebar {
+        width: 290px;
+        max-width: 84vw;
+        height: 100vh;
+        max-height: 100vh;
+        transform: translateX(-100%);
+        overflow: hidden !important;
+        /* Keep the drawer above the dimming overlay so it remains visible and clickable. */
+        z-index: 1000000;
+        box-shadow: 10px 0 40px -10px rgba(15, 23, 42, .25);
+        border-radius: 0 16px 16px 0;
+    }
+
+    html:not(.app-view) .admin-sidebar.mobile-open {
+        transform: translateX(0);
+    }
+
+    html:not(.app-view) .sidebar-close-btn {
+        display: inline-flex !important;
+    }
+
+    html:not(.app-view) .admin-sidebar-edge-trigger {
+        position: fixed;
+        z-index: 999997;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        display: block;
+        width: 14px;
+        touch-action: pan-y;
+    }
+
+    html.app-view .admin-sidebar,
+    html.app-view #sidebarOverlay,
+    html.app-view .sidebar-overlay,
+    html.app-view .admin-sidebar-edge-trigger,
+    html.app-view .menu-btn,
+    html.app-view .sidebar-close-btn,
+    html.app-view .erp-open-sidebar-btn,
+    html.app-view .mobile-menu-btn {
         display: none !important;
     }
 
@@ -524,5 +561,9 @@
         margin-left: 0 !important;
         width: 100% !important;
         max-width: 100% !important;
+    }
+
+    html:not(.app-view) :is(.menu-btn, .erp-open-sidebar-btn, .mobile-menu-btn) {
+        display: inline-flex !important;
     }
 }
