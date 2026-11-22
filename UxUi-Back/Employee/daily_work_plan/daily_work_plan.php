@@ -112,11 +112,22 @@ if ($action === 'shift_end_update' || isset($_POST['evening_update'])) {
     if ($taskStatus !== 'Pending' && $taskStatus !== 'Completed') {
         $taskStatus = 'Completed';
     }
+    $taskStatusSql = addslashes($taskStatus);
     $progress = ($taskStatus === 'Completed') ? 100 : 0;
 
     // Check existing work plan
-    $checkRes = $db->get_result("SELECT id, plan_text, task_id FROM `daily_employee_work_plans` WHERE (user_id = {$userId} OR employee_profile_id = {$profileId}) AND plan_date = '{$today}' LIMIT 1");
+    $checkRes = $db->get_result("SELECT id, plan_text, task_id, status FROM `daily_employee_work_plans` WHERE (user_id = {$userId} OR employee_profile_id = {$profileId}) AND plan_date = '{$today}' LIMIT 1");
     $planRow = $checkRes ? $checkRes->fetch_assoc() : null;
+    $planStatus = strtolower(trim((string)($planRow['status'] ?? '')));
+    if (!$planRow || trim((string)($planRow['plan_text'] ?? '')) === '' || !in_array($planStatus, ['submitted', 'active', 'completed'], true)) {
+        http_response_code(422);
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Submit your daily work plan before submitting a shift update.'
+        ]);
+        exit;
+    }
+
     $planId = $planRow ? (int)$planRow['id'] : 0;
     $existingPlanText = $planRow ? trim((string)$planRow['plan_text']) : '';
     $existingTaskId = $planRow && !empty($planRow['task_id']) ? (int)$planRow['task_id'] : 0;
@@ -209,7 +220,7 @@ if ($action === 'shift_end_update' || isset($_POST['evening_update'])) {
 
     echo json_encode([
         'status' => 'success',
-        'message' => "Shift update saved and added to tasks as {$taskStatus}!",
+        'message' => 'Shift update saved.',
         'task_id' => $taskId,
         'task_status' => $taskStatus,
         'data' => $updatedPlanRes ? $updatedPlanRes->fetch_assoc() : null
