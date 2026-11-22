@@ -579,6 +579,36 @@
     flex-wrap: wrap;
   }
 
+  .daily-plan-timestamps {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin-top: 12px;
+  }
+
+  .daily-plan-timestamps > div {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+    padding: 10px 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    background: #f8fafc;
+  }
+
+  .daily-plan-timestamps span {
+    color: #64748b;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  .daily-plan-timestamps strong {
+    color: #14204d;
+    font-size: 13px;
+    overflow-wrap: anywhere;
+  }
+
   .start-work-btn {
     border: 0;
     border-radius: 10px;
@@ -603,7 +633,7 @@
     background: #dcfce7;
     color: #15803d;
     border: 1px solid #bbf7d0;
-    cursor: default;
+    cursor: pointer;
     transform: none;
   }
 
@@ -888,6 +918,10 @@
     #Employee_user_dashboard_07_daily_work_plan .daily-plan-actions > button {
       flex: 1 1 100%;
       justify-content: center;
+    }
+
+    #Employee_user_dashboard_07_daily_work_plan .daily-plan-timestamps {
+      grid-template-columns: 1fr;
     }
 
     #Employee_user_dashboard_07_daily_work_plan .daily-plan-status {
@@ -1620,6 +1654,10 @@
             </button>
             <span id="dailyPlanStatus" class="daily-plan-status"></span>
           </div>
+          <div class="daily-plan-timestamps" id="dailyPlanTimestamps" style="display:none;">
+            <div><span>Plan first submitted</span><strong id="dailyPlanSubmittedAt">—</strong></div>
+            <div><span>Work update submitted</span><strong id="dailyWorkUpdateSubmittedAt">—</strong></div>
+          </div>
         </section>
 
         <!-- Step 2: Hidden completely until Step 1 plan is submitted -->
@@ -1830,11 +1868,27 @@
   const step2ActiveContent = document.getElementById('step2ActiveContent');
   let dailyWorkPlanSubmitted = false;
 
-  // Controls Step 2 visibility & lock state:
-  // Step 2 (Update on Planned Work) must be completely HIDDEN until Step 1 plan is submitted!
+  function formatPlanDateTime(value) {
+    const raw = String(value || '').trim();
+    if (!raw) return '—';
+    const parts = raw.replace('T', ' ').split(' ');
+    const time = parts[1] ? formatTimeStr(parts[0] && parts[1] ? parts.join(' ') : parts[1]) : '';
+    return [parts[0], time].filter(Boolean).join(' · ');
+  }
+
+  function renderDailyPlanTimestamps(data) {
+    const wrap = document.getElementById('dailyPlanTimestamps');
+    const submittedAt = document.getElementById('dailyPlanSubmittedAt');
+    const updateAt = document.getElementById('dailyWorkUpdateSubmittedAt');
+    if (submittedAt) submittedAt.textContent = formatPlanDateTime(data?.started_at);
+    if (updateAt) updateAt.textContent = formatPlanDateTime(data?.shift_ended_at);
+    if (wrap) wrap.style.display = data?.started_at ? 'grid' : 'none';
+  }
+
+  // Keep the update section locked until the plan is submitted with Start Work.
   function setStep2LockedState(isLocked) {
     if (step2CardContainer) {
-      step2CardContainer.style.display = 'block';
+      step2CardContainer.style.display = isLocked ? 'none' : 'block';
       step2CardContainer.classList.toggle('locked', isLocked);
     }
     if (step2LockedBanner) {
@@ -1850,6 +1904,16 @@
       submitShiftEndBtn.disabled = isLocked;
     }
   }
+
+  function clearPlanStatusWhileEditing() {
+    if (planStatus) {
+      planStatus.textContent = '';
+      planStatus.style.color = '';
+    }
+  }
+
+  planText?.addEventListener('input', clearPlanStatusWhileEditing);
+  document.getElementById('step1FileInput')?.addEventListener('change', clearPlanStatusWhileEditing);
 
   function escapeHtml(str) {
     return (str || '').toString().replace(/[&<>"']/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' })[m]);
@@ -2127,6 +2191,7 @@
       .then(res => {
         if (!res.data) {
           dailyWorkPlanSubmitted = false;
+          renderDailyPlanTimestamps(null);
           updatePlanPreviewText('');
           currentPlanAttachments = [];
           currentShiftAttachments = [];
@@ -2160,7 +2225,8 @@
 
         // A saved/submitted plan is required before shift updates can be sent.
         const planStatus = String(res.data.status || '').toLowerCase();
-        dailyWorkPlanSubmitted = !!currentPlan.trim() && ['submitted', 'active', 'completed'].includes(planStatus);
+        dailyWorkPlanSubmitted = !!currentPlan.trim() && ['active', 'completed'].includes(planStatus);
+        renderDailyPlanTimestamps(res.data);
         setStep2LockedState(!dailyWorkPlanSubmitted);
 
         const saveBtnTextEl = document.getElementById('savePlanBtnText');
@@ -2169,7 +2235,8 @@
         }
 
         if (res.data.started_at && startWorkBtn) {
-          startWorkBtn.textContent = 'Active Today';
+          const startWorkLabel = startWorkBtn.querySelector('span');
+          if (startWorkLabel) startWorkLabel.textContent = 'Update & Submit Plan';
           startWorkBtn.classList.add('active');
           startWorkBtn.disabled = false; // Allow re-saving or updating plan
           startWorkBtn.title = 'Shift is active. You can continue updating your plan throughout the day.';
@@ -2254,7 +2321,9 @@
       .then(res => {
         if (res.status !== 'success') throw new Error(res.message || 'Unable to save plan');
 
-        dailyWorkPlanSubmitted = true;
+        const savedPlanStatus = String(res.data?.status || '').toLowerCase();
+        dailyWorkPlanSubmitted = startWork || ['active', 'completed'].includes(savedPlanStatus);
+        renderDailyPlanTimestamps(res.data);
 
         step1SelectedFiles = [];
         renderPendingTray('step1');
@@ -2266,16 +2335,21 @@
         }
         if (planStatus) {
           planStatus.style.color = '#15803d';
-          planStatus.textContent = startWork ? 'Work started! Daily plan updated and active today.' : 'Daily plan updated successfully.';
+          planStatus.textContent = startWork
+            ? 'Daily work plan submitted successfully. You can now add your work update.'
+            : dailyWorkPlanSubmitted
+              ? 'Plan changes saved. Submit the plan to confirm them.'
+              : 'Daily plan saved. Submit Plan & Start Work to unlock the work update.';
         }
-        // Saving the plan submits it and unlocks Step 2.
-        setStep2LockedState(false);
+        // Saving keeps the update locked; only Start Work submits the plan.
+        setStep2LockedState(!dailyWorkPlanSubmitted);
 
         const saveBtnTextEl = document.getElementById('savePlanBtnText');
         if (saveBtnTextEl) saveBtnTextEl.textContent = 'Update Plan';
 
         if (startWorkBtn && startWork) {
-          startWorkBtn.textContent = 'Active Today';
+          const startWorkLabel = startWorkBtn.querySelector('span');
+          if (startWorkLabel) startWorkLabel.textContent = 'Update & Submit Plan';
           startWorkBtn.classList.add('active');
           startWorkBtn.disabled = false; // Still allows updating
           if (morningStatusBadge) {
@@ -2350,6 +2424,7 @@
           currentShiftAttachments = res.data.shift_attachments;
           renderSavedGallery('step2', currentShiftAttachments);
         }
+        renderDailyPlanTimestamps(res.data);
 
         const viewShiftTaskBtn = document.getElementById('viewShiftTaskBtn');
         if (viewShiftTaskBtn) {
