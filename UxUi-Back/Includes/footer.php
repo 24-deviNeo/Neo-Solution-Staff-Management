@@ -82,10 +82,10 @@
         }
     }
 
-    /* Hide footer on portals mobile (bottom nav takes its place) */
+    /* Keep the footer on mobile web; app view reserves space for its bottom navigation. */
     @media (max-width: 900px) {
-        body:has(.employee-bottom-nav) .erp-footer,
-        body:has(.admin-bottom-nav) .erp-footer {
+        html.app-view body:has(.employee-bottom-nav) .erp-footer,
+        html.app-view body:has(.admin-bottom-nav) .erp-footer {
             display: none !important;
         }
     }
