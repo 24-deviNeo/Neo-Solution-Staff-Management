@@ -3,8 +3,21 @@
 include_once __DIR__ . '/daily_presence.php';
 
 if (session_status() === PHP_SESSION_NONE && !headers_sent()) {
-    $timeout_duration = 3600 * 24; 
-    @ini_set('session.gc_maxlifetime', $timeout_duration);
+    // Keep app sessions alive across long periods of inactivity. Users sign out
+    // explicitly through the portal's logout action.
+    $session_lifetime = 10 * 365 * 24 * 60 * 60;
+    @ini_set('session.gc_maxlifetime', (string)$session_lifetime);
+
+    $session_cookie_params = session_get_cookie_params();
+    session_set_cookie_params([
+        'lifetime' => $session_lifetime,
+        'path' => !empty($session_cookie_params['path']) ? $session_cookie_params['path'] : '/',
+        'domain' => $session_cookie_params['domain'] ?? '',
+        'secure' => !empty($session_cookie_params['secure']) || (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off'),
+        'httponly' => true,
+        'samesite' => !empty($session_cookie_params['samesite']) ? $session_cookie_params['samesite'] : 'Lax'
+    ]);
+
     @session_start();
 }
 
