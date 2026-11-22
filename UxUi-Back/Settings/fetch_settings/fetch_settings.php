@@ -112,6 +112,7 @@ try {
     $default_type = ($role_param === 'admin') ? 'Administrator' : 'Employee';
     $account_info = [
         'account_type'   => $_SESSION['user_role'] ?? $_SESSION['ac_type'] ?? $default_type,
+        'email'          => $_SESSION['user_name'] ?? '',
         'account_status' => 'Active',
         'last_login'     => date('Y-m-d'),
         'member_since'   => date('Y-m-d')
@@ -130,6 +131,7 @@ try {
         if (!empty($u_row['ac_type'])) {
             $account_info['account_type'] = $u_row['ac_type'];
         }
+        $account_info['email'] = $u_row['user_name'] ?? $account_info['email'];
         $account_info['account_status'] = ($u_row['account_active_state'] == 1 || $u_row['account_active_state'] === null) ? 'Active' : 'Inactive';
         if (!empty($u_row['last_login'])) {
             $account_info['last_login'] = date('Y-m-d', strtotime($u_row['last_login']));
