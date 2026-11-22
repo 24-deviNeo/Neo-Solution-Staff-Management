@@ -27,8 +27,13 @@ $db->get_result("CREATE TABLE IF NOT EXISTS `daily_employee_work_plans` (
     `job_title` varchar(150) DEFAULT NULL,
     `plan_date` date NOT NULL,
     `plan_text` text NOT NULL,
+    `planned_tasks_json` longtext DEFAULT NULL,
     `status` varchar(30) NOT NULL DEFAULT 'submitted',
     `started_at` datetime DEFAULT NULL,
+    `shift_ended_at` datetime DEFAULT NULL,
+    `evening_update` text DEFAULT NULL,
+    `task_status` varchar(30) DEFAULT NULL,
+    `task_id` int DEFAULT NULL,
     `submitted_at` datetime NOT NULL,
     `updated_at` datetime NOT NULL,
     PRIMARY KEY (`id`),
@@ -39,6 +44,11 @@ $db->get_result("CREATE TABLE IF NOT EXISTS `daily_employee_work_plans` (
 @$db->get_result("ALTER TABLE `daily_employee_work_plans` ADD COLUMN IF NOT EXISTS `employee_name` varchar(255) DEFAULT NULL");
 @$db->get_result("ALTER TABLE `daily_employee_work_plans` ADD COLUMN IF NOT EXISTS `department` varchar(150) DEFAULT NULL");
 @$db->get_result("ALTER TABLE `daily_employee_work_plans` ADD COLUMN IF NOT EXISTS `job_title` varchar(150) DEFAULT NULL");
+@$db->get_result("ALTER TABLE `daily_employee_work_plans` ADD COLUMN IF NOT EXISTS `planned_tasks_json` longtext DEFAULT NULL");
+@$db->get_result("ALTER TABLE `daily_employee_work_plans` ADD COLUMN IF NOT EXISTS `shift_ended_at` datetime DEFAULT NULL");
+@$db->get_result("ALTER TABLE `daily_employee_work_plans` ADD COLUMN IF NOT EXISTS `evening_update` text DEFAULT NULL");
+@$db->get_result("ALTER TABLE `daily_employee_work_plans` ADD COLUMN IF NOT EXISTS `task_status` varchar(30) DEFAULT NULL");
+@$db->get_result("ALTER TABLE `daily_employee_work_plans` ADD COLUMN IF NOT EXISTS `task_id` int DEFAULT NULL");
 
 // Determine user ID
 $userId = 0;
@@ -119,11 +129,11 @@ if ($action === 'shift_end_update' || isset($_POST['evening_update'])) {
     $checkRes = $db->get_result("SELECT id, plan_text, task_id, status FROM `daily_employee_work_plans` WHERE (user_id = {$userId} OR employee_profile_id = {$profileId}) AND plan_date = '{$today}' LIMIT 1");
     $planRow = $checkRes ? $checkRes->fetch_assoc() : null;
     $planStatus = strtolower(trim((string)($planRow['status'] ?? '')));
-    if (!$planRow || trim((string)($planRow['plan_text'] ?? '')) === '' || !in_array($planStatus, ['submitted', 'active', 'completed'], true)) {
+    if (!$planRow || trim((string)($planRow['plan_text'] ?? '')) === '' || !in_array($planStatus, ['active', 'completed'], true)) {
         http_response_code(422);
         echo json_encode([
             'status' => 'error',
-            'message' => 'Submit your daily work plan before submitting a shift update.'
+            'message' => 'Use Submit Plan & Start Work before submitting a shift update.'
         ]);
         exit;
     }
@@ -274,7 +284,7 @@ if ($planText === '' && !empty($tasksList)) {
 
 $planTextSql = addslashes($planText);
 $plannedTasksJsonSql = addslashes(json_encode($tasksList));
-$status = $startWork ? 'active' : 'submitted';
+$status = $startWork ? 'active' : 'draft';
 $statusSql = addslashes($status);
 $startedSql = $startWork ? "'{$now}'" : 'NULL';
 
