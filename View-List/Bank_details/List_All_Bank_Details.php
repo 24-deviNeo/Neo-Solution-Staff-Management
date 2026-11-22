@@ -5,7 +5,8 @@ ini_set('display_errors', 0);
 
 include_once __DIR__ . '/../../imports/need/session_setup.php';
 include_once __DIR__ . '/../../imports/need/DB.php';
-include_once __DIR__ . '/../../Controllers/Main/Bank_Details/bank_details_LIST.php';
+// Keep directory casing identical to the deployed Linux filesystem path.
+include_once __DIR__ . '/../../Controllers/Main/Bank_details/bank_details_LIST.php';
 
 header('Content-Type: application/json; charset=utf-8');
 
