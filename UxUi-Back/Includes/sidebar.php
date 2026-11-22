@@ -72,11 +72,15 @@ $current_page = basename($_SERVER['PHP_SELF']);
 </aside>
 
 <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeAdminSidebar()"></div>
+<div class="admin-sidebar-edge-trigger" id="adminSidebarEdgeTrigger" aria-hidden="true"></div>
 
 <script>
+    var adminSidebarCloseTimer = null;
+
     function closeAdminSidebar() {
         var sb = document.getElementById('adminSidebar');
         var ov = document.getElementById('sidebarOverlay');
+        if (adminSidebarCloseTimer) window.clearTimeout(adminSidebarCloseTimer);
         if (sb) sb.classList.remove('mobile-open');
         if (ov) ov.classList.remove('active');
         document.body.style.overflow = '';
@@ -99,6 +103,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
         if (!sb) return;
 
         if (window.matchMedia('(max-width: 900px)').matches) {
+            /* Keep this idempotent: dashboard modules may also bind the same button. */
             sb.classList.add('mobile-open');
             if (ov) ov.classList.add('active');
             document.body.style.overflow = 'hidden';
@@ -107,6 +112,39 @@ $current_page = basename($_SERVER['PHP_SELF']);
 
         document.body.classList.toggle('admin-sidebar-hidden');
     }
+
+    (function bindAdminMobileSidebarReveal() {
+        var sidebar = document.getElementById('adminSidebar');
+        var edge = document.getElementById('adminSidebarEdgeTrigger');
+        if (!sidebar || !edge) return;
+
+        edge.addEventListener('pointerenter', function (event) {
+            if (event.pointerType === 'mouse' && window.matchMedia('(max-width: 900px)').matches) {
+                if (!sidebar.classList.contains('mobile-open')) openAdminSidebar();
+            }
+        });
+
+        edge.addEventListener('touchstart', function (event) {
+            if (event.touches.length && event.touches[0].clientX <= 18 && !sidebar.classList.contains('mobile-open')) {
+                openAdminSidebar();
+            }
+        }, { passive: true });
+
+        sidebar.addEventListener('pointerleave', function (event) {
+            if (event.pointerType !== 'mouse' || !window.matchMedia('(max-width: 900px)').matches) return;
+            adminSidebarCloseTimer = window.setTimeout(function () {
+                if (!sidebar.matches(':hover')) closeAdminSidebar();
+            }, 180);
+        });
+
+        sidebar.addEventListener('pointerenter', function () {
+            if (adminSidebarCloseTimer) window.clearTimeout(adminSidebarCloseTimer);
+        });
+
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'Escape' && sidebar.classList.contains('mobile-open')) closeAdminSidebar();
+        });
+    })();
 
     if (typeof window.logoutUser !== 'function') {
         window.logoutUser = function() {
