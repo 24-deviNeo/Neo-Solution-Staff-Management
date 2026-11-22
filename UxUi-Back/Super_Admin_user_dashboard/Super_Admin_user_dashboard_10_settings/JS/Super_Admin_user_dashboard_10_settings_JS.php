@@ -45,15 +45,12 @@
           if (res.account_info) {
             const acc = res.account_info;
             const accType = document.getElementById('admin_account_type');
-            const accStatus = document.getElementById('admin_account_status');
+            const accEmail = document.getElementById('admin_account_email');
             const lastLogin = document.getElementById('admin_last_login');
             const memSince = document.getElementById('admin_member_since');
 
             if (accType && acc.account_type) accType.textContent = acc.account_type;
-            if (accStatus && acc.account_status) {
-              accStatus.textContent = acc.account_status;
-              accStatus.style.color = (acc.account_status === 'Active') ? '#16a34a' : '#dc2626';
-            }
+            if (accEmail && acc.email) accEmail.textContent = acc.email;
             if (lastLogin && acc.last_login) lastLogin.textContent = acc.last_login;
             if (memSince && acc.member_since) memSince.textContent = acc.member_since;
           }
