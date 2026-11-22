@@ -18,12 +18,24 @@ require_login(['admin']);
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script>
+        (function () {
+            const params = new URLSearchParams(window.location.search);
+            const standalone = window.navigator.standalone === true ||
+                (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches);
+            const embedded = /; wv\)/i.test(navigator.userAgent || '') ||
+                !!window.ReactNativeWebView || !!window.flutter_inappwebview ||
+                !!(window.webkit && window.webkit.messageHandlers);
+            document.documentElement.classList.toggle('app-view', standalone || embedded || params.get('app') === '1' || params.get('view') === 'app');
+        })();
+    </script>
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <?php $portalThemeStylesheet = __DIR__ . '/../UxUi-Back/assets/css/erp-theme.css'; ?>
     <link rel="stylesheet" href="../UxUi-Back/assets/css/erp-theme.css?v=<?php echo filemtime($portalThemeStylesheet) . '-' . filesize($portalThemeStylesheet); ?>">
     <title>Admin Portal | NEO Solution</title>
-    <link rel="stylesheet" href="../UxUi-Back/assets/css/portals/sidebar-admin.css">
+    <?php $adminSidebarStylesheet = __DIR__ . '/../UxUi-Back/assets/css/portals/sidebar-admin.css'; ?>
+    <link rel="stylesheet" href="../UxUi-Back/assets/css/portals/sidebar-admin.css?v=<?php echo filemtime($adminSidebarStylesheet) . '-' . filesize($adminSidebarStylesheet); ?>">
     <?php $adminPortalStylesheet = __DIR__ . '/../UxUi-Back/assets/css/portals/admin-portal.css'; ?>
     <link rel="stylesheet" href="../UxUi-Back/assets/css/portals/admin-portal.css?v=<?php echo filemtime($adminPortalStylesheet) . '-' . filesize($adminPortalStylesheet); ?>">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
