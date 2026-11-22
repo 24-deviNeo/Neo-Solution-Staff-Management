@@ -174,6 +174,162 @@
       box-shadow: 0 2px 8px rgba(20,32,77,0.2) !important;
     }
 
+    .task-view-tabs {
+      display: flex;
+      gap: 8px;
+      margin: 0 0 16px;
+      padding: 4px;
+      width: fit-content;
+      max-width: 100%;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      background: #ffffff;
+    }
+
+    .task-view-tab {
+      border: 0;
+      border-radius: 9px;
+      padding: 10px 16px;
+      background: transparent;
+      color: #64748b;
+      font: inherit;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .task-view-tab.active {
+      background: #14204d;
+      color: #ffffff;
+    }
+
+    .daily-work-activity-panel {
+      width: 100%;
+    }
+
+    .daily-work-activity-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    .daily-work-activity-toolbar .task-search-box { flex: 1; max-width: 420px; margin: 0 !important; }
+    .daily-work-activity-filters {
+      display: grid;
+      grid-template-columns: minmax(180px, 1fr) minmax(160px, 220px);
+      gap: 10px;
+      margin: 0 0 12px;
+    }
+    .daily-work-activity-filters select,
+    .daily-work-activity-filters input,
+    .daily-work-activity-filters button {
+      min-width: 0;
+      min-height: 40px;
+      box-sizing: border-box;
+      border: 1px solid #dbe3ee;
+      border-radius: 10px;
+      background: #fff;
+      color: #334155;
+      padding: 8px 11px;
+      font: inherit;
+      font-size: 12px;
+    }
+    .daily-work-activity-filters button { cursor: pointer; font-weight: 700; }
+    .daily-work-activity-toolbar #clearDailyWorkActivityFilters { min-height:40px; padding:8px 13px; border:1px solid #dbe3ee; border-radius:10px; background:#fff; color:#334155; font:inherit; font-size:12px; font-weight:700; cursor:pointer; white-space:nowrap; }
+    .daily-work-filter-field { display: grid; gap: 4px; min-width: 0; color: #64748b; font-size: 10px; font-weight: 700; }
+
+    .daily-work-activity-table-wrap {
+      width: 100%;
+      overflow-x: hidden;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      background: #ffffff;
+      box-shadow: 0 2px 8px rgba(20,25,60,.04);
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .daily-work-activity-table {
+      width: 100%;
+      min-width: 0;
+      table-layout: fixed;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    .daily-work-activity-table th {
+      padding: 12px 14px;
+      background: #f8fafc;
+      border-bottom: 1px solid #e2e8f0;
+      color: #64748b;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+    }
+
+    .daily-work-activity-table td {
+      padding: 13px 14px;
+      border-bottom: 1px solid #edf1f6;
+      color: #334155;
+      font-size: 12px;
+      vertical-align: top;
+      overflow-wrap: anywhere;
+    }
+
+    .daily-work-activity-table tr:last-child td { border-bottom: 0; }
+    .daily-work-activity-table th:nth-child(1), .daily-work-activity-table td:nth-child(1) { width: 13%; }
+    .daily-work-activity-table th:nth-child(2), .daily-work-activity-table td:nth-child(2) { width: 23%; }
+    .daily-work-activity-table th:nth-child(3), .daily-work-activity-table td:nth-child(3) { width: 13%; }
+    .daily-work-activity-table th:nth-child(4), .daily-work-activity-table td:nth-child(4) { width: 23%; }
+    .daily-work-activity-table th:nth-child(5), .daily-work-activity-table td:nth-child(5) { width: 13%; }
+    .daily-work-activity-table th:nth-child(6), .daily-work-activity-table td:nth-child(6) { width: 15%; }
+    .daily-work-activity-employee { color: #14204d !important; font-weight: 800; }
+    .daily-work-activity-copy { white-space: pre-wrap; line-height: 1.4; }
+    .daily-work-activity-subtext { display: block; margin-top: 4px; color: #64748b; font-size: 10px; font-weight: 500; }
+    .daily-work-date-time { display: flex; flex-direction: column; gap: 3px; white-space: nowrap; }
+    .daily-work-date-time strong { color: #1e293b; font-weight: 700; }
+    .daily-work-date-time span { color: #64748b; font-variant-numeric: tabular-nums; }
+    .daily-work-status-pill { display: inline-flex; padding: 4px 8px; border-radius: 999px; background: #f1f5f9; color: #475569; font-size: 10px; font-weight: 800; white-space: nowrap; }
+    .daily-work-status-pill.active { background: #dbeafe; color: #1d4ed8; }
+    .daily-work-status-pill.submitted { background: #e0e7ff; color: #4338ca; }
+    .daily-work-status-pill.completed { background: #dcfce7; color: #15803d; }
+    .daily-work-status-pill.pending, .daily-work-status-pill.draft { background: #fef3c7; color: #b45309; }
+    .daily-work-board-columns { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr)); gap:14px; align-items:start; }
+    .daily-work-board-card { cursor:default; }
+    .daily-work-board-card:hover { transform:translateY(-1px); }
+    .daily-work-card-header { display:flex; align-items:flex-start; justify-content:space-between; gap:8px; margin-bottom:12px; }
+    .daily-work-card-header .task-board-card-title { margin:0 0 3px; font-size:14px; }
+    .daily-work-card-employee-meta { color:#748198; font-size:10px; }
+    .daily-work-card-date { flex:0 0 auto; padding:5px 8px; border:1px solid #e1e8f5; border-radius:8px; background:#f6f8fc; color:#42516b; font-size:10px; font-weight:700; }
+    .daily-work-card-first-saved { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:9px; padding:7px 9px; border-radius:8px; background:#eef4ff; color:#536582; font-size:9px; font-weight:700; }
+    .daily-work-card-first-saved .daily-work-date-time { flex-direction:row; align-items:center; gap:7px; font-size:10px; }
+    .daily-work-card-first-saved .daily-work-date-time strong { color:#30466d; }
+    .daily-work-card-first-saved .daily-work-date-time span { color:#536582; }
+    .daily-work-card-section { margin:0 0 9px; padding:10px; border:1px solid #e8edf5; border-radius:10px; background:#f9fbff; }
+    .daily-work-card-section h4 { margin:0 0 5px; color:#64748b; font-size:9px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; }
+    .daily-work-card-section p { margin:0; color:#27364d; font-size:11px; line-height:1.5; white-space:pre-wrap; overflow-wrap:anywhere; }
+    .daily-work-card-section p.is-empty { color:#94a3b8; font-style:italic; }
+    .daily-work-update-section { border-left:3px solid #8b9cf4; }
+    .daily-work-card-status-row { display:flex; flex-wrap:wrap; gap:6px; margin:9px 0; }
+    .daily-work-card-times { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; margin-bottom:10px; }
+    .daily-work-card-times > div { min-width:0; padding:8px; border:1px solid #e8edf5; border-radius:9px; background:#fff; }
+    .daily-work-card-times > div > span:first-child { display:block; margin-bottom:4px; color:#748198; font-size:9px; font-weight:800; text-transform:uppercase; }
+    .daily-work-board-empty,.daily-work-board-loading,.daily-work-board-empty-lane { padding:18px 12px; border:1px dashed #d9e1ed; border-radius:12px; background:#fff; color:#748198; text-align:center; font-size:12px; }
+    .daily-work-board-loading.is-error { color:#b91c1c; }
+
+    @media (max-width: 1400px) {
+      .daily-work-board-columns { grid-template-columns:repeat(2,minmax(0,1fr)); }
+    }
+
+    .task-view-content-hidden {
+      display: none !important;
+    }
+
+    #Admin_user_dashboard_07_task_management .task-view-content-hidden {
+      display: none !important;
+    }
+
     /* Table Component */
     .task-table-container {
       background: #ffffff;
@@ -185,6 +341,53 @@
       width: 100%;
       max-width: 100vw;
     }
+
+    .task-layout-toolbar { display:grid; grid-template-columns:minmax(150px,1fr) minmax(180px,auto) auto; align-items:center; gap:14px; padding:13px 15px; border:1px solid #e4e9f2; border-radius:14px; background:linear-gradient(120deg,#fff,#f8faff); box-shadow:0 3px 10px rgba(20,32,77,.04); }
+    .task-layout-title { display:grid; gap:3px; min-width:0; }
+    .task-layout-title strong { color:#14204d; font-size:14px; font-weight:800; }
+    .task-layout-title span { color:#7b879b; font-size:11px; }
+    .task-project-picker { display:grid; grid-template-columns:auto minmax(0,1fr); align-items:center; gap:8px; color:#64748b; font-size:11px; font-weight:700; }
+    .task-project-picker select { width:100%; min-width:170px; max-width:100%; padding:9px 12px; border:1px solid #dbe3ee; border-radius:10px; background:#fff; color:#24324a; font:inherit; font-size:12px; }
+    .task-layout-tabs { display:flex; gap:4px; padding:4px; border:1px solid #e2e8f0; border-radius:11px; background:#fff; }
+    .task-layout-tab { border:0; border-radius:8px; padding:9px 13px; background:transparent; color:#64748b; font:inherit; font-size:12px; font-weight:700; cursor:pointer; transition:background .15s,color .15s,box-shadow .15s; }
+    .task-layout-tab.active { background:#14204d; color:#fff; }
+    .task-board-container { width:100%; min-width:0; }
+    .task-board-columns { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px; align-items:start; }
+    .task-board-columns.is-single-lane { grid-template-columns:minmax(0,1fr); }
+    .task-board-columns.is-two-lanes { grid-template-columns:repeat(2,minmax(0,1fr)); }
+    .task-board-columns.is-single-lane .task-board-lane-items { grid-template-columns:repeat(auto-fit,minmax(min(360px,100%),1fr)); }
+    .task-board-lane { min-width:0; padding:14px; border:1px solid #e2e8f0; border-top:3px solid #94a3b8; border-radius:15px; background:#f7f9fc; }
+    .task-board-lane.lane-pending { border-top-color:#f59e0b; }
+    .task-board-lane.lane-progress { border-top-color:#3b82f6; }
+    .task-board-lane.lane-completed { border-top-color:#22c55e; }
+    .task-board-lane.drop-target { border-color:#7da1ff; background:#edf3ff; box-shadow:0 0 0 2px rgba(59,130,246,.12); }
+    .task-board-lane-header { display:flex; align-items:center; justify-content:space-between; gap:8px; margin-bottom:12px; padding:1px 1px 11px; border-bottom:1px solid #e2e8f0; color:#1e293b; font-size:13px; font-weight:800; }
+    .task-board-lane-title { display:inline-flex; align-items:center; gap:8px; }
+    .task-board-lane-dot { width:9px; height:9px; border-radius:50%; background:#94a3b8; }
+    .lane-pending .task-board-lane-dot { background:#f59e0b; }
+    .lane-progress .task-board-lane-dot { background:#3b82f6; }
+    .lane-completed .task-board-lane-dot { background:#22c55e; }
+    .task-board-lane-count { min-width:26px; padding:4px 8px; border-radius:999px; background:#e8edff; color:#334b9b; text-align:center; font-size:11px; }
+    .task-board-lane-items { display:grid; gap:11px; min-height:60px; }
+    .task-board-card { min-width:0; padding:14px; border:1px solid #e2e8f0; border-radius:13px; background:#fff; box-shadow:0 3px 9px rgba(15,23,42,.045); cursor:grab; transition:transform .16s,box-shadow .16s,border-color .16s; }
+    .task-board-card:hover { transform:translateY(-2px); border-color:#cbd7ef; box-shadow:0 8px 18px rgba(15,23,42,.09); }
+    .task-board-card:active { cursor:grabbing; }
+    .task-board-card-title { margin:0 0 8px; color:#14204d; font-size:14px; font-weight:800; line-height:1.4; overflow-wrap:anywhere; }
+    .task-board-card-description { display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:3; overflow:hidden; margin:0 0 11px; color:#64748b; font-size:12px; line-height:1.5; overflow-wrap:anywhere; }
+    .task-board-card-project { display:inline-flex; max-width:100%; margin-bottom:9px; padding:4px 8px; border-radius:7px; background:#eef2ff; color:#4f46a5; font-size:10px; font-weight:700; overflow-wrap:anywhere; }
+    .task-board-card-meta { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:7px 10px; margin-bottom:12px; color:#64748b; font-size:11px; overflow-wrap:anywhere; }
+    .task-board-card-meta span:first-child { grid-column:1/-1; }
+    .task-board-progress-label { display:flex; justify-content:space-between; gap:8px; margin-bottom:5px; color:#64748b; font-size:10px; }
+    .task-board-progress-label strong { color:#334155; }
+    .task-board-progress-track { height:6px; overflow:hidden; margin-bottom:10px; border-radius:999px; background:#e8edf5; }
+    .task-board-progress-track span { display:block; height:100%; border-radius:inherit; background:#2d63ed; }
+    .task-board-card-footer { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+    .task-board-card-footer .task-pill { white-space:nowrap; }
+    .task-board-card-actions { display:flex; gap:5px; }
+    .task-board-card-actions button { min-height:32px; padding:6px 10px; border:1px solid #dbe3ee; border-radius:8px; background:#fff; color:#334155; font-size:10px; font-weight:700; cursor:pointer; }
+    .task-board-card-actions button:hover { border-color:#9bb2f6; color:#1d4ed8; }
+    .task-board-status-select { width:100%; min-width:0; margin-top:11px; padding:9px 10px; border:1px solid #e2e8f0; border-radius:9px; background:#f8fafc; color:#334155; font:inherit; font-size:11px; }
+    .task-board-empty { padding:20px 10px; border:1px dashed #d7dfeb; border-radius:10px; background:rgba(255,255,255,.65); color:#94a3b8; text-align:center; font-size:11px; }
 
     .task-table {
       width: 100%;
@@ -461,7 +664,8 @@
       }
     }
 
-    @media (max-width: 900px) {
+    @media (max-width: 1200px) {
+      .daily-work-board-columns { grid-template-columns:repeat(2,minmax(0,1fr)); }
       #Admin_user_dashboard_07_task_management {
         padding: 0 12px 64px !important;
       }
@@ -836,6 +1040,10 @@
       }
     }
 
+    @media (max-width: 900px) {
+      .task-board-columns { grid-template-columns:repeat(2,minmax(0,1fr)); }
+    }
+
     @media (max-width: 600px) {
       #Admin_user_dashboard_07_task_management {
         padding: 0 10px 56px !important;
@@ -849,6 +1057,16 @@
       #Admin_user_dashboard_07_task_management .task-header-row {
         gap: 8px !important;
       }
+      #Admin_user_dashboard_07_task_management .task-layout-toolbar { grid-template-columns:1fr; gap:10px; padding:12px; }
+      #Admin_user_dashboard_07_task_management .task-layout-title { gap:2px; }
+      #Admin_user_dashboard_07_task_management .task-project-picker { display:grid; grid-template-columns:1fr; gap:5px; }
+      #Admin_user_dashboard_07_task_management .task-project-picker select { width:100%; min-width:0; }
+      #Admin_user_dashboard_07_task_management .task-layout-tabs { width:100%; }
+      #Admin_user_dashboard_07_task_management .task-layout-tab { flex:1; }
+      #Admin_user_dashboard_07_task_management .task-board-columns { grid-template-columns:1fr; gap:10px; }
+      #Admin_user_dashboard_07_task_management .task-board-lane { padding:10px; }
+      #Admin_user_dashboard_07_task_management .task-board-card { padding:11px; }
+      #Admin_user_dashboard_07_task_management .task-board-card-meta { font-size:11px; }
 
       #Admin_user_dashboard_07_task_management .task-count-text {
         font-size: 12px !important;
@@ -945,6 +1163,198 @@
         flex: 1 1 120px !important;
       }
     }
+    @media (max-width: 1200px) {
+      .task-view-tabs {
+        width: 100%;
+      }
+
+      .task-view-tab {
+        flex: 1 1 0;
+        min-width: 0;
+        padding: 9px 8px;
+        font-size: 12px;
+      }
+
+      .daily-work-activity-table-wrap {
+        overflow: visible;
+        border: 0;
+        background: transparent;
+        box-shadow: none;
+      }
+
+      .daily-work-activity-table,
+      .daily-work-activity-table tbody {
+        display: block;
+        width: 100% !important;
+        min-width: 0 !important;
+      }
+
+      .daily-work-activity-table thead { display: none; }
+
+      .daily-work-activity-table tr {
+        display: grid !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+        gap: 9px;
+        margin-bottom: 9px;
+        padding: 12px;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        background: #ffffff;
+        box-shadow: 0 1px 4px rgba(15,23,42,.04);
+      }
+
+      .daily-work-activity-table td {
+        display: flex !important;
+        width: auto !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        box-sizing: border-box !important;
+        flex-direction: column;
+        gap: 4px;
+        padding: 0;
+        border: 0 !important;
+        word-break: normal;
+        overflow-wrap: anywhere;
+      }
+
+      .daily-work-activity-table td::before {
+        content: attr(data-label);
+        color: #64748b;
+        font-size: 9px;
+        font-weight: 800;
+        letter-spacing: .04em;
+        text-transform: uppercase;
+        word-break: normal;
+        overflow-wrap: normal;
+      }
+
+      .daily-work-activity-table td[data-label="Employee / Date"],
+      .daily-work-activity-table td[data-label="Daily Work Plan"],
+      .daily-work-activity-table td[data-label="Shift Update"],
+      .daily-work-activity-table td[data-label="Assigned Task"] {
+        grid-column: 1 / -1;
+      }
+
+      .daily-work-activity-toolbar {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 10px;
+      }
+
+      .daily-work-activity-toolbar > .task-count-text { grid-column:1 / -1; }
+
+      .daily-work-activity-toolbar .task-search-box {
+        grid-column: 1;
+        width: 100%;
+        max-width: none;
+      }
+
+      .daily-work-activity-toolbar #clearDailyWorkActivityFilters {
+        min-height: 38px;
+        padding: 7px 10px;
+      }
+
+      .daily-work-activity-filters {
+        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+        gap: 8px;
+        margin-bottom: 10px;
+      }
+
+      .daily-work-activity-filters > * { width: 100%; }
+    }
+
+    html.app-view .daily-work-activity-table-wrap {
+      overflow: visible;
+      border: 0;
+      background: transparent;
+      box-shadow: none;
+    }
+
+    html.app-view .daily-work-activity-table,
+    html.app-view .daily-work-activity-table tbody {
+      display: block;
+      width: 100%;
+      min-width: 0;
+    }
+
+    html.app-view .daily-work-activity-table thead { display: none; }
+
+    html.app-view .daily-work-activity-table tr {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 9px;
+      margin-bottom: 9px;
+      padding: 12px;
+      border: 1px solid #e2e8f0;
+      border-radius: 14px;
+      background: #ffffff;
+      box-shadow: 0 1px 4px rgba(15,23,42,.04);
+    }
+
+    html.app-view .daily-work-activity-table td {
+      display: flex;
+      width: auto !important;
+      max-width: 100% !important;
+      min-width: 0;
+      box-sizing: border-box;
+      flex-direction: column;
+      gap: 4px;
+      padding: 0;
+      border: 0 !important;
+      word-break: normal;
+      overflow-wrap: anywhere;
+    }
+
+    html.app-view .daily-work-activity-table td::before {
+      content: attr(data-label);
+      color: #64748b;
+      font-size: 9px;
+      font-weight: 800;
+      letter-spacing: .04em;
+      text-transform: uppercase;
+      word-break: normal;
+      overflow-wrap: normal;
+    }
+
+    html.app-view .daily-work-activity-table td[data-label="Employee / Date"],
+    html.app-view .daily-work-activity-table td[data-label="Daily Work Plan"],
+    html.app-view .daily-work-activity-table td[data-label="Shift Update"],
+    html.app-view .daily-work-activity-table td[data-label="Assigned Task"] {
+      grid-column: 1 / -1;
+    }
+
+    #Admin_user_dashboard_07_task_management .task-controls-row.task-view-content-hidden,
+    #Admin_user_dashboard_07_task_management .task-table-container.task-view-content-hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 600px) {
+      #Admin_user_dashboard_07_task_management .task-header-row.task-view-content-hidden { display:none !important; }
+      #Admin_user_dashboard_07_task_management .daily-work-activity-toolbar { display:grid !important; grid-template-columns:minmax(0,1fr) auto !important; }
+      #Admin_user_dashboard_07_task_management .daily-work-activity-toolbar > .task-count-text { grid-column:1 / -1 !important; }
+      #Admin_user_dashboard_07_task_management .daily-work-activity-toolbar .task-search-box { grid-column:1 !important; width:100% !important; max-width:none !important; }
+      #Admin_user_dashboard_07_task_management .daily-work-activity-toolbar #clearDailyWorkActivityFilters { grid-column:2 !important; width:auto !important; }
+      #Admin_user_dashboard_07_task_management .daily-work-activity-toolbar .task-count-text { font-size: 12px; }
+      #Admin_user_dashboard_07_task_management .daily-work-activity-toolbar .task-search-box { min-width: 0; padding: 10px 12px; }
+      #Admin_user_dashboard_07_task_management .daily-work-activity-filters { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+      #Admin_user_dashboard_07_task_management .daily-work-board-columns { grid-template-columns:1fr; gap:10px; }
+      #Admin_user_dashboard_07_task_management .daily-work-board-lane { padding:10px; }
+      #Admin_user_dashboard_07_task_management .daily-work-board-card { padding:12px; }
+      #Admin_user_dashboard_07_task_management .daily-work-card-header { gap:6px; }
+      #Admin_user_dashboard_07_task_management .daily-work-card-times { gap:6px; }
+      #Admin_user_dashboard_07_task_management .daily-work-activity-table tr { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 8px; padding: 10px; }
+      #Admin_user_dashboard_07_task_management .daily-work-activity-table td { width: auto !important; max-width: 100% !important; min-width: 0 !important; padding: 9px 10px !important; border: 1px solid #e5eaf2 !important; border-radius: 10px; background: #fff; font-size: 12px; }
+      #Admin_user_dashboard_07_task_management .daily-work-activity-table td::before { margin-bottom: 3px; font-size: 9px; line-height: 1.25; }
+      #Admin_user_dashboard_07_task_management .daily-work-activity-table td[data-label="Employee / Date"] { grid-column: 1 / -1; border-color: #dbe7ff !important; background: #eef4ff; }
+      #Admin_user_dashboard_07_task_management .daily-work-activity-table td[data-label="Daily Work Plan"],
+      #Admin_user_dashboard_07_task_management .daily-work-activity-table td[data-label="Shift Update"],
+      #Admin_user_dashboard_07_task_management .daily-work-activity-table td[data-label="Assigned Task"] { grid-column: 1 / -1; }
+      #Admin_user_dashboard_07_task_management .daily-work-activity-copy { line-height: 1.45; }
+    }
 </style>
 
 <div id="Admin_user_dashboard_07_task_management" class="w3-container" style="display: none; padding: 0;"> 
@@ -978,6 +1388,11 @@
           </button>
         </div>
 
+        <div class="task-view-tabs" role="tablist" aria-label="Task management views">
+          <button type="button" class="task-view-tab active" id="assignedTasksTab" role="tab" aria-selected="true">Assigned Tasks</button>
+          <button type="button" class="task-view-tab" id="dailyWorkActivityTab" role="tab" aria-selected="false">Daily Work Plans &amp; Updates</button>
+        </div>
+
         <!-- Toolbar  -->
         <div class="task-controls-row">
           <div class="task-search-box">
@@ -996,8 +1411,19 @@
           </div>
         </div>
 
+        <div class="task-layout-toolbar" id="assignedTaskLayoutToolbar">
+          <div class="task-layout-title"><strong>Project task board</strong><span>Choose a project to view and organize its tasks.</span></div>
+          <label class="task-project-picker">Project
+            <select id="taskProjectFilter"><option value="all">All projects</option></select>
+          </label>
+          <div class="task-layout-tabs" role="tablist" aria-label="Assigned task layout">
+            <button type="button" class="task-layout-tab" id="taskTableViewTab" role="tab" aria-selected="false">Table</button>
+            <button type="button" class="task-layout-tab active" id="taskKanbanViewTab" role="tab" aria-selected="true">Kanban</button>
+          </div>
+        </div>
+
         <!-- Dynamic Responsive Table -->
-        <div class="task-table-container">
+        <div class="task-table-container task-view-content-hidden">
           <table class="task-table">
             <thead>
               <tr>
@@ -1018,6 +1444,28 @@
             </tbody>
           </table>
         </div>
+
+        <section class="task-board-container" id="taskBoardContainer" aria-label="Project task board">
+          <div class="task-board-columns" id="taskBoardColumns"></div>
+        </section>
+
+        <section class="daily-work-activity-panel" id="dailyWorkActivityPanel" style="display:none;" aria-label="Daily work plans and updates">
+          <div class="daily-work-activity-toolbar">
+            <p class="task-count-text" id="dailyWorkActivityCount">Loading daily work activity...</p>
+            <div class="task-search-box">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+              <input type="search" id="dailyWorkActivitySearch" autocomplete="off" placeholder="Search employees, plans, updates, or status...">
+            </div>
+            <button type="button" id="clearDailyWorkActivityFilters">Clear filters</button>
+          </div>
+          <div class="daily-work-activity-filters" aria-label="Filter daily work records">
+            <label class="daily-work-filter-field">Employee<select id="dailyWorkEmployeeFilter" aria-label="Filter by employee"><option value="">All employees</option></select></label>
+            <label class="daily-work-filter-field">Plan date<input type="date" id="dailyWorkDateFilter" aria-label="Filter by plan date"></label>
+          </div>
+          <div class="daily-work-board-columns" id="dailyWorkActivityBoard" aria-live="polite">
+            <div class="daily-work-board-loading">Loading daily work plans...</div>
+          </div>
+        </section>
     </div>
 
     <!-- Create Task Modal -->
