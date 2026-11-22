@@ -900,6 +900,38 @@
       gap: 10px;
     }
 
+    #Employee_user_dashboard_07_daily_work_plan .shift-status-alert {
+      align-items: flex-start;
+      flex-wrap: wrap;
+      min-width: 0;
+      overflow-wrap: anywhere;
+      line-height: 1.45;
+    }
+
+    #Employee_user_dashboard_07_daily_work_plan .step-locked-banner {
+      align-items: flex-start;
+      padding: 10px 12px;
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    #Employee_user_dashboard_07_daily_work_plan .step-locked-banner span {
+      min-width: 0;
+      overflow-wrap: anywhere;
+    }
+
+    #Employee_user_dashboard_07_daily_work_plan .shift-status-alert > div {
+      flex: 1 1 100% !important;
+      min-width: 0;
+    }
+
+    #Employee_user_dashboard_07_daily_work_plan .shift-status-alert .shift-view-task-btn {
+      width: 100%;
+      margin-left: 0 !important;
+      justify-content: center;
+      white-space: normal;
+    }
+
     #Employee_user_dashboard_07_daily_work_plan .shift-ctrls-row > div,
     #Employee_user_dashboard_07_daily_work_plan .shift-ctrls-row > button {
       width: 100%;
@@ -1795,21 +1827,21 @@
   const shiftStatusBadge = document.getElementById('shiftStatusBadge');
   const step2CardContainer = document.getElementById('step2CardContainer');
   const step2LockedBanner = document.getElementById('step2LockedBanner');
+  const step2ActiveContent = document.getElementById('step2ActiveContent');
+  let dailyWorkPlanSubmitted = false;
 
   // Controls Step 2 visibility & lock state:
   // Step 2 (Update on Planned Work) must be completely HIDDEN until Step 1 plan is submitted!
   function setStep2LockedState(isLocked) {
     if (step2CardContainer) {
-      if (isLocked) {
-        step2CardContainer.style.display = 'none';
-        step2CardContainer.classList.add('locked');
-      } else {
-        step2CardContainer.style.display = 'block';
-        step2CardContainer.classList.remove('locked');
-      }
+      step2CardContainer.style.display = 'block';
+      step2CardContainer.classList.toggle('locked', isLocked);
     }
     if (step2LockedBanner) {
-      step2LockedBanner.style.display = 'none';
+      step2LockedBanner.style.display = isLocked ? 'flex' : 'none';
+    }
+    if (step2ActiveContent) {
+      step2ActiveContent.style.display = isLocked ? 'none' : 'block';
     }
     if (shiftEndNotes) {
       shiftEndNotes.disabled = isLocked;
@@ -2094,6 +2126,7 @@
       .then(res => res.json())
       .then(res => {
         if (!res.data) {
+          dailyWorkPlanSubmitted = false;
           updatePlanPreviewText('');
           currentPlanAttachments = [];
           currentShiftAttachments = [];
@@ -2125,13 +2158,14 @@
         renderSavedGallery('step1', currentPlanAttachments);
         renderSavedGallery('step2', currentShiftAttachments);
 
-        // If plan is submitted or shift started, unlock Step 2!
-        const hasStartedOrSubmitted = !!(res.data.started_at || (currentPlan && currentPlan.trim().length > 0));
-        setStep2LockedState(!hasStartedOrSubmitted);
+        // A saved/submitted plan is required before shift updates can be sent.
+        const planStatus = String(res.data.status || '').toLowerCase();
+        dailyWorkPlanSubmitted = !!currentPlan.trim() && ['submitted', 'active', 'completed'].includes(planStatus);
+        setStep2LockedState(!dailyWorkPlanSubmitted);
 
         const saveBtnTextEl = document.getElementById('savePlanBtnText');
         if (saveBtnTextEl) {
-          saveBtnTextEl.textContent = hasStartedOrSubmitted ? 'Update Plan' : 'Save Plan';
+          saveBtnTextEl.textContent = dailyWorkPlanSubmitted ? 'Update Plan' : 'Save Plan';
         }
 
         if (res.data.started_at && startWorkBtn) {
@@ -2220,6 +2254,8 @@
       .then(res => {
         if (res.status !== 'success') throw new Error(res.message || 'Unable to save plan');
 
+        dailyWorkPlanSubmitted = true;
+
         step1SelectedFiles = [];
         renderPendingTray('step1');
         const fileInp = document.getElementById('step1FileInput');
@@ -2232,7 +2268,7 @@
           planStatus.style.color = '#15803d';
           planStatus.textContent = startWork ? 'Work started! Daily plan updated and active today.' : 'Daily plan updated successfully.';
         }
-        // Unlock Step 2 immediately once plan is saved/started
+        // Saving the plan submits it and unlocks Step 2.
         setStep2LockedState(false);
 
         const saveBtnTextEl = document.getElementById('savePlanBtnText');
@@ -2261,6 +2297,15 @@
   }
 
   function submitShiftEndUpdate() {
+    if (!dailyWorkPlanSubmitted) {
+      if (planStatus) {
+        planStatus.style.color = '#dc2626';
+        planStatus.textContent = 'Submit your daily work plan before sending a shift update.';
+      }
+      setStep2LockedState(true);
+      return;
+    }
+
     const notes = (shiftEndNotes?.value || '').trim();
     const statusVal = shiftEndTaskStatus?.value || 'Completed';
 
