@@ -703,7 +703,7 @@
       }
 
       .info-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
       }
     }
 
@@ -855,6 +855,7 @@
       }
 
       #Admin_user_dashboard_10_settings .info-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
         gap: 9px !important;
         margin-bottom: 16px !important;
       }
@@ -1171,6 +1172,7 @@
           <!-- Section 4: Account Information -->
           <?php
           $admin_init_type = $_SESSION['user_role'] ?? $_SESSION['ac_type'] ?? 'Administrator';
+          $admin_init_email = $_SESSION['user_name'] ?? '';
           $admin_init_status = 'Active';
           $admin_init_last_login = date('Y-m-d');
           $admin_init_member_since = date('Y-m-d');
@@ -1189,6 +1191,7 @@
                       $q_adm = $conn_adm->query("SELECT * FROM `main_user_login` WHERE `id` = '$uid_adm_esc' OR `user_name` = '$uid_adm_esc' LIMIT 1");
                       if ($q_adm && $r_adm = $q_adm->fetch_assoc()) {
                           $admin_init_type = !empty($r_adm['ac_type']) ? $r_adm['ac_type'] : $admin_init_type;
+                          $admin_init_email = $r_adm['user_name'] ?? $admin_init_email;
                           $admin_init_status = ($r_adm['account_active_state'] == 1 || $r_adm['account_active_state'] === null) ? 'Active' : 'Inactive';
                           if (!empty($r_adm['last_login'])) $admin_init_last_login = date('Y-m-d', strtotime($r_adm['last_login']));
                           if (!empty($r_adm['sdt'])) $admin_init_member_since = date('Y-m-d', strtotime($r_adm['sdt']));
@@ -1216,8 +1219,8 @@
                 <strong id="admin_account_type"><?php echo htmlspecialchars($admin_init_type); ?></strong>
               </div>
               <div class="info-box">
-                <span>Account Status</span>
-                <strong id="admin_account_status" style="color:<?php echo ($admin_init_status === 'Active') ? '#16a34a' : '#dc2626'; ?>;"><?php echo htmlspecialchars($admin_init_status); ?></strong>
+                <span>Login Email</span>
+                <strong id="admin_account_email"><?php echo htmlspecialchars($admin_init_email); ?></strong>
               </div>
               <div class="info-box">
                 <span>Last Login</span>
