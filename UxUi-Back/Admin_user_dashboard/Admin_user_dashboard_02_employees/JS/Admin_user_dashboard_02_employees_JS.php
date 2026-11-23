@@ -33,11 +33,16 @@
     function populateEmployeeDepartmentFilter() {
       if (!deptFilterSelect) return;
       const cur = deptFilterSelect.value;
-      const depts = Array.from(new Set(employees.map(e => e.dept).filter(Boolean))).sort();
-      deptFilterSelect.innerHTML = '<option value="all">All Departments</option>' +
-        depts.map(d => `<option value="${d}">${d}</option>`).join('');
-      if (cur && depts.includes(cur)) {
+      const depts = Array.from(new Set(employees.map(e => String(e.dept || '').trim()).filter(Boolean)))
+        .filter(d => d.toLowerCase() !== 'unassigned' && d.toLowerCase() !== 'unassigned department')
+        .sort((a, b) => a.localeCompare(b));
+      const options = [new Option('All Departments', 'all'), new Option('Unassigned Department', '__unassigned')];
+      depts.forEach(dept => options.push(new Option(dept, dept)));
+      deptFilterSelect.replaceChildren(...options);
+      if (cur === '__unassigned' || depts.includes(cur)) {
         deptFilterSelect.value = cur;
+      } else {
+        deptFilterSelect.value = 'all';
       }
     }
 
@@ -98,7 +103,10 @@
       const selectedDept = deptFilterSelect ? deptFilterSelect.value : 'all';
       const rows = employees.filter(e => {
         const matchesFilter = activeFilter === 'all' || e.status === activeFilter;
-        const matchesDept = selectedDept === 'all' || (e.dept && e.dept.toLowerCase() === selectedDept.toLowerCase());
+        const employeeDept = String(e.dept || '').trim().toLowerCase();
+        const isUnassignedDept = !employeeDept || employeeDept === 'unassigned' || employeeDept === 'unassigned department';
+        const matchesDept = selectedDept === 'all' ||
+          (selectedDept === '__unassigned' ? isUnassignedDept : employeeDept === selectedDept.toLowerCase());
         const matchesQuery = !query ||
           (e.name || '').toLowerCase().includes(query) ||
           (e.email || '').toLowerCase().includes(query) ||
@@ -1725,7 +1733,7 @@
 
         return `
           <tr>
-            <td>
+            <td data-label="Applicant">
               <div style="display:flex; align-items:center; gap:10px;">
                 <div style="width:36px; height:36px; border-radius:50%; background:linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); color:#ffffff; font-weight:700; font-size:13px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
                   ${safeHtml(fullName.substring(0, 2).toUpperCase())}
@@ -1736,14 +1744,14 @@
                 </div>
               </div>
             </td>
-            <td>
+            <td data-label="Contact">
               <div style="display:flex; align-items:center; gap:6px;">
                 <i class="fas fa-phone-volume" style="color:#2563eb; font-size:12px;"></i>
                 <span style="font-weight:700; color:#1e293b; font-family:monospace; font-size:13px;">${safeHtml(s.phone_number)}</span>
               </div>
               <div>${otpBadge}</div>
             </td>
-            <td>
+            <td data-label="Department &amp; Role">
               <div style="font-weight:700; color:#14204d; font-size:13px;">
                 ${s.department && s.department !== 'Unassigned' ? safeHtml(s.department) : '<span style="color:#d97706; font-style:italic;">Pending Assignment</span>'}
               </div>
@@ -1752,9 +1760,9 @@
                 <span>${safeHtml(s.job_title || 'Staff')}</span>
               </div>
             </td>
-            <td style="font-size:12px; color:#64748b;">${safeHtml(dateStr)}</td>
-            <td>${badgeHtml}</td>
-            <td style="text-align:center; vertical-align:middle;">${actionsHtml}</td>
+            <td data-label="Submitted" style="font-size:12px; color:#64748b;">${safeHtml(dateStr)}</td>
+            <td data-label="Status">${badgeHtml}</td>
+            <td data-label="Actions" style="text-align:center; vertical-align:middle;">${actionsHtml}</td>
           </tr>
         `;
       }).join('');
@@ -1781,15 +1789,15 @@
 
         return `
           <tr>
-            <td>
+            <td data-label="Form">
               <strong style="color:#14204d; font-size:13px;">${safeHtml(f.title)}</strong>
               <div style="font-size:11px; color:#94a3b8; font-family:monospace;">Token: ${safeHtml(f.form_token)}</div>
             </td>
-            <td><span style="font-weight:600; color:#334155;">${safeHtml(f.department)}</span></td>
-            <td>${safeHtml(f.job_title)}</td>
-            <td>${targetEmail}</td>
-            <td style="font-size:12px; color:#64748b;">${safeHtml(dateStr)}</td>
-            <td style="text-align:center;">
+            <td data-label="Department"><span style="font-weight:600; color:#334155;">${safeHtml(f.department)}</span></td>
+            <td data-label="Role">${safeHtml(f.job_title)}</td>
+            <td data-label="Target email">${targetEmail}</td>
+            <td data-label="Created" style="font-size:12px; color:#64748b;">${safeHtml(dateStr)}</td>
+            <td data-label="Share link" style="text-align:center;">
               <div style="display:flex; align-items:center; justify-content:center; gap:6px;">
                 <button type="button" onclick="copyFormLink('${safeHtml(f.form_url)}')" style="padding:5px 10px; border-radius:6px; border:1px solid #10b981; background:#ecfdf5; color:#059669; font-size:11.5px; font-weight:700; cursor:pointer;" title="Copy shareable link">
                   <i class="fas fa-copy"></i> Copy Link
@@ -2088,6 +2096,7 @@
             alert(`Application approved successfully!\n\n${res.message || 'Staff member account has been provisioned.'}`);
             window.closeReviewSubmissionModal();
             window.loadOnboardingData();
+            window.loadAdminAccountsData();
             if (typeof window.fetchAdminEmployees === 'function') {
               window.fetchAdminEmployees();
             }
