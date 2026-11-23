@@ -681,7 +681,61 @@
   .w3-p-stat .num { display: block; font-size: 14px; font-weight: 800; color: var(--navy); }
   .w3-p-stat .lbl { font-size: 11px; color: var(--muted); font-weight: 600; }
 
+  @media (min-width: 769px) {
+    #Admin_user_dashboard_02_employees { padding: 0 !important; }
+    #Admin_user_dashboard_02_employees .w3-page-head { margin-bottom: 20px !important; }
+    #Admin_user_dashboard_02_employees .emp-section-tabs-bar { margin-bottom: 16px !important; }
+    #sectionAllEmployees .employee-list-toolbar,
+    #sectionAdminAccounts .admin-accounts-toolbar { margin-bottom: 20px !important; }
+    #sectionOnboardingForms .onboarding-stats-grid,
+    #sectionAdminAccounts .admin-account-stats-grid {
+      gap: 12px !important;
+      margin-bottom: 20px !important;
+    }
+    #sectionAllEmployees .w3-table-card,
+    #sectionOnboardingForms .w3-table-card,
+    #sectionAdminAccounts .w3-table-card {
+      padding: 0 !important;
+      margin-bottom: 24px !important;
+    }
+    #sectionOnboardingForms .w3-table-card > div:first-child { padding: 14px 18px !important; }
+    #sectionOnboardingForms table.emp-table tbody { padding: 0 !important; }
+  }
+
   @media (max-width: 768px) {
+    #createEmpFormModal .w3-modal-card,
+    #reviewSubmissionModal .w3-modal-card {
+      width: 100% !important;
+      max-width: 100% !important;
+      height: 88vh !important;
+      height: 88dvh !important;
+      max-height: calc(100vh - 24px) !important;
+      max-height: calc(100dvh - 24px) !important;
+      min-height: 0 !important;
+    }
+    #createEmpFormReal {
+      display: flex !important;
+      flex: 1 1 0 !important;
+      flex-direction: column !important;
+      min-height: 0 !important;
+      height: 0 !important;
+      overflow: hidden !important;
+    }
+    #createEmpFormModal .w3-modal-body-scroll,
+    #reviewSubmissionModal .w3-modal-body-scroll {
+      flex: 1 1 0 !important;
+      min-height: 0 !important;
+      height: 0 !important;
+      overflow-y: auto !important;
+      overscroll-behavior: contain !important;
+      -webkit-overflow-scrolling: touch !important;
+    }
+    #createEmpFormModal .w3-modal-footer,
+    #reviewSubmissionModal .w3-modal-footer {
+      flex: 0 0 auto !important;
+      padding: 10px 12px !important;
+    }
+
     #Admin_user_dashboard_02_employees {
       width: 100% !important;
       max-width: 100vw !important;
@@ -819,6 +873,80 @@
     }
 
     .w3-table-card { display: none !important; }
+    #sectionOnboardingForms .w3-table-card {
+      display: block !important;
+      width: 100% !important;
+      max-width: 100% !important;
+    }
+    #sectionOnboardingForms .w3-table-wrap {
+      display: block !important;
+      width: 100% !important;
+      max-width: 100% !important;
+      overflow: visible !important;
+    }
+    #sectionOnboardingForms table.emp-table {
+      width: 100% !important;
+      min-width: 0 !important;
+      table-layout: fixed !important;
+    }
+    #sectionOnboardingForms table.emp-table thead { display: none !important; }
+    #sectionOnboardingForms table.emp-table tbody {
+      display: grid !important;
+      gap: 10px !important;
+      padding: 10px !important;
+    }
+    #sectionOnboardingForms table.emp-table tbody tr {
+      display: flex !important;
+      flex-direction: column !important;
+      min-width: 0 !important;
+      padding: 7px 10px !important;
+      border: 1px solid #e2e8f0 !important;
+      border-radius: 12px !important;
+      background: #fff !important;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, .04) !important;
+    }
+    #sectionOnboardingForms table.emp-table tbody td {
+      display: grid !important;
+      grid-template-columns: minmax(78px, 30%) minmax(0, 1fr) !important;
+      align-items: start !important;
+      gap: 8px !important;
+      width: 100% !important;
+      min-width: 0 !important;
+      padding: 8px 2px !important;
+      border-bottom: 1px solid #f1f5f9 !important;
+      white-space: normal !important;
+      overflow-wrap: anywhere !important;
+      text-align: left !important;
+      font-size: 12px !important;
+    }
+    #sectionOnboardingForms table.emp-table tbody td::before {
+      content: attr(data-label);
+      color: #64748b;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .03em;
+    }
+    #sectionOnboardingForms table.emp-table tbody td[colspan] {
+      display: block !important;
+      text-align: center !important;
+      padding: 22px 10px !important;
+    }
+    #sectionOnboardingForms table.emp-table tbody td[colspan]::before { content: none; }
+    #sectionOnboardingForms table.emp-table tbody td > div,
+    #sectionOnboardingForms table.emp-table tbody td > span { min-width: 0; max-width: 100%; }
+    #sectionOnboardingForms table.emp-table tbody td[data-label="Actions"] > div,
+    #sectionOnboardingForms table.emp-table tbody td[data-label="Share link"] > div {
+      justify-content: flex-start !important;
+      flex-wrap: wrap !important;
+    }
+    #sectionOnboardingForms table.emp-table tbody td[data-label="Actions"] button,
+    #sectionOnboardingForms table.emp-table tbody td[data-label="Share link"] button,
+    #sectionOnboardingForms table.emp-table tbody td[data-label="Share link"] a {
+      min-height: 36px !important;
+      white-space: normal !important;
+      text-align: center !important;
+    }
     #sectionAdminAccounts #mobileAdminCardsContainer { display: flex !important; }
     .mobile-emp-cards {
       display: flex !important;
@@ -1010,6 +1138,45 @@
     }
   }
 
+  @media (max-width: 768px) {
+    #Admin_user_dashboard_02_employees .w3-page-head {
+      margin: 0 0 12px !important;
+      padding: 0 !important;
+      gap: 8px !important;
+    }
+    #Admin_user_dashboard_02_employees {
+      padding: 0 12px 72px !important;
+    }
+    #Admin_user_dashboard_02_employees .emp-section-tabs-bar {
+      margin: 0 0 12px !important;
+      padding: 4px 3px 0 !important;
+    }
+    #sectionAllEmployees .employee-list-toolbar,
+    #sectionAdminAccounts .admin-accounts-toolbar {
+      margin: 0 0 10px !important;
+    }
+    #sectionAllEmployees #mobileEmpCardsContainer,
+    #sectionAdminAccounts #mobileAdminCardsContainer {
+      margin: 0 !important;
+      gap: 10px !important;
+    }
+    #sectionOnboardingForms .onboarding-stats-grid,
+    #sectionAdminAccounts .admin-account-stats-grid {
+      gap: 8px !important;
+      margin: 0 0 12px !important;
+    }
+    #sectionOnboardingForms .w3-table-card {
+      margin: 0 0 12px !important;
+    }
+    #sectionOnboardingForms .w3-table-card > div:first-child {
+      padding: 12px !important;
+      gap: 8px !important;
+    }
+    #sectionOnboardingForms table.emp-table tbody { padding: 0 12px 12px !important; }
+    #sectionAllEmployees .mobile-emp-card { padding: 12px !important; }
+    #sectionAdminAccounts .admin-account-stat-card { padding: 10px 8px !important; }
+  }
+
   @media (max-height: 520px) {
     .w3-modal-card {
       max-height: 94vh !important;
@@ -1034,7 +1201,7 @@
     }
     #sectionAdminAccounts .admin-accounts-filter-row {
       display: grid !important;
-      grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr) !important;
+      grid-template-columns: minmax(0, 1fr) !important;
       align-items: center !important;
       gap: 8px !important;
       width: 100% !important;
@@ -1054,7 +1221,70 @@
       min-width: 0 !important;
       font-size: 12px !important;
     }
-    #sectionAdminAccounts .admin-status-select {
+    #sectionAdminAccounts .admin-account-stats-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+      gap: 6px !important;
+      margin-bottom: 12px !important;
+    }
+    #sectionAdminAccounts .admin-account-stat-card {
+      min-width: 0 !important;
+      flex-direction: column !important;
+      justify-content: center !important;
+      gap: 6px !important;
+      padding: 9px 4px !important;
+      text-align: center !important;
+    }
+    #sectionAdminAccounts .admin-account-stat-icon {
+      width: 34px !important;
+      height: 34px !important;
+      flex: 0 0 34px !important;
+      font-size: 15px !important;
+    }
+    #sectionAdminAccounts .admin-account-stat-copy { width: 100%; min-width: 0; }
+    #sectionAdminAccounts .admin-account-stat-value { font-size: 16px !important; }
+    #sectionAdminAccounts .admin-account-stat-label {
+      font-size: 9px !important;
+      line-height: 1.2 !important;
+      overflow-wrap: anywhere;
+    }
+
+    #sectionAllEmployees .employee-list-toolbar {
+      display: block !important;
+      width: 100% !important;
+      margin-bottom: 10px !important;
+    }
+    #sectionAllEmployees .employee-list-controls {
+      display: grid !important;
+      grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr) !important;
+      align-items: center !important;
+      gap: 8px !important;
+      width: 100% !important;
+      min-width: 0 !important;
+    }
+    #sectionAllEmployees .employee-list-controls .w3-search-box,
+    #sectionAllEmployees .employee-list-controls #empDepartmentFilter {
+      width: 100% !important;
+      min-width: 0 !important;
+      max-width: 100% !important;
+      height: 44px !important;
+      box-sizing: border-box !important;
+    }
+    #sectionAllEmployees .employee-list-controls .w3-search-box { grid-column: 1 !important; padding: 0 10px !important; }
+    #sectionAllEmployees .employee-list-controls .w3-search-box input { width: 100% !important; min-width: 0 !important; font-size: 12px !important; }
+    #sectionAllEmployees .employee-list-controls .w3-toolbar-filter-row { display: contents !important; }
+    #sectionAllEmployees .employee-list-controls #empDepartmentFilter {
+      grid-column: 2 !important;
+      flex: none !important;
+      padding: 0 8px !important;
+      font-size: 11px !important;
+    }
+    #sectionAllEmployees .employee-list-controls #filterPills { grid-column: 1 / -1 !important; }
+  }
+  @media (max-width: 600px) {
+    #sectionAdminAccounts .admin-accounts-filter-row {
+      grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr) !important;
+    }
+    #sectionAdminAccounts .admin-accounts-filter-row #adminStatusFilter {
       display: block !important;
       padding: 0 8px !important;
       border: 1px solid #cbd5e1 !important;
@@ -1099,7 +1329,7 @@
       <div style="display: flex; gap: 8px; flex-wrap: wrap;">
         <button class="w3-btn-primary" id="openCreateFormBtn" type="button" onclick="openCreateEmpFormModal()" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); border: none; box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25);">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="width:16px; height:16px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
-          Create Employee Form
+          Create Form
         </button>
         <button class="w3-btn-primary" id="openAddEmpBtn" type="button">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
@@ -1117,7 +1347,7 @@
         <i class="fas fa-file-signature"></i> Onboarding Submissions &amp; Forms
         <span id="pendingSubmissionsBadge" style="display: none; background: #ef4444; color: #ffffff; font-size: 11px; padding: 2px 8px; border-radius: 999px; font-weight: 800;">0</span>
       </button>
-      <button type="button" class="emp-section-tab" id="tabAdminAccountsBtn" onclick="switchEmpSectionTab('admins')" style="display: none; padding: 10px 18px; border: none; background: transparent; font-size: 13.5px; font-weight: 600; color: #64748b; border-bottom: 3px solid transparent; cursor: pointer; align-items: center; gap: 8px;">
+      <button type="button" class="emp-section-tab" id="tabAdminAccountsBtn" onclick="switchEmpSectionTab('admins')" style="display: flex; padding: 10px 18px; border: none; background: transparent; font-size: 13.5px; font-weight: 600; color: #64748b; border-bottom: 3px solid transparent; cursor: pointer; align-items: center; gap: 8px;">
         <i class="fas fa-user-clock"></i> All accounts
         <span id="pendingAdminsBadge" style="display: none; background: #ef4444; color: #ffffff; font-size: 11px; padding: 2px 8px; border-radius: 999px; font-weight: 800;">0</span>
       </button>
@@ -1125,11 +1355,11 @@
 
     <!-- 1. All Employees View -->
     <div id="sectionAllEmployees">
-      <div class="w3-toolbar" style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
-        <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap; flex:1; min-width:280px;">
+      <div class="w3-toolbar employee-list-toolbar" style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+        <div class="employee-list-controls" style="display:flex; align-items:center; gap:12px; flex-wrap:wrap; flex:1; min-width:280px;">
           <div class="w3-search-box">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-            <input type="text" id="searchInput" placeholder="Search employees...">
+            <input type="search" id="searchInput" name="employee-search" placeholder="Search employees..." autocomplete="new-password" autocapitalize="off" spellcheck="false" readonly onfocus="this.removeAttribute('readonly')">
           </div>
           <div class="w3-toolbar-filter-row" style="display:flex; align-items:center; gap:10px; flex:1;">
             <select id="empDepartmentFilter" style="padding: 8px 12px; border: 1px solid #cbd5e1; border-radius: 999px; font-size: 13px; font-weight: 600; color: #1e293b; background: #ffffff; outline: none; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.03);">
@@ -1282,34 +1512,34 @@
    
 
       <!-- Stats summary cards -->
-      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 20px;">
-        <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; display: flex; align-items: center; gap: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
-          <div style="width: 44px; height: 44px; border-radius: 10px; background: #eff6ff; color: #2563eb; display: flex; align-items: center; justify-content: center; font-size: 20px;">
+      <div class="admin-account-stats-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; margin-bottom: 20px;">
+        <div class="admin-account-stat-card" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; display: flex; align-items: center; gap: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+          <div class="admin-account-stat-icon" style="width: 44px; height: 44px; border-radius: 10px; background: #eff6ff; color: #2563eb; display: flex; align-items: center; justify-content: center; font-size: 20px;">
             <i class="fas fa-users-gear"></i>
           </div>
-          <div>
-            <div style="font-size: 20px; font-weight: 800; color: #0f172a;" id="statTotalAdmins">0</div>
-            <div style="font-size: 12px; color: #64748b; font-weight: 600;">Total Managed Accounts</div>
+          <div class="admin-account-stat-copy">
+            <div class="admin-account-stat-value" style="font-size: 20px; font-weight: 800; color: #0f172a;" id="statTotalAdmins">0</div>
+            <div class="admin-account-stat-label" style="font-size: 12px; color: #64748b; font-weight: 600;">Total Managed Accounts</div>
           </div>
         </div>
         
-        <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; display: flex; align-items: center; gap: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
-          <div style="width: 44px; height: 44px; border-radius: 10px; background: #fffbeb; color: #f59e0b; display: flex; align-items: center; justify-content: center; font-size: 20px;">
+        <div class="admin-account-stat-card" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; display: flex; align-items: center; gap: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+          <div class="admin-account-stat-icon" style="width: 44px; height: 44px; border-radius: 10px; background: #fffbeb; color: #f59e0b; display: flex; align-items: center; justify-content: center; font-size: 20px;">
             <i class="fas fa-hourglass-half"></i>
           </div>
-          <div>
-            <div style="font-size: 20px; font-weight: 800; color: #d97706;" id="statPendingAdmins">0</div>
-            <div style="font-size: 12px; color: #64748b; font-weight: 600;">Pending Role / Approval</div>
+          <div class="admin-account-stat-copy">
+            <div class="admin-account-stat-value" style="font-size: 20px; font-weight: 800; color: #d97706;" id="statPendingAdmins">0</div>
+            <div class="admin-account-stat-label" style="font-size: 12px; color: #64748b; font-weight: 600;">Pending Role / Approval</div>
           </div>
         </div>
 
-        <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; display: flex; align-items: center; gap: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
-          <div style="width: 44px; height: 44px; border-radius: 10px; background: #ecfdf5; color: #10b981; display: flex; align-items: center; justify-content: center; font-size: 20px;">
+        <div class="admin-account-stat-card" style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 16px; display: flex; align-items: center; gap: 14px; box-shadow: 0 1px 3px rgba(0,0,0,0.04);">
+          <div class="admin-account-stat-icon" style="width: 44px; height: 44px; border-radius: 10px; background: #ecfdf5; color: #10b981; display: flex; align-items: center; justify-content: center; font-size: 20px;">
             <i class="fas fa-check-circle"></i>
           </div>
-          <div>
-            <div style="font-size: 20px; font-weight: 800; color: #0f172a;" id="statActiveAdmins">0</div>
-            <div style="font-size: 12px; color: #64748b; font-weight: 600;">Approved / Active Accounts</div>
+          <div class="admin-account-stat-copy">
+            <div class="admin-account-stat-value" style="font-size: 20px; font-weight: 800; color: #0f172a;" id="statActiveAdmins">0</div>
+            <div class="admin-account-stat-label" style="font-size: 12px; color: #64748b; font-weight: 600;">Approved / Active Accounts</div>
           </div>
         </div>
       </div>
@@ -1319,7 +1549,7 @@
         <div class="admin-accounts-filter-row" style="display:flex; align-items:center; gap:12px; flex-wrap:wrap; flex:1; min-width:280px;">
           <div class="w3-search-box">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-            <input type="text" id="adminSearchInput" placeholder="Search accounts by name or email..." oninput="renderAdminTable()">
+            <input type="search" id="adminSearchInput" name="account-search" placeholder="Search accounts by name or email..." autocomplete="new-password" autocapitalize="off" spellcheck="false" readonly onfocus="this.removeAttribute('readonly')" oninput="renderAdminTable()">
           </div>
           <div class="w3-filter-pills" id="adminFilterPills">
             <div class="w3-pill active" data-filter="all" onclick="filterAdminTable('all')">All</div>
