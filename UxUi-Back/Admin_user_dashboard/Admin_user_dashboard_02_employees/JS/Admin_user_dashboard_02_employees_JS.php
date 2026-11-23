@@ -2181,12 +2181,10 @@
 
     window.filterAdminTable = function(filter) {
       currentAdminFilter = filter;
+      const statusSelect = document.getElementById('adminStatusFilter');
+      if (statusSelect) statusSelect.value = filter;
       document.querySelectorAll('#adminFilterPills .w3-pill').forEach(pill => {
-        if (pill.getAttribute('data-filter') === filter) {
-          pill.classList.add('active');
-        } else {
-          pill.classList.remove('active');
-        }
+        pill.classList.toggle('active', pill.getAttribute('data-filter') === filter);
       });
       window.renderAdminTable();
     };
