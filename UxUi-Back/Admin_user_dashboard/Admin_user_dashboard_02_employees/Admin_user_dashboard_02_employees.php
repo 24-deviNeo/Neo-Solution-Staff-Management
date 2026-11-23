@@ -320,6 +320,7 @@
   .action-btn {
     width: 34px;
     height: 34px;
+    padding: 0 !important;
     border-radius: 8px;
     display: inline-flex;
     align-items: center;
@@ -328,10 +329,20 @@
     border: none;
     transition: filter 0.15s ease, transform 0.15s ease;
   }
-  .action-btn svg { width: 16px; height: 16px; }
+  .action-btn svg { width: 22px; height: 22px; }
   .action-btn.view { background-color: var(--blue-lighter); color: var(--blue); }
   .action-btn.plan { background-color: var(--green-bg); color: var(--green); }
   .action-btn:hover { filter: brightness(0.92); transform: translateY(-1px); }
+
+  @media (min-width: 769px) {
+    html:not(.app-view) #Admin_user_dashboard_02_employees .row-actions .action-btn svg {
+      width: 20px !important;
+      height: 20px !important;
+      max-width: none !important;
+      max-height: none !important;
+      display: block !important;
+    }
+  }
 
   /* Selectable Working Day Chips */
   .day-chips-container {
@@ -729,27 +740,29 @@
       text-overflow: ellipsis;
     }
 
-    /* Sub-tabs horizontal scroll on mobile */
+    /* Show employee section tabs together on mobile without horizontal scrolling. */
     .emp-section-tabs-bar {
       display: flex !important;
-      overflow-x: auto !important;
-      -webkit-overflow-scrolling: touch !important;
-      scrollbar-width: none !important;
-      white-space: nowrap !important;
-      gap: 4px !important;
-      padding: 4px 6px 0 !important;
+      overflow: hidden !important;
+      white-space: normal !important;
+      gap: 2px !important;
+      padding: 4px 3px 0 !important;
       width: 100% !important;
+      min-width: 0 !important;
       box-sizing: border-box !important;
     }
-    .emp-section-tabs-bar::-webkit-scrollbar {
-      display: none !important;
-    }
     .emp-section-tabs-bar .emp-section-tab {
-      padding: 8px 10px !important;
-      font-size: 11.5px !important;
-      flex-shrink: 0 !important;
-      white-space: nowrap !important;
-      gap: 5px !important;
+      flex: 1 1 0 !important;
+      min-width: 0 !important;
+      flex-direction: column !important;
+      justify-content: center !important;
+      text-align: center !important;
+      white-space: normal !important;
+      overflow-wrap: anywhere !important;
+      padding: 7px 3px !important;
+      font-size: 9.5px !important;
+      line-height: 1.2 !important;
+      gap: 4px !important;
     }
 
     .w3-toolbar {
@@ -859,6 +872,7 @@
       padding-right: 8px;
       white-space: nowrap;
     }
+    .mobile-emp-card-actions > button i { font-size: 20px !important; line-height: 1 !important; }
 
     /* Onboarding Stats Grid 3 in one row for mobile */
     .onboarding-stats-grid {
@@ -1010,6 +1024,46 @@
     .w3-modal-footer {
       padding: 8px 14px !important;
     }
+  }
+  .admin-status-select { display: none; }
+  @media (max-width: 900px) {
+    #sectionAdminAccounts .admin-accounts-toolbar {
+      display: block !important;
+      width: 100% !important;
+      margin-bottom: 10px !important;
+    }
+    #sectionAdminAccounts .admin-accounts-filter-row {
+      display: grid !important;
+      grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr) !important;
+      align-items: center !important;
+      gap: 8px !important;
+      width: 100% !important;
+      min-width: 0 !important;
+    }
+    #sectionAdminAccounts .admin-accounts-filter-row .w3-search-box,
+    #sectionAdminAccounts .admin-accounts-filter-row #adminStatusFilter {
+      width: 100% !important;
+      min-width: 0 !important;
+      max-width: 100% !important;
+      height: 44px !important;
+      box-sizing: border-box !important;
+    }
+    #sectionAdminAccounts .admin-accounts-filter-row .w3-search-box { padding: 0 10px !important; }
+    #sectionAdminAccounts .admin-accounts-filter-row .w3-search-box input {
+      width: 100% !important;
+      min-width: 0 !important;
+      font-size: 12px !important;
+    }
+    #sectionAdminAccounts .admin-status-select {
+      display: block !important;
+      padding: 0 8px !important;
+      border: 1px solid #cbd5e1 !important;
+      border-radius: 10px !important;
+      background: #fff !important;
+      color: #334155 !important;
+      font-size: 11px !important;
+    }
+    #sectionAdminAccounts #adminFilterPills { display: none !important; }
   }
 </style>
 
@@ -1261,8 +1315,8 @@
       </div>
 
       <!-- Toolbar -->
-      <div class="w3-toolbar" style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; margin-bottom:14px;">
-        <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap; flex:1; min-width:280px;">
+      <div class="w3-toolbar admin-accounts-toolbar" style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; margin-bottom:14px;">
+        <div class="admin-accounts-filter-row" style="display:flex; align-items:center; gap:12px; flex-wrap:wrap; flex:1; min-width:280px;">
           <div class="w3-search-box">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
             <input type="text" id="adminSearchInput" placeholder="Search accounts by name or email..." oninput="renderAdminTable()">
@@ -1273,10 +1327,13 @@
             <div class="w3-pill" data-filter="active" onclick="filterAdminTable('active')">Active</div>
             <div class="w3-pill" data-filter="blocked" onclick="filterAdminTable('blocked')">Declined</div>
           </div>
+          <select id="adminStatusFilter" class="admin-status-select" aria-label="Filter accounts by status" onchange="filterAdminTable(this.value)">
+            <option value="all">All</option>
+            <option value="pending">Pending Approval</option>
+            <option value="active">Active</option>
+            <option value="blocked">Declined</option>
+          </select>
         </div>
-        <button type="button" onclick="loadAdminAccountsData()" class="w3-btn-primary" style="padding: 8px 16px; font-size: 13px; background: #ffffff; color: #14204d; border: 1px solid #cbd5e1; box-shadow: none;">
-          <i class="fas fa-rotate"></i> Refresh List
-        </button>
       </div>
 
       <!-- Desktop Table Card -->
