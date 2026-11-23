@@ -2,19 +2,19 @@
    EMPLOYEE SIDEBAR (PERFECT FIT + AUTO-SCROLL SAFEGUARD)
 ========================================================= */
 :root {
-    --sb-navy: #14204d;
-    --sb-navy-dark: #0d1536;
-    --sb-blue: #2563eb;
-    --sb-blue-light: #eff6ff;
-    --sb-blue-border: #bfdbfe;
-    --sb-text: #334155;
-    --sb-text-muted: #64748b;
+    --sb-navy: #6D5745;
+    --sb-navy-dark: #4E3E31;
+    --sb-blue: #8A715D;
+    --sb-blue-light: #F4EFEB;
+    --sb-blue-border: #E6E1D8;
+    --sb-text: #1F1D1B;
+    --sb-text-muted: #746C65;
     --sb-bg: #ffffff;
-    --sb-card-bg: #f8fafc;
-    --sb-border: #e2e8f0;
-    --sb-red: #ef4444;
-    --sb-red-bg: #fff5f5;
-    --sb-red-border: #fecaca;
+    --sb-card-bg: #FAF8F5;
+    --sb-border: #E6E1D8;
+    --sb-red: #BA4343;
+    --sb-red-bg: #FBEFEF;
+    --sb-red-border: #F5D3D3;
 }
 
 .admin-sidebar {
