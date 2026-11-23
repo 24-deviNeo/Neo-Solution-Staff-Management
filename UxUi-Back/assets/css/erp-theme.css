@@ -1146,7 +1146,6 @@ textarea {
 .admin-bottom-nav,
 .emp-bottom-nav,
 .mobile-bottom-nav {
-    display: flex !important;
     justify-content: space-around !important;
     align-items: center !important;
     box-sizing: border-box !important;
