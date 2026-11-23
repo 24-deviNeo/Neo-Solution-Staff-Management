@@ -111,11 +111,11 @@ if ($conn->query($update_sql)) {
     if ($new_role === 'Admin') {
         // Updated to Administrator
         $conn->query("UPDATE `employee_profiles` SET `job_title` = 'Administrator' WHERE `user_id` = {$account_id} OR `email` = '{$safe_email}'");
-        $conn->query("UPDATE `employees` SET `job_role` = 'Administrator' WHERE `main_user_login_id` = '{$account_id}' OR `email` = '{$safe_email}'");
+        $conn->query("UPDATE `employees` SET `job_roles` = 'Administrator' WHERE `main_user_login_id` = '{$account_id}' OR `email` = '{$safe_email}'");
     } else {
         // Updated to Employee (Staff)
         $conn->query("UPDATE `employee_profiles` SET `job_title` = 'Staff' WHERE (`user_id` = {$account_id} OR `email` = '{$safe_email}') AND `job_title` = 'Administrator'");
-        $conn->query("UPDATE `employees` SET `job_role` = 'Staff' WHERE (`main_user_login_id` = '{$account_id}' OR `email` = '{$safe_email}') AND `job_role` = 'Administrator'");
+        $conn->query("UPDATE `employees` SET `job_roles` = 'Staff' WHERE (`main_user_login_id` = '{$account_id}' OR `email` = '{$safe_email}') AND `job_roles` = 'Administrator'");
     }
 
     $comp_info = new Company_Info_Variable_List();
