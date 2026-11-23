@@ -1725,14 +1725,6 @@
             </div>
 
             <div class="shift-ctrls-row">
-              <div style="display: flex; align-items: center; gap: 8px;">
-                <label style="font-size: 13px; font-weight: 700; color: #334155;">Work Status:</label>
-                <select id="shiftEndTaskStatus" class="filter-pill-select" style="min-width: 150px; font-weight: 700;">
-                  <option value="Completed" selected>Completed</option>
-                  <option value="Pending">Pending</option>
-                </select>
-              </div>
-
               <button type="button" id="submitShiftEndBtn" class="shift-end-submit-btn">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                   <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
@@ -1859,7 +1851,6 @@
   const morningStatusBadge = document.getElementById('morningPlanStatusBadge');
 
   const shiftEndNotes = document.getElementById('shiftEndNotes');
-  const shiftEndTaskStatus = document.getElementById('shiftEndTaskStatus');
   const submitShiftEndBtn = document.getElementById('submitShiftEndBtn');
   const shiftEndStatusMsg = document.getElementById('shiftEndStatusMsg');
   const shiftStatusBadge = document.getElementById('shiftStatusBadge');
@@ -2257,10 +2248,6 @@
         if (shiftEndNotes && res.data.evening_update) {
           shiftEndNotes.value = res.data.evening_update;
         }
-        if (shiftEndTaskStatus && res.data.task_status) {
-          shiftEndTaskStatus.value = res.data.task_status;
-        }
-
         if (res.data.task_id && viewShiftTaskBtn) {
           viewShiftTaskBtn.style.display = 'inline-flex';
           viewShiftTaskBtn.setAttribute('data-task-id', res.data.task_id);
@@ -2270,20 +2257,19 @@
 
         if (res.data.shift_ended_at) {
           const endedTime = formatTimeStr(res.data.shift_ended_at);
-          const stVal = res.data.task_status || 'Completed';
           if (viewShiftTaskBtn) {
             viewShiftTaskBtn.style.display = 'inline-flex';
             if (res.data.task_id) viewShiftTaskBtn.setAttribute('data-task-id', res.data.task_id);
           }
           if (shiftStatusBadge) {
-            shiftStatusBadge.textContent = `Shift Ended (${endedTime})`;
-            shiftStatusBadge.className = 'shift-wrapup-badge ' + (stVal === 'Completed' ? 'completed' : 'pending');
+            shiftStatusBadge.textContent = `Shift update submitted at ${endedTime}`;
+            shiftStatusBadge.className = 'shift-wrapup-badge completed';
           }
           if (shiftEndStatusMsg) {
             shiftEndStatusMsg.style.display = 'flex';
             shiftEndStatusMsg.className = 'shift-status-alert success';
             shiftEndStatusMsg.innerHTML = `
-              <div style="flex:1;">Shift ended at <b>${endedTime}</b> (Status: <b>${stVal}</b> — Synced to Tasks)</div>
+            <div style="flex:1;">Shift update submitted at <b>${endedTime}</b>.</div>
               <button type="button" class="shift-view-task-btn" style="padding: 6px 14px; font-size: 12px; margin-left: auto;" onclick="openShiftWorkTaskModal()">
                 <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                 <span>View Task</span>
@@ -2381,7 +2367,6 @@
     }
 
     const notes = (shiftEndNotes?.value || '').trim();
-    const statusVal = shiftEndTaskStatus?.value || 'Completed';
 
     if (!notes && !(planText?.value || '').trim()) {
       if (shiftEndStatusMsg) {
@@ -2400,7 +2385,6 @@
     const body = new FormData();
     body.append('action', 'shift_end_update');
     body.append('evening_update', notes);
-    body.append('task_status', statusVal);
     step2SelectedFiles.forEach(f => {
       body.append('shift_files[]', f);
     });
@@ -2436,7 +2420,7 @@
           shiftEndStatusMsg.style.display = 'flex';
           shiftEndStatusMsg.className = 'shift-status-alert success';
           shiftEndStatusMsg.innerHTML = `
-            <div style="flex:1;">🎉 <b>${res.message}</b> Added to your tasks as <b>${statusVal}</b>!</div>
+            <div style="flex:1;">🎉 <b>${res.message}</b> Your work update has been recorded.</div>
             <button type="button" class="shift-view-task-btn" style="padding: 6px 14px; font-size: 12px; margin-left: auto;" onclick="openShiftWorkTaskModal()">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
               <span>View Task</span>
@@ -2445,8 +2429,9 @@
         }
 
         if (shiftStatusBadge) {
-          shiftStatusBadge.textContent = 'Shift Ended (' + statusVal + ')';
-          shiftStatusBadge.className = 'shift-wrapup-badge ' + (statusVal === 'Completed' ? 'completed' : 'pending');
+          const submittedAt = res.data?.shift_ended_at ? formatTimeStr(res.data.shift_ended_at) : formatTimeStr(new Date().toISOString().replace('T', ' '));
+          shiftStatusBadge.textContent = 'Shift update submitted at ' + submittedAt;
+          shiftStatusBadge.className = 'shift-wrapup-badge completed';
         }
 
         // Immediately reload task list below
