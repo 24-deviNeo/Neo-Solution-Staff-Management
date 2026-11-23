@@ -32,8 +32,8 @@
     const tableBody = document.getElementById('taskTableBody');
     const taskCount = document.getElementById('taskCount');
     const taskSearchInput = document.getElementById('taskSearchInput');
-    const filterPills = document.querySelectorAll('#taskFilterGroup .filter-pill:not(select)');
     const taskEmployeeFilter = document.getElementById('taskEmployeeFilter');
+    const taskStatusFilter = document.getElementById('taskStatusFilter');
     const assignedTasksTab = document.getElementById('assignedTasksTab');
     const dailyWorkActivityTab = document.getElementById('dailyWorkActivityTab');
     const dailyWorkActivityPanel = document.getElementById('dailyWorkActivityPanel');
@@ -49,9 +49,6 @@
     const taskBoardColumns = document.getElementById('taskBoardColumns');
     const taskProjectFilter = document.getElementById('taskProjectFilter');
     const taskLayoutToolbar = document.getElementById('assignedTaskLayoutToolbar');
-    const taskTableViewTab = document.getElementById('taskTableViewTab');
-    const taskKanbanViewTab = document.getElementById('taskKanbanViewTab');
-    let activeTaskLayout = 'kanban';
     let dailyWorkActivities = [];
     let dailyPlanTaskIds = new Set();
     let activeFilter = 'All';
@@ -157,8 +154,8 @@
         else taskHeaderRow.style.removeProperty('display');
       }
       taskLayoutToolbar?.classList.toggle('task-view-content-hidden', showActivity);
-      taskTableContainer?.classList.toggle('task-view-content-hidden', showActivity || activeTaskLayout !== 'table');
-      taskBoardContainer?.classList.toggle('task-view-content-hidden', showActivity || activeTaskLayout !== 'kanban');
+      taskTableContainer?.classList.add('task-view-content-hidden');
+      taskBoardContainer?.classList.toggle('task-view-content-hidden', showActivity);
       if (dailyWorkActivityPanel) dailyWorkActivityPanel.style.display = showActivity ? 'block' : 'none';
       if (showActivity) window.fetchDailyWorkActivities();
     }
@@ -174,17 +171,6 @@
       if (dailyWorkDateFilter) dailyWorkDateFilter.value = '';
       renderDailyWorkActivities();
     });
-    function setTaskLayout(layout) {
-      activeTaskLayout = layout === 'kanban' ? 'kanban' : 'table';
-      taskTableViewTab?.classList.toggle('active', activeTaskLayout === 'table');
-      taskKanbanViewTab?.classList.toggle('active', activeTaskLayout === 'kanban');
-      taskTableViewTab?.setAttribute('aria-selected', String(activeTaskLayout === 'table'));
-      taskKanbanViewTab?.setAttribute('aria-selected', String(activeTaskLayout === 'kanban'));
-      showTaskManagementView('assigned');
-      renderTaskBoard();
-    }
-    taskTableViewTab?.addEventListener('click', () => setTaskLayout('table'));
-    taskKanbanViewTab?.addEventListener('click', () => setTaskLayout('kanban'));
     taskProjectFilter?.addEventListener('change', renderTaskTable);
     // ---- Fetch Tasks Live from MySQL Database ----
     window.fetchAdminTasks = function() {
@@ -333,14 +319,10 @@
     }
 
     // ---- Filter & Search Listeners ----
-    if (filterPills.length > 0) {
-      filterPills.forEach(btn => {
-        btn.addEventListener('click', () => {
-          filterPills.forEach(b => b.classList.remove('active'));
-          btn.classList.add('active');
-          activeFilter = btn.dataset.filter || 'All';
-          renderTaskTable();
-        });
+    if (taskStatusFilter) {
+      taskStatusFilter.addEventListener('change', () => {
+        activeFilter = taskStatusFilter.value || 'All';
+        renderTaskTable();
       });
     }
 
