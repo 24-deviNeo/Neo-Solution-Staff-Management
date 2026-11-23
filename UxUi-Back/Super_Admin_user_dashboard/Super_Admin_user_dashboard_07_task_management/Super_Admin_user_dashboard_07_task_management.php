@@ -208,22 +208,21 @@
     }
 
     .daily-work-activity-toolbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
+      display: grid;
+      gap: 8px;
       margin-bottom: 14px;
     }
-    .daily-work-activity-toolbar .task-search-box { flex: 1; max-width: 420px; margin: 0 !important; }
-    .daily-work-activity-filters {
+    .daily-work-activity-controls {
       display: grid;
-      grid-template-columns: minmax(180px, 1fr) minmax(160px, 220px);
+      grid-template-columns: minmax(260px, 1.5fr) minmax(190px, 1fr) minmax(170px, .85fr) auto;
+      align-items: end;
       gap: 10px;
-      margin: 0 0 12px;
+      min-width: 0;
     }
-    .daily-work-activity-filters select,
-    .daily-work-activity-filters input,
-    .daily-work-activity-filters button {
+    .daily-work-activity-controls .task-search-box { width:100%; max-width:none; min-width:0; margin:0 !important; }
+    .daily-work-activity-controls select,
+    .daily-work-activity-controls input,
+    .daily-work-activity-controls button {
       min-width: 0;
       min-height: 40px;
       box-sizing: border-box;
@@ -235,8 +234,7 @@
       font: inherit;
       font-size: 12px;
     }
-    .daily-work-activity-filters button { cursor: pointer; font-weight: 700; }
-    .daily-work-activity-toolbar #clearDailyWorkActivityFilters { min-height:40px; padding:8px 13px; border:1px solid #dbe3ee; border-radius:10px; background:#fff; color:#334155; font:inherit; font-size:12px; font-weight:700; cursor:pointer; white-space:nowrap; }
+    .daily-work-activity-controls button { cursor: pointer; font-weight: 700; white-space:nowrap; }
     .daily-work-filter-field { display: grid; gap: 4px; min-width: 0; color: #64748b; font-size: 10px; font-weight: 700; }
 
     .daily-work-activity-table-wrap {
@@ -1237,34 +1235,12 @@
         grid-column: 1 / -1;
       }
 
-      .daily-work-activity-toolbar {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) auto;
-        align-items: center;
-        gap: 8px;
-        margin-bottom: 10px;
-      }
-
-      .daily-work-activity-toolbar > .task-count-text { grid-column:1 / -1; }
-
-      .daily-work-activity-toolbar .task-search-box {
-        grid-column: 1;
-        width: 100%;
-        max-width: none;
-      }
-
-      .daily-work-activity-toolbar #clearDailyWorkActivityFilters {
-        min-height: 38px;
-        padding: 7px 10px;
-      }
-
-      .daily-work-activity-filters {
-        grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-        gap: 8px;
-        margin-bottom: 10px;
-      }
-
-      .daily-work-activity-filters > * { width: 100%; }
+      .daily-work-activity-toolbar { margin-bottom:10px; }
+      .daily-work-activity-controls { display:flex; flex-wrap:nowrap; align-items:end; gap:8px; max-width:100%; overflow-x:auto; padding-bottom:4px; overscroll-behavior-inline:contain; }
+      .daily-work-activity-controls .task-search-box { flex:0 0 260px; }
+      .daily-work-activity-controls .daily-work-filter-field { flex:0 0 180px; }
+      .daily-work-activity-controls .daily-work-filter-field:last-of-type { flex-basis:160px; }
+      .daily-work-activity-controls #clearDailyWorkActivityFilters { flex:0 0 auto; min-height:40px; padding:8px 11px; }
     }
 
     html.app-view .daily-work-activity-table-wrap {
@@ -1334,13 +1310,12 @@
 
     @media (max-width: 600px) {
       #Super_Admin_user_dashboard_07_task_management .task-header-row.task-view-content-hidden { display:none !important; }
-      #Super_Admin_user_dashboard_07_task_management .daily-work-activity-toolbar { display:grid !important; grid-template-columns:minmax(0,1fr) auto !important; }
-      #Super_Admin_user_dashboard_07_task_management .daily-work-activity-toolbar > .task-count-text { grid-column:1 / -1 !important; }
-      #Super_Admin_user_dashboard_07_task_management .daily-work-activity-toolbar .task-search-box { grid-column:1 !important; width:100% !important; max-width:none !important; }
-      #Super_Admin_user_dashboard_07_task_management .daily-work-activity-toolbar #clearDailyWorkActivityFilters { grid-column:2 !important; width:auto !important; }
       #Super_Admin_user_dashboard_07_task_management .daily-work-activity-toolbar .task-count-text { font-size: 12px; }
-      #Super_Admin_user_dashboard_07_task_management .daily-work-activity-toolbar .task-search-box { min-width: 0; padding: 10px 12px; }
-      #Super_Admin_user_dashboard_07_task_management .daily-work-activity-filters { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+      #Super_Admin_user_dashboard_07_task_management .daily-work-activity-controls { display:flex !important; flex-wrap:nowrap !important; overflow-x:auto !important; }
+      #Super_Admin_user_dashboard_07_task_management .daily-work-activity-controls .task-search-box { flex:0 0 240px !important; width:240px !important; }
+      #Super_Admin_user_dashboard_07_task_management .daily-work-activity-controls .daily-work-filter-field { flex:0 0 160px !important; }
+      #Super_Admin_user_dashboard_07_task_management .daily-work-activity-controls .daily-work-filter-field:last-of-type { flex-basis:145px !important; }
+      #Super_Admin_user_dashboard_07_task_management .daily-work-activity-controls #clearDailyWorkActivityFilters { flex:0 0 auto !important; width:auto !important; }
       #Super_Admin_user_dashboard_07_task_management .daily-work-board-columns { grid-template-columns:1fr; gap:10px; }
       #Super_Admin_user_dashboard_07_task_management .daily-work-board-lane { padding:10px; }
       #Super_Admin_user_dashboard_07_task_management .daily-work-board-card { padding:12px; }
@@ -1452,15 +1427,15 @@
         <section class="daily-work-activity-panel" id="dailyWorkActivityPanel" style="display:none;" aria-label="Daily work plans and updates">
           <div class="daily-work-activity-toolbar">
             <p class="task-count-text" id="dailyWorkActivityCount">Loading daily work activity...</p>
-            <div class="task-search-box">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-              <input type="search" id="dailyWorkActivitySearch" autocomplete="off" placeholder="Search employees, plans, updates, or status...">
+            <div class="daily-work-activity-controls" aria-label="Filter daily work records">
+              <div class="task-search-box">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                <input type="search" id="dailyWorkActivitySearch" autocomplete="off" placeholder="Search employees, plans, updates, or status...">
+              </div>
+              <label class="daily-work-filter-field">Employee<select id="dailyWorkEmployeeFilter" aria-label="Filter by employee"><option value="">All employees</option></select></label>
+              <label class="daily-work-filter-field">Plan date<input type="date" id="dailyWorkDateFilter" aria-label="Filter by plan date"></label>
+              <button type="button" id="clearDailyWorkActivityFilters">Clear filters</button>
             </div>
-            <button type="button" id="clearDailyWorkActivityFilters">Clear filters</button>
-          </div>
-          <div class="daily-work-activity-filters" aria-label="Filter daily work records">
-            <label class="daily-work-filter-field">Employee<select id="dailyWorkEmployeeFilter" aria-label="Filter by employee"><option value="">All employees</option></select></label>
-            <label class="daily-work-filter-field">Plan date<input type="date" id="dailyWorkDateFilter" aria-label="Filter by plan date"></label>
           </div>
           <div class="daily-work-board-columns" id="dailyWorkActivityBoard" aria-live="polite">
             <div class="daily-work-board-loading">Loading daily work plans...</div>
