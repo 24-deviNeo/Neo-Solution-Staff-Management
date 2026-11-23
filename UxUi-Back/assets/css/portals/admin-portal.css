@@ -1263,12 +1263,6 @@ body #Admin_user_dashboard_02_employees .onboarding-stat-card {
     box-sizing: border-box !important;
 }
 
-/* Clear nested padding in Employees while retaining the shared page gutter. */
-body #Admin_user_dashboard_02_employees .main > *:not(.topbar):not(.overlay):not(.w3-modal-overlay):not(.w3-modal):not(.modal):not(.modal-overlay) {
-    padding-left: 0 !important;
-    padding-right: 0 !important;
-}
-
 /* Keep Admin and Super Admin Dashboard card text on the same typography,
    alignment and spacing after shared portal overrides are applied. */
 body #Admin_user_dashboard_01 .card-header-row,
@@ -1524,6 +1518,24 @@ body :is(
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
+    }
+}
+
+/* Keep Employees web content on one shared horizontal inset. */
+@media (min-width: 901px) {
+    body #Admin_user_dashboard_02_employees,
+    body #Super_Admin_user_dashboard_02_employees {
+        padding-left: var(--erp-page-gutter, 20px) !important;
+        padding-right: var(--erp-page-gutter, 20px) !important;
+    }
+
+    body #Admin_user_dashboard_02_employees > .main > :not(.topbar):not(.overlay):not(.w3-modal-overlay),
+    body #Super_Admin_user_dashboard_02_employees > .main > :not(.topbar):not(.overlay):not(.w3-modal-overlay) {
+        width: 100% !important;
+        max-width: 100% !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        box-sizing: border-box !important;
     }
 }
 
