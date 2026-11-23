@@ -340,7 +340,7 @@
       max-width: 100vw;
     }
 
-    .task-layout-toolbar { display:grid; grid-template-columns:minmax(150px,1fr) minmax(180px,auto) auto; align-items:center; gap:14px; padding:13px 15px; border:1px solid #e4e9f2; border-radius:14px; background:linear-gradient(120deg,#fff,#f8faff); box-shadow:0 3px 10px rgba(20,32,77,.04); }
+    .task-layout-toolbar { display:grid; grid-template-columns:minmax(150px,1fr) minmax(180px,auto); align-items:center; gap:14px; padding:13px 15px; border:1px solid #e4e9f2; border-radius:14px; background:linear-gradient(120deg,#fff,#f8faff); box-shadow:0 3px 10px rgba(20,32,77,.04); }
     .task-layout-title { display:grid; gap:3px; min-width:0; }
     .task-layout-title strong { color:#14204d; font-size:14px; font-weight:800; }
     .task-layout-title span { color:#7b879b; font-size:11px; }
@@ -1236,11 +1236,45 @@
       }
 
       .daily-work-activity-toolbar { margin-bottom:10px; }
-      .daily-work-activity-controls { display:flex; flex-wrap:nowrap; align-items:end; gap:8px; max-width:100%; overflow-x:auto; padding-bottom:4px; overscroll-behavior-inline:contain; }
-      .daily-work-activity-controls .task-search-box { flex:0 0 260px; }
-      .daily-work-activity-controls .daily-work-filter-field { flex:0 0 180px; }
-      .daily-work-activity-controls .daily-work-filter-field:last-of-type { flex-basis:160px; }
-      .daily-work-activity-controls #clearDailyWorkActivityFilters { flex:0 0 auto; min-height:40px; padding:8px 11px; }
+      .daily-work-activity-controls {
+        display: grid !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        align-items: end !important;
+        gap: 8px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        overflow: visible !important;
+        padding-bottom: 0 !important;
+      }
+      .daily-work-activity-controls .task-search-box {
+        grid-column: 1 / 2 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        min-width: 0 !important;
+        flex: none !important;
+      }
+      .daily-work-activity-controls .daily-work-filter-field:first-of-type {
+        grid-column: 2 / 3 !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        flex: none !important;
+      }
+      .daily-work-activity-controls .daily-work-filter-field:last-of-type {
+        grid-column: 1 / 2 !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        flex: none !important;
+        flex-basis: auto !important;
+      }
+      .daily-work-activity-controls #clearDailyWorkActivityFilters {
+        grid-column: 2 / 3 !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        flex: none !important;
+        min-height: 40px !important;
+        padding: 8px 11px !important;
+      }
     }
 
     html.app-view .daily-work-activity-table-wrap {
@@ -1311,11 +1345,34 @@
     @media (max-width: 600px) {
       #Admin_user_dashboard_07_task_management .task-header-row.task-view-content-hidden { display:none !important; }
       #Admin_user_dashboard_07_task_management .daily-work-activity-toolbar .task-count-text { font-size: 12px; }
-      #Admin_user_dashboard_07_task_management .daily-work-activity-controls { display:flex !important; flex-wrap:nowrap !important; overflow-x:auto !important; }
-      #Admin_user_dashboard_07_task_management .daily-work-activity-controls .task-search-box { flex:0 0 240px !important; width:240px !important; }
-      #Admin_user_dashboard_07_task_management .daily-work-activity-controls .daily-work-filter-field { flex:0 0 160px !important; }
-      #Admin_user_dashboard_07_task_management .daily-work-activity-controls .daily-work-filter-field:last-of-type { flex-basis:145px !important; }
-      #Admin_user_dashboard_07_task_management .daily-work-activity-controls #clearDailyWorkActivityFilters { flex:0 0 auto !important; width:auto !important; }
+      #Admin_user_dashboard_07_task_management .daily-work-activity-controls {
+        display: grid !important;
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        gap: 8px !important;
+        width: 100% !important;
+        overflow: visible !important;
+      }
+      #Admin_user_dashboard_07_task_management .daily-work-activity-controls .task-search-box {
+        grid-column: 1 / 2 !important;
+        width: 100% !important;
+        flex: none !important;
+      }
+      #Admin_user_dashboard_07_task_management .daily-work-activity-controls .daily-work-filter-field:first-of-type {
+        grid-column: 2 / 3 !important;
+        width: 100% !important;
+        flex: none !important;
+      }
+      #Admin_user_dashboard_07_task_management .daily-work-activity-controls .daily-work-filter-field:last-of-type {
+        grid-column: 1 / 2 !important;
+        width: 100% !important;
+        flex: none !important;
+        flex-basis: auto !important;
+      }
+      #Admin_user_dashboard_07_task_management .daily-work-activity-controls #clearDailyWorkActivityFilters {
+        grid-column: 2 / 3 !important;
+        width: 100% !important;
+        flex: none !important;
+      }
       #Admin_user_dashboard_07_task_management .daily-work-board-columns { grid-template-columns:1fr; gap:10px; }
       #Admin_user_dashboard_07_task_management .daily-work-board-lane { padding:10px; }
       #Admin_user_dashboard_07_task_management .daily-work-board-card { padding:12px; }
@@ -1329,6 +1386,55 @@
       #Admin_user_dashboard_07_task_management .daily-work-activity-table td[data-label="Shift Update"],
       #Admin_user_dashboard_07_task_management .daily-work-activity-table td[data-label="Assigned Task"] { grid-column: 1 / -1; }
       #Admin_user_dashboard_07_task_management .daily-work-activity-copy { line-height: 1.45; }
+    }
+
+    @media (max-width: 900px) {
+      html.app-view #Admin_user_dashboard_07_task_management { padding-bottom: calc(96px + env(safe-area-inset-bottom)) !important; }
+      #Admin_user_dashboard_07_task_management .main-task-wrapper { gap: 8px !important; }
+      #Admin_user_dashboard_07_task_management .task-view-tabs { margin-bottom: 2px !important; }
+      #Admin_user_dashboard_07_task_management .task-controls-row {
+        display: grid !important;
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+        align-items: center !important;
+        gap: 4px !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        margin-bottom: 0 !important;
+        overflow: visible !important;
+      }
+      #Admin_user_dashboard_07_task_management .task-controls-row > .task-search-box {
+        grid-column: 1 !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+        gap: 4px !important;
+        height: 44px !important;
+        min-height: 44px !important;
+        padding: 0 7px !important;
+      }
+      #Admin_user_dashboard_07_task_management .task-filter-group { display: contents !important; }
+      #Admin_user_dashboard_07_task_management .task-filter-select {
+        width: 100% !important;
+        min-width: 0 !important;
+        margin-left: 0 !important;
+        height: 44px !important;
+        min-height: 44px !important;
+        padding: 0 4px !important;
+        font-size: 10px !important;
+        white-space: nowrap !important;
+      }
+      #Admin_user_dashboard_07_task_management #taskEmployeeFilter { grid-column: 2 !important; }
+      #Admin_user_dashboard_07_task_management #taskStatusFilter { grid-column: 3 !important; }
+      #Admin_user_dashboard_07_task_management .task-controls-row > .task-search-box input { min-width: 0 !important; width: 100% !important; font-size: 11px !important; }
+      #Admin_user_dashboard_07_task_management .task-board-columns,
+      #Admin_user_dashboard_07_task_management .daily-work-board-columns { grid-template-columns: minmax(0, 1fr) !important; gap: 10px !important; }
+      #Admin_user_dashboard_07_task_management .task-layout-toolbar,
+      #Admin_user_dashboard_07_task_management .task-project-picker { grid-template-columns: minmax(0, 1fr) !important; }
+      #Admin_user_dashboard_07_task_management .task-project-picker select { min-width: 0 !important; }
+      #Admin_user_dashboard_07_task_management .task-layout-tabs { display: none !important; }
+      #Admin_user_dashboard_07_task_management .task-board-card-footer { flex-wrap: wrap; }
+      #Admin_user_dashboard_07_task_management .w3-modal-overlay { align-items: flex-start !important; overflow-y: auto !important; overscroll-behavior: contain; padding-top: max(12px, env(safe-area-inset-top)) !important; padding-bottom: max(12px, env(safe-area-inset-bottom)) !important; }
+      #Admin_user_dashboard_07_task_management .w3-modal-card { max-height: calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important; overflow-y: auto !important; -webkit-overflow-scrolling: touch; }
     }
 </style>
 
@@ -1372,16 +1478,18 @@
         <div class="task-controls-row">
           <div class="task-search-box">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-            <input type="search" id="taskSearchInput" name="portal_task_lookup" autocomplete="new-password" autocorrect="off" spellcheck="false" readonly placeholder="Search tasks by title, department, or employee...">
+            <input type="search" id="taskSearchInput" name="portal_task_lookup" autocomplete="new-password" autocorrect="off" spellcheck="false" readonly placeholder="Search tasks...">
           </div>
 
           <div class="task-filter-group" id="taskFilterGroup">
-            <button class="filter-pill active" data-filter="All">All</button>
-            <button class="filter-pill" data-filter="Pending">Pending</button>
-            <button class="filter-pill" data-filter="In Progress">In Progress</button>
-            <button class="filter-pill" data-filter="Completed">Completed</button>
-            <select id="taskEmployeeFilter" class="filter-pill" style="display: block; appearance: auto; pointer-events: auto; position: relative; z-index: 2; padding: 7px 14px; outline: none; margin-left: auto; cursor: pointer; background-color: #fff; border: 1px solid #e2e8f0; border-radius: 999px;">
+            <select id="taskEmployeeFilter" class="filter-pill task-filter-select" aria-label="Filter tasks by employee" style="display: block; appearance: auto; pointer-events: auto; position: relative; z-index: 2; padding: 7px 14px; outline: none; margin-left: auto; cursor: pointer; background-color: #fff; border: 1px solid #e2e8f0; border-radius: 999px;">
               <option value="All">All Employees</option>
+            </select>
+            <select id="taskStatusFilter" class="filter-pill task-filter-select" aria-label="Filter tasks by work status">
+              <option value="All">All statuses</option>
+              <option value="Pending">To do</option>
+              <option value="In Progress">In progress</option>
+              <option value="Completed">Completed</option>
             </select>
           </div>
         </div>
@@ -1391,10 +1499,6 @@
           <label class="task-project-picker">Project
             <select id="taskProjectFilter"><option value="all">All projects</option></select>
           </label>
-          <div class="task-layout-tabs" role="tablist" aria-label="Assigned task layout">
-            <button type="button" class="task-layout-tab" id="taskTableViewTab" role="tab" aria-selected="false">Table</button>
-            <button type="button" class="task-layout-tab active" id="taskKanbanViewTab" role="tab" aria-selected="true">Kanban</button>
-          </div>
         </div>
 
         <!-- Dynamic Responsive Table -->
