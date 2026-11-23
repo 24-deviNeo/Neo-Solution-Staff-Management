@@ -1015,3 +1015,166 @@ body, html {
 
 
 
+
+
+/* ==========================================================================
+   GLOBAL FIT & TEXT CONTAINMENT SAFEGUARDS
+   Text sizes stay inside containers, cards, and buttons with proper breathing room
+   ========================================================================== */
+
+/* Universal text wrapping & containment safeguards */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+body, html {
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+}
+
+/* Ensure headings and titles stay strictly inside bounds */
+h1, h2, h3, h4, h5, h6,
+.page-title, .header-title, .card-title, .erp-card__title {
+    overflow-wrap: break-word;
+    word-break: break-word;
+    max-width: 100%;
+    line-height: 1.35;
+}
+
+/* Standardize buttons so full text is visible with comfortable padding */
+button,
+.btn,
+.w3-button,
+.admin-bottom-nav-link,
+.emp-bottom-nav-link,
+input[type="button"],
+input[type="submit"],
+input[type="reset"] {
+    box-sizing: border-box !important;
+    max-width: 100% !important;
+    white-space: normal;
+    word-break: normal;
+    overflow-wrap: break-word;
+    text-align: center;
+    line-height: 1.35;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+/* For single-line action buttons & badges, ensure flex layout and no overflow clipping */
+.btn-primary,
+.btn-secondary,
+.btn-submit,
+.btn-accent,
+.erp-btn,
+.action-btn {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 6px !important;
+    padding: 8px 14px !important;
+    min-height: 36px !important;
+    height: auto !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    letter-spacing: normal !important;
+}
+
+/* Badges, pills and tags must always fit their text */
+.badge,
+.tag,
+.status-pill,
+.status-badge,
+[class*="badge-"],
+[class*="status-"] {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    box-sizing: border-box !important;
+    max-width: 100% !important;
+    padding: 3px 8px !important;
+    font-size: 11.5px !important;
+    font-weight: 600 !important;
+    line-height: 1.3 !important;
+    white-space: nowrap !important;
+    gap: 4px !important;
+    height: auto !important;
+    min-height: 22px !important;
+}
+
+/* Cards, boxes and containers padding & spacing */
+.erp-card,
+.card,
+.stat-card,
+.table-card,
+.settings-card,
+.notif-card,
+.content-card,
+.w3-card,
+.w3-card-2,
+.w3-card-4,
+.dashboard-card,
+.info-card,
+.pd-bento-card {
+    box-sizing: border-box !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+    word-wrap: break-word !important;
+}
+
+/* Table cells wrap safely and keep comfortable cell padding */
+table th,
+table td {
+    overflow-wrap: break-word;
+    word-break: normal;
+    padding: 10px 12px;
+}
+
+/* Inputs and selects must never exceed container boundary */
+input,
+select,
+textarea {
+    box-sizing: border-box !important;
+    max-width: 100% !important;
+    padding: 8px 12px !important;
+    font-size: 13.5px !important;
+    line-height: 1.4 !important;
+}
+
+/* Bottom navigation bar buttons text sizing */
+.admin-bottom-nav,
+.emp-bottom-nav,
+.mobile-bottom-nav {
+    display: flex !important;
+    justify-content: space-around !important;
+    align-items: center !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 4px 6px !important;
+}
+
+.admin-bottom-nav-link,
+.emp-bottom-nav-link {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 10.5px !important;
+    font-weight: 600 !important;
+    padding: 4px 6px !important;
+    min-width: 0 !important;
+    flex: 1 1 0 !important;
+    gap: 3px !important;
+}
+
+.admin-bottom-nav-link span,
+.emp-bottom-nav-link span {
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+    max-width: 100% !important;
+    font-size: 10.5px !important;
+    line-height: 1.2 !important;
+}
