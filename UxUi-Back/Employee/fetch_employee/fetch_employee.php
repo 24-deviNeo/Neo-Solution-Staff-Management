@@ -45,6 +45,9 @@ try {
         `schedule_end_date` date DEFAULT NULL,
         `work_mode` varchar(100) DEFAULT 'On-Site (Active)',
         `probation_status` varchar(100) DEFAULT 'In Progress',
+        `probation_required` tinyint(1) NOT NULL DEFAULT 0,
+        `probation_days_worked` int NOT NULL DEFAULT 0,
+        `probation_period_days` int NOT NULL DEFAULT 15,
         `probation_start_date` date DEFAULT NULL,
         `probation_end_date` date DEFAULT NULL,
         `official_start_date` date DEFAULT NULL,
@@ -57,6 +60,42 @@ try {
         PRIMARY KEY (`id`),
         KEY `idx_user_id` (`user_id`)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci");
+
+    // Backfill the probation workflow fields for databases created before
+    // probation was made optional and admin-approved.
+    foreach ([
+        'probation_required' => 'tinyint(1) NOT NULL DEFAULT 0',
+        'probation_days_worked' => 'int NOT NULL DEFAULT 0',
+        'probation_last_counted_date' => 'date DEFAULT NULL'
+    ] as $probationColumn => $probationDefinition) {
+        $columnExists = $conn->query("SHOW COLUMNS FROM `employee_profiles` WHERE `Field` = '{$probationColumn}'");
+        if ($columnExists && $columnExists->num_rows === 0) {
+            $conn->query("ALTER TABLE `employee_profiles` ADD COLUMN `{$probationColumn}` {$probationDefinition}");
+        }
+    }
+
+    // Older Admin saves could attach probation to a duplicate/older profile
+    // row. Carry that assignment forward to the newest row used by the portal.
+    try {
+        $assignedUsers = $conn->query("SELECT DISTINCT `user_id` FROM `employee_profiles` WHERE `user_id` > 0 AND `probation_required` = 1");
+        if ($assignedUsers) {
+            while ($assignedUser = $assignedUsers->fetch_assoc()) {
+                $probationUserId = (int)$assignedUser['user_id'];
+                $latestResult = $conn->query("SELECT * FROM `employee_profiles` WHERE `user_id` = {$probationUserId} ORDER BY `id` DESC LIMIT 1");
+                $latestProfile = $latestResult ? $latestResult->fetch_assoc() : null;
+                if (!$latestProfile || (int)($latestProfile['probation_required'] ?? 0) === 1) continue;
+                $sourceResult = $conn->query("SELECT * FROM `employee_profiles` WHERE `user_id` = {$probationUserId} AND `probation_required` = 1 ORDER BY `id` DESC LIMIT 1");
+                $sourceProfile = $sourceResult ? $sourceResult->fetch_assoc() : null;
+                if (!$sourceProfile) continue;
+                $sourceStatus = $conn->real_escape_string((string)($sourceProfile['probation_status'] ?? 'In Progress'));
+                $sourceDays = max(1, (int)($sourceProfile['probation_period_days'] ?? 15));
+                $workedDays = max(0, (int)($sourceProfile['probation_days_worked'] ?? 0));
+                $startDate = !empty($sourceProfile['probation_start_date']) ? "'" . $conn->real_escape_string($sourceProfile['probation_start_date']) . "'" : 'NULL';
+                $endDate = !empty($sourceProfile['probation_end_date']) ? "'" . $conn->real_escape_string($sourceProfile['probation_end_date']) . "'" : 'NULL';
+                $conn->query("UPDATE `employee_profiles` SET `probation_required` = 1, `probation_status` = '{$sourceStatus}', `probation_period_days` = {$sourceDays}, `probation_days_worked` = {$workedDays}, `probation_start_date` = {$startDate}, `probation_end_date` = {$endDate} WHERE `id` = " . (int)$latestProfile['id']);
+            }
+        }
+    } catch (\Throwable $e) {}
 
     // Keep administrator accounts out of employee pickers, including legacy
     // profile and employee-table rows linked to an administrator login.
@@ -84,7 +123,10 @@ try {
     $todayDay = date('D');
 
     // 1. Fetch live employee profile(s) from employee_profiles table
-    $prof_res = $db->get_result("SELECT * FROM `employee_profiles` ORDER BY `id` ASC");
+    // Use the same newest profile row as fetch_profile.php. Some older saves
+    // created duplicate profile rows for one login; the oldest row could show
+    // a different probation flag in Admin than the employee's own portal.
+    $prof_res = $db->get_result("SELECT * FROM `employee_profiles` ORDER BY `id` DESC");
     if ($prof_res && $prof_res->num_rows > 0) {
         while ($p = $prof_res->fetch_assoc()) {
             $name = !empty($p['full_name']) ? trim($p['full_name']) : '';
@@ -155,6 +197,7 @@ try {
 
             $employees[] = [
                 'id'              => (int)$p['id'],
+                'profile_id'      => (int)$p['id'],
                 'account_id'      => $uId,
                 'initials'        => $initials,
                 'name'            => $name,
@@ -178,6 +221,13 @@ try {
                 'today_work_mode' => $dailyWorkMode,
                 'today_mode_type' => $dailyModeType,
                 'employment_type' => !empty($p['employment_type']) ? $p['employment_type'] : 'Full-Time (Permanent)',
+                'official_start_date' => !empty($p['official_start_date']) ? $p['official_start_date'] : '',
+                'probation_status' => (int)($p['probation_required'] ?? 0) === 1 ? (!empty($p['probation_status']) ? $p['probation_status'] : 'In Progress') : 'Not Required',
+                'probation_required' => (int)($p['probation_required'] ?? 0),
+                'probation_days_worked' => (int)($p['probation_days_worked'] ?? 0),
+                'probation_period_days' => isset($p['probation_period_days']) ? max(1, (int)$p['probation_period_days']) : 15,
+                'probation_start_date' => !empty($p['probation_start_date']) ? $p['probation_start_date'] : (!empty($p['join_date']) ? $p['join_date'] : ''),
+                'probation_end_date' => !empty($p['probation_end_date']) ? $p['probation_end_date'] : '',
                 'em_name'         => !empty($p['emergency_contact_name']) ? $p['emergency_contact_name'] : '',
                 'em_phone'        => !empty($p['emergency_contact_phone']) ? $p['emergency_contact_phone'] : ''
             ];
