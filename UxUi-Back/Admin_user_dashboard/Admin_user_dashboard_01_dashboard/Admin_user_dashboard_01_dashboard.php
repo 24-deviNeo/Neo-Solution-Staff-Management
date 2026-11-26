@@ -943,7 +943,7 @@
       </div>
 
       <!-- Pending Tasks -> Task Management -->
-      <div class="stat-card" onclick="if(typeof Admin_user_dashboard_07_OPEN === 'function') Admin_user_dashboard_07_OPEN();" title="View Tasks" style="cursor: pointer;">
+      <div class="stat-card" onclick="if(typeof Admin_user_dashboard_07_OPEN === 'function') Admin_user_dashboard_07_OPEN('Pending');" title="View Pending Tasks" style="cursor: pointer;">
         <div class="stat-icon amber">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
@@ -954,7 +954,7 @@
       </div>
 
       <!-- Completed Tasks -> Task Management -->
-      <div class="stat-card" onclick="if(typeof Admin_user_dashboard_07_OPEN === 'function') Admin_user_dashboard_07_OPEN();" title="View Completed Tasks" style="cursor: pointer;">
+      <div class="stat-card" onclick="if(typeof Admin_user_dashboard_07_OPEN === 'function') Admin_user_dashboard_07_OPEN('Completed');" title="View Completed Tasks" style="cursor: pointer;">
         <div class="stat-icon navy">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <rect x="3" y="3" width="18" height="18" rx="2"/><path d="m9 12 2 2 4-4"/>
