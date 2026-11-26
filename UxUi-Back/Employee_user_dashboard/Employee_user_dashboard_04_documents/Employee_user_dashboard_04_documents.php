@@ -1134,7 +1134,7 @@
             window.loadEmpPendingDocRequests();
           }
 
-          alert(docType + ' saved and uploaded to database successfully!');
+          
         } else {
           alert('Upload failed: ' + (response.message || 'Error occurred.'));
           if (tag) {
@@ -1227,7 +1227,7 @@
           if (viewBtn) viewBtn.disabled = true;
           if (delBtn) delBtn.disabled = true;
 
-          alert(docType + ' deleted permanently from database.');
+          
         } else {
           if (delBtn) delBtn.disabled = false;
           alert('Delete failed: ' + (res.message || 'Error occurred.'));
