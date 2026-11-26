@@ -318,9 +318,13 @@
 
   .row-actions { display: flex; align-items: center; justify-content: center; margin: 0 auto; gap: 6px; }
   .action-btn {
-    width: 34px;
-    height: 34px;
+    width: 34px !important;
+    height: 34px !important;
+    min-width: 34px !important;
+    min-height: 34px !important;
+    max-width: 34px !important;
     padding: 0 !important;
+    box-sizing: border-box !important;
     border-radius: 8px;
     display: inline-flex;
     align-items: center;
@@ -329,15 +333,15 @@
     border: none;
     transition: filter 0.15s ease, transform 0.15s ease;
   }
-  .action-btn svg { width: 22px; height: 22px; }
+  .action-btn svg { width: 16px !important; height: 16px !important; }
   .action-btn.view { background-color: var(--blue-lighter); color: var(--blue); }
   .action-btn.plan { background-color: var(--green-bg); color: var(--green); }
   .action-btn:hover { filter: brightness(0.92); transform: translateY(-1px); }
 
   @media (min-width: 769px) {
     html:not(.app-view) #Super_Admin_user_dashboard_02_employees .row-actions .action-btn svg {
-      width: 20px !important;
-      height: 20px !important;
+      width: 16px !important;
+      height: 16px !important;
       max-width: none !important;
       max-height: none !important;
       display: block !important;
@@ -990,17 +994,26 @@
       word-break: break-word;
     }
     .mobile-emp-card-actions {
-      flex-wrap: wrap;
-      gap: 8px;
+      flex-wrap: nowrap;
+      justify-content: flex-end;
+      gap: 6px;
     }
     .mobile-emp-card-actions > button {
-      flex: 1 1 calc(50% - 4px);
-      min-width: 0;
-      padding-left: 8px;
-      padding-right: 8px;
+      flex: 0 0 40px;
+      width: 40px;
+      height: 40px;
+      min-width: 40px;
+      padding: 0 !important;
       white-space: nowrap;
+      border-radius: 9px;
     }
-    .mobile-emp-card-actions > button i { font-size: 20px !important; line-height: 1 !important; }
+    .mobile-emp-card-actions > button i { font-size: 16px !important; line-height: 1 !important; }
+    .mobile-emp-card-actions > button span { display: none; }
+    .mobile-emp-card-actions .btn-mobile-emp-view { background: #eff6ff; border-color: #dbeafe; color: #3156b5; }
+    .mobile-emp-card-actions .btn-mobile-emp-edit { background: #f8fafc; border-color: #e2e8f0; color: #475569; }
+    .mobile-emp-card-actions .btn-mobile-emp-plan { background: #f0fdf4; border-color: #dcfce7; color: #15803d; }
+    .mobile-emp-card-actions > button { transition: background-color .15s ease, border-color .15s ease; }
+    .mobile-emp-card-actions > button:focus-visible { outline: 2px solid #94a3b8; outline-offset: 2px; }
 
     /* Onboarding Stats Grid 3 in one row for mobile */
     .onboarding-stats-grid {
@@ -1192,7 +1205,6 @@
       padding: 8px 14px !important;
     }
   }
-  .admin-status-select { display: none; }
   @media (max-width: 900px) {
     #sectionAdminAccounts .admin-accounts-toolbar {
       display: block !important;
@@ -1207,8 +1219,7 @@
       width: 100% !important;
       min-width: 0 !important;
     }
-    #sectionAdminAccounts .admin-accounts-filter-row .w3-search-box,
-    #sectionAdminAccounts .admin-accounts-filter-row #adminStatusFilter {
+    #sectionAdminAccounts .admin-accounts-filter-row .w3-search-box {
       width: 100% !important;
       min-width: 0 !important;
       max-width: 100% !important;
@@ -1284,16 +1295,6 @@
     #sectionAdminAccounts .admin-accounts-filter-row {
       grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr) !important;
     }
-    #sectionAdminAccounts .admin-accounts-filter-row #adminStatusFilter {
-      display: block !important;
-      padding: 0 8px !important;
-      border: 1px solid #cbd5e1 !important;
-      border-radius: 10px !important;
-      background: #fff !important;
-      color: #334155 !important;
-      font-size: 11px !important;
-    }
-    #sectionAdminAccounts #adminFilterPills { display: none !important; }
   }
 </style>
 
@@ -1369,6 +1370,7 @@
               <div class="w3-pill active" data-filter="all">All</div>
               <div class="w3-pill" data-filter="active">Active</div>
               <div class="w3-pill" data-filter="inactive">Inactive</div>
+              <div class="w3-pill" data-filter="probation">Probation</div>
             </div>
           </div>
         </div>
@@ -1384,6 +1386,7 @@
                 <th>Department</th>
                 <th>Job Role</th>
                 <th>Status</th>
+                <th>Probation Dates</th>
                 <th>Joined</th>
                 <th style="text-align: center;">Actions</th>
               </tr>
@@ -1556,12 +1559,6 @@
             <div class="w3-pill" data-filter="active" onclick="filterAdminTable('active')">Active</div>
             <div class="w3-pill" data-filter="blocked" onclick="filterAdminTable('blocked')">Declined</div>
           </div>
-          <select id="adminStatusFilter" class="admin-status-select" aria-label="Filter accounts by status" onchange="filterAdminTable(this.value)">
-            <option value="all">All</option>
-            <option value="pending">Pending Approval</option>
-            <option value="active">Active</option>
-            <option value="blocked">Declined</option>
-          </select>
         </div>
       </div>
 
@@ -1999,6 +1996,45 @@
                   <option value="Contract">Contract</option>
                   <option value="Internship">Internship</option>
                 </select>
+              </div>
+            </div>
+            <div style="font-size:12px; font-weight:800; color:#64748b; text-transform:uppercase; letter-spacing:0.04em; margin:16px 0 8px; border-top:1px solid #e2e8f0; padding-top:14px;">Career Timeline &amp; Service Milestones</div>
+            <div class="w3-form-row">
+              <div class="w3-form-group">
+                <label>Official Appointment Date</label>
+                <input type="date" id="editEmpOfficialStartDate">
+              </div>
+              <div class="w3-form-group">
+                <label>Probation Required</label>
+                <select id="editEmpProbationRequired">
+                  <option value="0">No — standard employee</option>
+                  <option value="1">Yes — probation applies</option>
+                </select>
+              </div>
+              <div class="w3-form-group">
+                <label>Probation / Approval Status</label>
+                <select id="editEmpProbationStatus">
+                  <option value="Not Required">Not Required</option>
+                  <option value="In Progress">In Progress</option>
+                  <option value="Pending Approval">Pending Approval</option>
+                  <option value="Confirmed Staff">Confirmed Staff (Admin approved)</option>
+                </select>
+              </div>
+            </div>
+            <div class="w3-form-row">
+              <div class="w3-form-group">
+                <label>Probation Start Date</label>
+                <input type="date" id="editEmpProbationStartDate">
+              </div>
+              <div class="w3-form-group">
+                <label>Probation Review / End Date</label>
+                <input type="date" id="editEmpProbationEndDate">
+              </div>
+            </div>
+            <div class="w3-form-row">
+              <div class="w3-form-group">
+                <label>Probation Length (Days)</label>
+                <input type="number" id="editEmpProbationDays" min="1" max="365" value="15" inputmode="numeric">
               </div>
             </div>
             <div class="w3-form-row">
