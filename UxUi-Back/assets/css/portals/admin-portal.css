@@ -949,6 +949,28 @@ body .erp-footer {
         min-width: 0 !important;
         padding-inline: clamp(8px, 1.2vw, 14px) !important;
     }
+
+    /* Keep salary chips and receipt actions inside their table columns. */
+    :is(#Admin_user_dashboard_04_bank_details, #Super_Admin_user_dashboard_04_bank_details) .table-wrap {
+        max-width: 100% !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+    }
+
+    :is(#Admin_user_dashboard_04_bank_details, #Super_Admin_user_dashboard_04_bank_details) #adminTabBankAccountsView table.emp-table colgroup col:nth-child(1) { width: 18% !important; }
+    :is(#Admin_user_dashboard_04_bank_details, #Super_Admin_user_dashboard_04_bank_details) #adminTabBankAccountsView table.emp-table colgroup col:nth-child(2) { width: 15% !important; }
+    :is(#Admin_user_dashboard_04_bank_details, #Super_Admin_user_dashboard_04_bank_details) #adminTabBankAccountsView table.emp-table colgroup col:nth-child(3) { width: 22% !important; }
+    :is(#Admin_user_dashboard_04_bank_details, #Super_Admin_user_dashboard_04_bank_details) #adminTabBankAccountsView table.emp-table colgroup col:nth-child(4) { width: 13% !important; }
+    :is(#Admin_user_dashboard_04_bank_details, #Super_Admin_user_dashboard_04_bank_details) #adminTabBankAccountsView table.emp-table colgroup col:nth-child(5) { width: 17% !important; }
+    :is(#Admin_user_dashboard_04_bank_details, #Super_Admin_user_dashboard_04_bank_details) #adminTabBankAccountsView table.emp-table colgroup col:nth-child(6) { width: 15% !important; }
+
+    :is(#Admin_user_dashboard_04_bank_details, #Super_Admin_user_dashboard_04_bank_details) #adminTabBankAccountsView .salary-chip,
+    :is(#Admin_user_dashboard_04_bank_details, #Super_Admin_user_dashboard_04_bank_details) #adminTabBankAccountsView .table-pay-btn {
+        gap: 4px !important;
+        padding: 4px 6px !important;
+        font-size: 10.5px !important;
+        max-width: 100% !important;
+    }
 }
 
 @media (max-width: 900px) {
