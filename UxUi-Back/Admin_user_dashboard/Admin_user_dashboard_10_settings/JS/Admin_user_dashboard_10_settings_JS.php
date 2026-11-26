@@ -126,7 +126,7 @@
             if (!res || res.status !== 'success') {
               throw new Error((res && res.message) || 'Error saving email settings.');
             }
-            alert('Leave Email & SMTP settings saved successfully!');
+            
             fetchSmtpSettings();
           })
           .catch((error) => {
@@ -266,7 +266,7 @@
           .then(res => res.json())
           .then(res => {
             if (res.status === 'success') {
-              alert('General settings saved successfully!');
+              
             } else {
               throw new Error(res.message || 'Error saving settings.');
             }
@@ -355,7 +355,7 @@
           .then(res => res.json())
           .then(res => {
             if (res.status === 'success') {
-              alert(res.message || 'Phone number saved successfully.');
+              
             } else {
               alert(res.message || 'Could not save phone number.');
             }
@@ -402,7 +402,7 @@
               if (res.status === 'success') {
                 updateTwoFactorBadge(false);
                 if (twoFactorVerifyBox) twoFactorVerifyBox.style.display = 'none';
-                alert('Two-Factor Authentication disabled.');
+                
               } else {
                 alert(res.message || 'Could not disable 2FA.');
                 twoFactorToggle.checked = true;
@@ -494,7 +494,7 @@
               if (twoFactorVerifyBox) twoFactorVerifyBox.style.display = 'none';
               updateTwoFactorBadge(true);
               if (twoFactorToggle) twoFactorToggle.checked = true;
-              alert('Two-Factor Authentication successfully enabled!');
+              
             } else {
               if (twoFactorAlert) {
                 twoFactorAlert.style.display = 'block';
@@ -549,7 +549,7 @@
           .then(res => res.json())
           .then(res => {
             if (res.status === 'success') {
-              showPasswordAlert(res.message || 'Password changed successfully!', 'success');
+              showPassword
               if (secCurrentPass) secCurrentPass.value = '';
               if (secNewPass) secNewPass.value = '';
               if (secConfirmPass) secConfirmPass.value = '';
