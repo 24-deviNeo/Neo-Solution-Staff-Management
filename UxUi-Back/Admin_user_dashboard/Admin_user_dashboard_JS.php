@@ -105,10 +105,15 @@ function Admin_user_dashboard_05_OPEN() {
  }
  }
 
- function Admin_user_dashboard_07_OPEN() {
+ function Admin_user_dashboard_07_OPEN(statusFilter) {
   Admin_user_dashboard_close_all();
   setAdminDashboardSectionDisplay("Admin_user_dashboard_07_task_management", "block");
   setSidebarActive('task_management');
+  var statusSelect = document.getElementById('taskStatusFilter');
+  if (statusSelect) {
+    statusSelect.value = statusFilter || 'All';
+    statusSelect.dispatchEvent(new Event('change', { bubbles: true }));
+  }
   if (typeof window.fetchAdminTasks === 'function') {
     window.fetchAdminTasks();
   }
