@@ -214,17 +214,21 @@
     }
     .daily-work-activity-controls {
       display: grid;
-      grid-template-columns: minmax(260px, 1.5fr) minmax(190px, 1fr) minmax(170px, .85fr) auto;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       align-items: end;
       gap: 10px;
       min-width: 0;
     }
-    .daily-work-activity-controls .task-search-box { width:100%; max-width:none; min-width:0; margin:0 !important; }
+    .daily-work-activity-controls .task-search-box { width:100%; max-width:none; min-width:0; height:44px; min-height:44px; padding:0 12px; margin:0 !important; box-sizing:border-box; grid-column:1; }
+    .daily-work-activity-controls .daily-work-filter-field:first-of-type { grid-column:2; }
+    .daily-work-activity-controls .daily-work-filter-field:last-of-type { grid-column:1; }
+    .daily-work-activity-controls #clearDailyWorkActivityFilters { grid-column:2; }
     .daily-work-activity-controls select,
     .daily-work-activity-controls input,
     .daily-work-activity-controls button {
       min-width: 0;
-      min-height: 40px;
+      height: 44px;
+      min-height: 44px;
       box-sizing: border-box;
       border: 1px solid #dbe3ee;
       border-radius: 10px;
@@ -236,6 +240,16 @@
     }
     .daily-work-activity-controls button { cursor: pointer; font-weight: 700; white-space:nowrap; }
     .daily-work-filter-field { display: grid; gap: 4px; min-width: 0; color: #64748b; font-size: 10px; font-weight: 700; }
+    .daily-work-activity-controls .task-search-box input,
+    .daily-work-activity-controls .task-search-box input:focus {
+      height:100% !important;
+      min-height:0 !important;
+      padding:0 !important;
+      border:0 !important;
+      outline:0 !important;
+      background:transparent !important;
+      box-shadow:none !important;
+    }
 
     .daily-work-activity-table-wrap {
       width: 100%;
@@ -1435,6 +1449,63 @@
       #Admin_user_dashboard_07_task_management .task-board-card-footer { flex-wrap: wrap; }
       #Admin_user_dashboard_07_task_management .w3-modal-overlay { align-items: flex-start !important; overflow-y: auto !important; overscroll-behavior: contain; padding-top: max(12px, env(safe-area-inset-top)) !important; padding-bottom: max(12px, env(safe-area-inset-bottom)) !important; }
       #Admin_user_dashboard_07_task_management .w3-modal-card { max-height: calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important; overflow-y: auto !important; -webkit-overflow-scrolling: touch; }
+    }
+    @media (max-width: 1200px) {
+      #Admin_user_dashboard_07_task_management .daily-work-activity-controls,
+      #Super_Admin_user_dashboard_07_task_management .daily-work-activity-controls {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        align-items: end !important;
+      }
+      #Admin_user_dashboard_07_task_management .daily-work-activity-controls > *,
+      #Super_Admin_user_dashboard_07_task_management .daily-work-activity-controls > * {
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+      }
+      #Admin_user_dashboard_07_task_management .daily-work-activity-controls .task-search-box,
+      #Super_Admin_user_dashboard_07_task_management .daily-work-activity-controls .task-search-box {
+        height: 44px !important;
+        min-height: 44px !important;
+        padding: 0 12px !important;
+      }
+      #Admin_user_dashboard_07_task_management .daily-work-activity-controls .task-search-box,
+      #Super_Admin_user_dashboard_07_task_management .daily-work-activity-controls .task-search-box { grid-column: 1 !important; }
+      #Admin_user_dashboard_07_task_management .daily-work-activity-controls .daily-work-filter-field:first-of-type,
+      #Super_Admin_user_dashboard_07_task_management .daily-work-activity-controls .daily-work-filter-field:first-of-type { grid-column: 2 !important; }
+      #Admin_user_dashboard_07_task_management .daily-work-activity-controls .daily-work-filter-field:last-of-type,
+      #Super_Admin_user_dashboard_07_task_management .daily-work-activity-controls .daily-work-filter-field:last-of-type { grid-column: 1 !important; }
+      #Admin_user_dashboard_07_task_management .daily-work-activity-controls #clearDailyWorkActivityFilters,
+      #Super_Admin_user_dashboard_07_task_management .daily-work-activity-controls #clearDailyWorkActivityFilters { grid-column: 2 !important; }
+      #Admin_user_dashboard_07_task_management .daily-work-activity-controls select,
+      #Admin_user_dashboard_07_task_management .daily-work-activity-controls input,
+      #Admin_user_dashboard_07_task_management .daily-work-activity-controls button,
+      #Super_Admin_user_dashboard_07_task_management .daily-work-activity-controls select,
+      #Super_Admin_user_dashboard_07_task_management .daily-work-activity-controls input,
+      #Super_Admin_user_dashboard_07_task_management .daily-work-activity-controls button {
+        width: 100% !important;
+        height: 44px !important;
+        min-height: 44px !important;
+        box-sizing: border-box !important;
+      }
+      #Admin_user_dashboard_07_task_management .daily-work-activity-controls .task-search-box input,
+      #Super_Admin_user_dashboard_07_task_management .daily-work-activity-controls .task-search-box input,
+      #Admin_user_dashboard_07_task_management .daily-work-activity-controls .task-search-box input:focus,
+      #Super_Admin_user_dashboard_07_task_management .daily-work-activity-controls .task-search-box input:focus {
+        height: 100% !important;
+        min-height: 0 !important;
+        padding: 0 !important;
+        border: 0 !important;
+        outline: 0 !important;
+        background: transparent !important;
+        box-shadow: none !important;
+      }
+    }
+    @media (max-width: 600px) {
+      #Admin_user_dashboard_07_task_management .daily-work-activity-controls,
+      #Super_Admin_user_dashboard_07_task_management .daily-work-activity-controls { grid-template-columns: minmax(0, 1fr) !important; }
+      #Admin_user_dashboard_07_task_management .daily-work-activity-controls > *,
+      #Super_Admin_user_dashboard_07_task_management .daily-work-activity-controls > * { grid-column: 1 / -1 !important; }
     }
 </style>
 
