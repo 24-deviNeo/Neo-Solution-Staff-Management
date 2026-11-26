@@ -242,6 +242,11 @@
     gap: 20px;
     width: 100%;
   }
+  .profile-grid-layout > .prof-card.roster-full-width {
+    grid-column: 1 / -1;
+    width: 100%;
+    min-width: 0;
+  }
 
   .prof-card {
     background: #ffffff;
@@ -331,8 +336,8 @@
   /* Weekly Roster */
   .roster-days-grid {
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 8px;
+    grid-template-columns: repeat(7, minmax(0, 1fr));
+    gap: 12px;
     margin-top: 12px;
   }
 
@@ -340,7 +345,8 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 10px 3px;
+    min-height: 88px;
+    padding: 14px 10px;
     border-radius: 12px;
     text-align: center;
     border: 1px solid #e2e8f0;
@@ -350,7 +356,7 @@
   }
   
   .roster-day-name {
-    font-size: 12px;
+    font-size: 14px;
     font-weight: 700;
     color: #1e293b;
     margin-bottom: 6px;
@@ -361,15 +367,16 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    white-space: nowrap;
-    word-break: keep-all;
-    font-size: 9.5px;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    font-size: 11px;
     font-weight: 800;
-    padding: 4px 6px;
+    padding: 6px 9px;
     border-radius: 6px;
     text-transform: uppercase;
-    line-height: 1;
-    max-width: 100%;
+    line-height: 1.15;
+    width: 100%;
+    max-width: 150px;
     box-sizing: border-box;
   }
   .roster-day-badge.onsite { background: #2563eb; color: #ffffff; border: 1px solid #2563eb; }
@@ -496,6 +503,24 @@
     color: #64748b;
     line-height: 1.45;
   }
+
+  .timeline-countdown {
+    display: inline-flex;
+    align-items: center;
+    margin-top: 7px;
+    padding: 4px 9px;
+    border-radius: 999px;
+    background: #eff6ff;
+    color: #3156b5;
+    font-size: 11.5px;
+    font-weight: 700;
+    line-height: 1.3;
+  }
+
+  .timeline-countdown.is-active { background: #eff6ff; color: #3156b5; }
+  .timeline-countdown.is-upcoming { background: #f1f5f9; color: #475569; }
+  .timeline-countdown.is-due { background: #fff7ed; color: #c2410c; }
+  .timeline-countdown.is-complete { background: #f0fdf4; color: #15803d; }
 
   /* Modal Styles */
   .modal-overlay {
@@ -864,31 +889,18 @@
             <span class="info-field-label">Residential Address</span>
             <span class="info-field-val" id="pdAddress">—</span>
           </div>
+          <div class="info-field">
+            <span class="info-field-label">Emergency Contact Name</span>
+            <span class="info-field-val" id="viewEmName" style="color:#0f172a;font-weight:700;">&mdash;</span>
+          </div>
+          <div class="info-field">
+            <span class="info-field-label">Emergency Contact Number</span>
+            <span class="info-field-val" id="viewEmPhone" style="color:#0f172a;font-weight:700;">&mdash;</span>
+          </div>
         </div>
       </div>
 
-      <!-- Card 3: Emergency Notification Contact -->
-      <div class="prof-card">
-        <div class="prof-card-head">
-          <div>
-            <h3>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-              <span>Primary Emergency Contact</span>
-            </h3>
-            <p class="prof-card-subtitle">Designated next of kin for urgent notification</p>
-          </div>
-        </div>
-        <div class="info-field-grid">
-          <div class="info-field">
-            <span class="info-field-label">Contact Person Name</span>
-            <span class="info-field-val" id="viewEmName" style="color: #0f172a; font-weight: 700;">—</span>
-          </div>
-          <div class="info-field">
-            <span class="info-field-label">Emergency Phone Number</span>
-            <span class="info-field-val" id="viewEmPhone" style="color: #0f172a; font-weight: 700;">—</span>
-          </div>
-        </div>
-      </div>
+      
 
       <!-- Card 4: Job Information & Placement Record -->
       <div class="prof-card">
@@ -979,7 +991,7 @@
       </div>
 
       <!-- Card 6: Weekly Duty Schedule / Roster Grid -->
-      <div class="prof-card">
+      <div class="prof-card roster-full-width">
         <div class="prof-card-head">
           <div>
             <h3>
@@ -1057,6 +1069,7 @@
           <div class="timeline-date" id="timelineProbDate">Probation & Service Review</div>
           <div class="timeline-title" id="timelineProbTitle">Probation Status</div>
           <div class="timeline-desc" id="timelineProbDesc">Staff service confirmation and evaluation.</div>
+          <div class="timeline-countdown" id="timelineProbCountdown" aria-live="polite">Probation period: 15 days</div>
         </div>
 
         <!-- Milestone 3: Active Position -->
