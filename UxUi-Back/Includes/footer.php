@@ -7,7 +7,9 @@
        PAGE FOOTER (NATURAL SCROLL FLOW AT PAGE BOTTOM)
        ========================================================= */
     .erp-footer {
-        position: relative;
+        position: fixed;
+        bottom: 0;
+        left: 0;
         margin-left: 260px;
         width: calc(100% - 260px);
         margin-top: auto !important;
@@ -28,7 +30,17 @@
         transition: margin-left 0.3s ease, width 0.3s ease;
     }
 
+    /* Keep page content clear of the viewport-pinned footer. */
+    html:not(.app-view) body {
+        padding-bottom: 40px !important;
+    }
+
     body.admin-sidebar-hidden .erp-footer {
+        margin-left: 0 !important;
+        width: 100% !important;
+    }
+
+    body.employee-sidebar-hidden .erp-footer {
         margin-left: 0 !important;
         width: 100% !important;
     }
@@ -70,6 +82,10 @@
             justify-content: center;
             gap: 6px;
             text-align: center;
+        }
+
+        html:not(.app-view) body {
+            padding-bottom: 64px !important;
         }
     }
 
