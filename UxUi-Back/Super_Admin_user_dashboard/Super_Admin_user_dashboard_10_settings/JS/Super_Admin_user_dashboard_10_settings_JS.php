@@ -126,7 +126,7 @@
             if (!res || res.status !== 'success') {
               throw new Error((res && res.message) || 'Error saving email settings.');
             }
-            alert('Leave Email & SMTP settings saved successfully!');
+            
             fetchSmtpSettings();
           })
           .catch((error) => {
@@ -266,7 +266,7 @@
           .then(res => res.json())
           .then(res => {
             if (res.status === 'success') {
-              alert('General settings saved successfully!');
+              
             } else {
               throw new Error(res.message || 'Error saving settings.');
             }
