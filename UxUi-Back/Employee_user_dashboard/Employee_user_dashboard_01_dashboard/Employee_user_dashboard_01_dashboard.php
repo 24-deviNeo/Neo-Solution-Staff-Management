@@ -574,7 +574,7 @@
     <!-- 4 Stat Cards (Clickable Navigation) -->
     <section class="stats">
       <!-- Today's Tasks -> Daily Work Plan -->
-      <div class="stat-card" onclick="if(typeof Employee_user_dashboard_07_OPEN==='function') Employee_user_dashboard_07_OPEN();" title="View Today's Tasks" style="cursor: pointer;">
+      <div class="stat-card" onclick="if(typeof Employee_user_dashboard_07_OPEN==='function') Employee_user_dashboard_07_OPEN('all');" title="View Today's Tasks" style="cursor: pointer;">
         <div class="stat-icon blue">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <polyline points="9 11 12 14 22 4"></polyline>
@@ -586,7 +586,7 @@
       </div>
 
       <!-- Pending Tasks -> Daily Work Plan -->
-      <div class="stat-card" onclick="if(typeof Employee_user_dashboard_07_OPEN==='function') Employee_user_dashboard_07_OPEN();" title="View Pending Tasks" style="cursor: pointer;">
+      <div class="stat-card" onclick="if(typeof Employee_user_dashboard_07_OPEN==='function') Employee_user_dashboard_07_OPEN('Pending');" title="View Pending Tasks" style="cursor: pointer;">
         <div class="stat-icon amber">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="10"></circle>
@@ -598,7 +598,7 @@
       </div>
 
       <!-- Completed Tasks -> Daily Work Plan -->
-      <div class="stat-card" onclick="if(typeof Employee_user_dashboard_07_OPEN==='function') Employee_user_dashboard_07_OPEN();" title="View Completed Tasks" style="cursor: pointer;">
+      <div class="stat-card" onclick="if(typeof Employee_user_dashboard_07_OPEN==='function') Employee_user_dashboard_07_OPEN('Completed');" title="View Completed Tasks" style="cursor: pointer;">
         <div class="stat-icon green">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
