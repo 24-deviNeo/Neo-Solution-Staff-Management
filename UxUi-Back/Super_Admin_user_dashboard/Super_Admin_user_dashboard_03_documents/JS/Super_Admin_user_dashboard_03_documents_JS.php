@@ -585,7 +585,7 @@ function submitAdminDocUpload(e) {
         btn.innerHTML = originalText;
       }
       if (res && res.status === 'success') {
-        alert('Document(s) uploaded and saved to database successfully!');
+        
         closeAdminUploadModal();
         loadAdminDocuments();
       } else {
