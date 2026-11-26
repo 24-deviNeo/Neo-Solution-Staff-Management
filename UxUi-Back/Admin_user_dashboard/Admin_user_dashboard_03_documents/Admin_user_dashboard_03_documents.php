@@ -1058,7 +1058,7 @@
           <div id="docsFilterGroup">
             <div class="doc-search-box">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-              <input type="text" id="docSearchInput" class="doc-search-input" placeholder="Search by employee, file name, or ID..." oninput="filterAdminDocs();">
+              <input type="search" id="docSearchInput" name="document_query" class="doc-search-input" placeholder="Search by employee, file name, or ID..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" data-1p-ignore="true" oninput="filterAdminDocs();">
             </div>
 
             <select id="docTypeFilter" class="doc-select" onchange="filterAdminDocs();">
@@ -1077,7 +1077,7 @@
           <div id="reqsFilterGroup" style="display:none;">
             <div class="doc-search-box">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-              <input type="text" id="reqSearchInput" class="doc-search-input" placeholder="Search requests by employee, doc type..." oninput="filterDocRequests();">
+              <input type="search" id="reqSearchInput" name="document_request_query" class="doc-search-input" placeholder="Search requests by employee, doc type..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" data-lpignore="true" data-1p-ignore="true" oninput="filterDocRequests();">
             </div>
 
             <select id="reqStatusFilter" class="doc-select" onchange="filterDocRequests();">
