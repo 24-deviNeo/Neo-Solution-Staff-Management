@@ -1465,7 +1465,7 @@
           closeAdminUploadReceiptModal();
           window.loadAdminPaymentReceipts();
           window.loadAdminBankDetails();
-          alert('Payment receipt (' + period + ') sent to ' + empName + ' successfully!');
+          
           switchAdminBankTab('payments');
         } else {
           alert('Error: ' + (resObj.message || 'Could not upload receipt.'));
