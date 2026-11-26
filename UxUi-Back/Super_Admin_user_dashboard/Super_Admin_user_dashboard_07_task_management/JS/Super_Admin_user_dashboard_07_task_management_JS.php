@@ -589,7 +589,7 @@
           .then(res => res.json())
           .then(res => {
             if (res.status === 'success') {
-              alert('Task assigned & saved to database successfully!');
+              
               closeCreateModal();
               window.fetchAdminTasks();
             } else {
@@ -783,7 +783,7 @@
           .then(res => res.json())
           .then(res => {
             if (res.status === 'success') {
-              alert('Task updated successfully in database!');
+              
               closeEditModal();
               window.fetchAdminTasks();
             } else {
