@@ -1107,3 +1107,29 @@ body .employee-dashboard-content #Employee_user_dashboard_01 .main > .banner {
 body .employee-dashboard-content :is([id^="Employee_user_dashboard_"]):not(#_) .topbar + * {
     margin-top: 12px !important;
 }
+
+/* Keep the shared footer at the bottom on short employee pages. */
+html,
+body {
+    min-height: 100vh !important;
+    min-height: 100dvh !important;
+}
+
+body {
+    display: flex !important;
+    flex-direction: column !important;
+}
+
+body .employee-dashboard-content {
+    flex: 1 0 auto !important;
+    min-height: 0 !important;
+}
+
+body .employee-dashboard-content [id^="Employee_user_dashboard_"]:not([style*="display: none"]):not([style*="display:none"]) {
+    min-height: 0 !important;
+    height: auto !important;
+}
+
+body .erp-footer {
+    margin-top: auto !important;
+}
