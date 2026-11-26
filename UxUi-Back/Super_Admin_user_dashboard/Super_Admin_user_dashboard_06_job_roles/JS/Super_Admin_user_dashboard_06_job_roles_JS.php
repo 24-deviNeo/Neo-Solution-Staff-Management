@@ -215,7 +215,7 @@
             if (res.status === 'success') {
               closeAddModal();
               window.fetchAdminJobRoles();
-              alert('Job Role created and saved to database successfully!');
+              
             } else {
               alert(res.message || 'Error creating job role.');
             }
@@ -263,7 +263,7 @@
             if (res.status === 'success') {
               closeEditModal();
               window.fetchAdminJobRoles();
-              alert('Job Role updated in database successfully!');
+              
             } else {
               alert(res.message || 'Error updating job role.');
             }
