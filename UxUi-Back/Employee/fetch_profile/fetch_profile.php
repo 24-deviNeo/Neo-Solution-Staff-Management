@@ -138,11 +138,15 @@ try {
             'today_work_mode'         => $dailyWorkMode,
             'today_mode_type'         => $dailyModeType,
             'today_day'               => $todayDay,
-            'probation_status'        => !empty($p['probation_status']) ? $p['probation_status'] : 'In Progress',
+            'probation_status'        => (int)($p['probation_required'] ?? 0) === 1 ? (!empty($p['probation_status']) ? $p['probation_status'] : 'In Progress') : 'Not Required',
+            'probation_required'      => isset($p['probation_required']) ? (int)$p['probation_required'] : 0,
+            'probation_period_days'   => isset($p['probation_period_days']) ? max(1, (int)$p['probation_period_days']) : 15,
+            'probation_days_worked'   => isset($p['probation_days_worked']) ? max(0, (int)$p['probation_days_worked']) : 0,
             'probation_start_date'    => !empty($p['probation_start_date']) ? $p['probation_start_date'] : (!empty($p['join_date']) ? $p['join_date'] : ''),
             'probation_end_date'      => !empty($p['probation_end_date']) ? $p['probation_end_date'] : '',
             'official_start_date'     => !empty($p['official_start_date']) ? $p['official_start_date'] : '',
             'attendance_days'         => isset($p['attendance_days']) ? (int)$p['attendance_days'] : null,
+            'probation_already_marked_today' => !empty($p['last_attendance_date']) && $p['last_attendance_date'] === date('Y-m-d'),
             'profile_pic'             => !empty($p['profile_pic']) ? $p['profile_pic'] : ''
         ];
 
