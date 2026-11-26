@@ -263,7 +263,7 @@
             if (res.status === 'success') {
               closeAddModal();
               window.fetchAdminDepartments();
-              alert('Department created successfully!');
+              
             } else {
               alert(res.message || 'Error creating department.');
             }
@@ -311,7 +311,7 @@
             if (res.status === 'success') {
               closeEditModal();
               window.fetchAdminDepartments();
-              alert('Department updated successfully!');
+              
             } else {
               alert(res.message || 'Error updating department.');
             }
