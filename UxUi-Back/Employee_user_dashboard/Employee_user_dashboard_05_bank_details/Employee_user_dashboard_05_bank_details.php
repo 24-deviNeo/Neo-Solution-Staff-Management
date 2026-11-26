@@ -1156,7 +1156,7 @@ $emp_session_uid  = isset($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : 0;
           return;
         }
         window.closeEmpBankEditModal();
-        alert('Your bank account details were updated successfully!');
+        
         fetchEmployeeBankDetails();
       },
       error: function(xhr, status, error) {
@@ -1173,7 +1173,7 @@ $emp_session_uid  = isset($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : 0;
           }
         } catch(e) {}
         window.closeEmpBankEditModal();
-        alert('Bank details updated successfully.');
+        
         fetchEmployeeBankDetails();
       }
     });
