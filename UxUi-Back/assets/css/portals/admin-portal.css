@@ -832,6 +832,26 @@ header.topbar p,
     }
 }
 
+/* Keep short dashboard pages content-height so the footer does not leave a
+   viewport-sized empty block between the page content and the footer. */
+html,
+body {
+    min-height: 100vh !important;
+    min-height: 100dvh !important;
+}
+
+[id^="Admin_user_dashboard_"]:not([style*="display: none"]):not([style*="display:none"]),
+[id^="Super_Admin_user_dashboard_"]:not([style*="display: none"]):not([style*="display:none"]),
+#Employee_user_dashboard_03_personal_details:not([style*="display: none"]):not([style*="display:none"]) {
+    flex: 1 0 auto !important;
+    min-height: calc(100vh - 40px) !important;
+    min-height: calc(100dvh - 40px) !important;
+}
+
+body .erp-footer {
+    margin-top: auto !important;
+}
+
 @media (max-width: 900px) {
     [id^="Admin_user_dashboard_"],
     [id^="Super_Admin_user_dashboard_"] {
@@ -1592,5 +1612,21 @@ body :is(
         border-color: #dcfce7 !important;
         color: #15803d !important;
     }
+}
+
+/* Final shared override: page sections follow their content height. */
+html,
+body {
+    min-height: 0 !important;
+}
+
+[id^="Admin_user_dashboard_"]:not([style*="display: none"]):not([style*="display:none"]),
+[id^="Super_Admin_user_dashboard_"]:not([style*="display: none"]):not([style*="display:none"]) {
+    flex: 0 0 auto !important;
+    min-height: 0 !important;
+}
+
+body .erp-footer {
+    margin-top: 16px !important;
 }
 
