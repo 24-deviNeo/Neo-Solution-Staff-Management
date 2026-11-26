@@ -10,6 +10,9 @@
         || (itemPage === 'my_profile' && (pageName === 'leave_requests' || pageName === 'profile_sub' || pageName === 'documents_sub' || pageName === 'bank_sub' || pageName === 'leave_sub') && window.matchMedia('(max-width: 900px)').matches);
       item.classList.toggle('active', isMatch);
     });
+    try {
+      sessionStorage.setItem('employeePortalActivePage', pageName);
+    } catch (e) {}
   }
 
   function Employee_user_dashboard_close_all() {
@@ -230,6 +233,9 @@
       }
     };
     var activeTab = tabs[tabName] ? tabName : 'profile';
+    try {
+      sessionStorage.setItem('employeePortalActivePage', 'profile_' + activeTab);
+    } catch (e) {}
 
     if (titleEl) {
       titleEl.textContent = titles[activeTab] || 'My Information';
@@ -264,10 +270,11 @@
       hubContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
-    // Update bottom nav active state on mobile for sub-pages
-    if (window.matchMedia('(max-width: 900px)').matches) {
-      setEmployeeSidebarActive(activeTab === 'hub' ? 'my_profile' : (activeTab === 'leave' ? 'leave_requests' : 'my_profile'));
-    }
+    // Keep the sidebar and bottom navigation in sync at every screen size.
+    setEmployeeSidebarActive(activeTab === 'hub' ? 'my_profile' : (activeTab === 'leave' ? 'leave_requests' : 'my_profile'));
+    try {
+      sessionStorage.setItem('employeePortalActivePage', 'profile_' + activeTab);
+    } catch (e) {}
   };
 
   function Employee_user_dashboard_03_OPEN() {
