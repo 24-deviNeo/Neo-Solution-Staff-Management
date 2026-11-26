@@ -84,7 +84,7 @@
     const workShift = p.work_shift || '08:30 AM – 05:30 PM';
     const joined = p.join_date || p.joined || '—';
     const empType = p.employment_type || 'Full-Time';
-    const probStatus = p.probation_status || 'Confirmed Staff';
+    const probStatus = p.probation_status || 'Not Required';
     const schedStart = p.schedule_start_date || '—';
     const schedEnd = p.schedule_end_date || '—';
 
@@ -274,11 +274,32 @@
     if (el('timelineJoinDesc')) el('timelineJoinDesc').textContent = `Official appointment as ${role} in ${dept} department.`;
 
     const probStart = p.probation_start_date || joined || '—';
-    const probEnd = p.probation_end_date ? ` to ${p.probation_end_date}` : '';
+    const probationDays = Math.max(1, Math.min(365, parseInt(p.probation_period_days, 10) || 15));
+    const probationWorked = Math.min(probationDays, Math.max(0, parseInt(p.probation_days_worked, 10) || 0));
+    const probationRemaining = Math.max(0, probationDays - probationWorked);
+    const probationEndDate = p.probation_end_date || '';
+    const probEnd = probationEndDate ? ` to ${probationEndDate}` : '';
     if (el('timelineProbDate')) el('timelineProbDate').textContent = probStart !== '—' ? `Review: ${probStart}${probEnd}` : 'Confirmation Review';
     if (el('timelineProbTitle')) el('timelineProbTitle').textContent = `Probation Status: ${probStatus}`;
     if (el('timelineProbDesc')) el('timelineProbDesc').textContent = `Employment evaluation in ${dept} department under ${empType} agreement.`;
-
+    const probationCountdown = el('timelineProbCountdown');
+    if (probationCountdown) {
+      const statusLower = String(probStatus).toLowerCase();
+      let countdownText = `${probationWorked} of ${probationDays} workdays completed · ${probationRemaining} remaining`;
+      let countdownClass = 'is-active';
+      if (Number(p.probation_required) !== 1) {
+        countdownText = 'Probation not required for this employee';
+        countdownClass = 'is-upcoming';
+      } else if (statusLower.includes('pending approval')) {
+        countdownText = `${probationWorked} workdays completed · Awaiting admin approval`;
+        countdownClass = 'is-due';
+      } else if (statusLower.includes('confirm') || statusLower.includes('complete')) {
+        countdownText = `Probation completed · ${probationDays} workdays`;
+        countdownClass = 'is-complete';
+      }
+      probationCountdown.className = `timeline-countdown ${countdownClass}`;
+      probationCountdown.textContent = countdownText;
+    }
     if (el('timelineActiveTitle')) el('timelineActiveTitle').textContent = `Current Active Role (${empType})`;
     if (el('timelineActiveDesc')) el('timelineActiveDesc').textContent = `Active member of ${dept} team at ${location} as ${role}.`;
 
