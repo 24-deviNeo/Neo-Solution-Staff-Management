@@ -852,6 +852,105 @@ body .erp-footer {
     margin-top: auto !important;
 }
 
+/* Give the documents toolbar its own tablet layout before its controls collide. */
+@media (max-width: 1200px) {
+    :is(#Admin_user_dashboard_03_documents, #Super_Admin_user_dashboard_03_documents) .doc-search-box {
+        position: relative !important;
+        border: 1px solid #dbe4ff !important;
+        border-radius: 8px !important;
+        background: #f8fafc !important;
+        overflow: hidden !important;
+    }
+
+    :is(#Admin_user_dashboard_03_documents, #Super_Admin_user_dashboard_03_documents) .doc-search-box svg {
+        display: block !important;
+        position: absolute !important;
+        z-index: 2 !important;
+        left: 12px !important;
+        top: 50% !important;
+        width: 16px !important;
+        height: 16px !important;
+        max-width: none !important;
+        color: #64748b !important;
+        transform: translateY(-50%) !important;
+        pointer-events: none !important;
+    }
+
+    :is(#Admin_user_dashboard_03_documents, #Super_Admin_user_dashboard_03_documents) .doc-search-input {
+        position: relative !important;
+        z-index: 1 !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        height: 36px !important;
+        padding: 0 10px 0 36px !important;
+        border: 0 !important;
+        outline: 0 !important;
+        background: transparent !important;
+        box-shadow: none !important;
+    }
+}
+
+@media (min-width: 901px) and (max-width: 1200px) {
+    :is(#Admin_user_dashboard_03_documents, #Super_Admin_user_dashboard_03_documents) .doc-toolbar {
+        flex-wrap: wrap !important;
+        align-items: stretch !important;
+        gap: 10px !important;
+    }
+
+    :is(#Admin_user_dashboard_03_documents, #Super_Admin_user_dashboard_03_documents) .doc-toolbar-left {
+        flex: 1 1 100% !important;
+        width: 100% !important;
+        max-width: none !important;
+        min-width: 0 !important;
+    }
+
+    :is(#Admin_user_dashboard_03_documents, #Super_Admin_user_dashboard_03_documents) #docsFilterGroup,
+    :is(#Admin_user_dashboard_03_documents, #Super_Admin_user_dashboard_03_documents) #reqsFilterGroup {
+        display: flex !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        gap: 10px !important;
+    }
+
+    :is(#Admin_user_dashboard_03_documents, #Super_Admin_user_dashboard_03_documents) #reqsFilterGroup[style*="display: none"] {
+        display: none !important;
+    }
+
+    :is(#Admin_user_dashboard_03_documents, #Super_Admin_user_dashboard_03_documents) #docsFilterGroup[style*="display: none"] {
+        display: none !important;
+    }
+
+    :is(#Admin_user_dashboard_03_documents, #Super_Admin_user_dashboard_03_documents) .doc-search-box {
+        flex: 1 1 auto !important;
+        min-width: 0 !important;
+    }
+
+    :is(#Admin_user_dashboard_03_documents, #Super_Admin_user_dashboard_03_documents) .doc-select {
+        flex: 0 1 190px !important;
+        width: 190px !important;
+        max-width: 36% !important;
+        min-width: 130px !important;
+    }
+
+    :is(#Admin_user_dashboard_03_documents, #Super_Admin_user_dashboard_03_documents) .doc-toolbar-right {
+        flex: 1 1 100% !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        justify-content: space-between !important;
+        flex-wrap: wrap !important;
+    }
+
+    :is(#Admin_user_dashboard_03_documents, #Super_Admin_user_dashboard_03_documents) .doc-subnav-tabs {
+        min-width: 0 !important;
+        flex: 1 1 auto !important;
+    }
+
+    :is(#Admin_user_dashboard_03_documents, #Super_Admin_user_dashboard_03_documents) .doc-tab-pill {
+        min-width: 0 !important;
+        padding-inline: clamp(8px, 1.2vw, 14px) !important;
+    }
+}
+
 @media (max-width: 900px) {
     [id^="Admin_user_dashboard_"],
     [id^="Super_Admin_user_dashboard_"] {
