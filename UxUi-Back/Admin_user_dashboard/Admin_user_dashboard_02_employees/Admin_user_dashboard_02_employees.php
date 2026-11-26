@@ -1342,14 +1342,14 @@
     <!-- Employee Section Sub-Tabs -->
     <div class="emp-section-tabs-bar" style="display: flex; gap: 6px; border-bottom: 2px solid #e2e8f0; margin-bottom: 16px; background: #ffffff; padding: 6px 10px 0; border-radius: 12px 12px 0 0; box-shadow: 0 1px 2px rgba(0,0,0,0.02);">
       <button type="button" class="emp-section-tab active" id="tabAllEmployeesBtn" onclick="switchEmpSectionTab('employees')" style="padding: 10px 18px; border: none; background: transparent; font-size: 13.5px; font-weight: 700; color: #2563eb; border-bottom: 3px solid #2563eb; cursor: pointer; display: flex; align-items: center; gap: 8px;">
-        <i class="fas fa-users"></i> All Employees
+        <i class="fas fa-users"></i><span class="emp-section-tab-label">All Employees</span>
       </button>
       <button type="button" class="emp-section-tab" id="tabOnboardingBtn" onclick="switchEmpSectionTab('onboarding')" style="padding: 10px 18px; border: none; background: transparent; font-size: 13.5px; font-weight: 600; color: #64748b; border-bottom: 3px solid transparent; cursor: pointer; display: flex; align-items: center; gap: 8px;">
-        <i class="fas fa-file-signature"></i> Onboarding Submissions &amp; Forms
+        <i class="fas fa-file-signature"></i><span class="emp-section-tab-label">Onboarding Submissions &amp; Forms</span>
         <span id="pendingSubmissionsBadge" style="display: none; background: #ef4444; color: #ffffff; font-size: 11px; padding: 2px 8px; border-radius: 999px; font-weight: 800;">0</span>
       </button>
       <button type="button" class="emp-section-tab" id="tabAdminAccountsBtn" onclick="switchEmpSectionTab('admins')" style="display: flex; padding: 10px 18px; border: none; background: transparent; font-size: 13.5px; font-weight: 600; color: #64748b; border-bottom: 3px solid transparent; cursor: pointer; align-items: center; gap: 8px;">
-        <i class="fas fa-user-clock"></i> All accounts
+        <i class="fas fa-user-clock"></i><span class="emp-section-tab-label">All accounts</span>
         <span id="pendingAdminsBadge" style="display: none; background: #ef4444; color: #ffffff; font-size: 11px; padding: 2px 8px; border-radius: 999px; font-weight: 800;">0</span>
       </button>
     </div>
@@ -1385,7 +1385,6 @@
                 <th>Employee</th>
                 <th>Department</th>
                 <th>Job Role</th>
-                <th>Status</th>
                 <th>Probation Dates</th>
                 <th>Joined</th>
                 <th style="text-align: center;">Actions</th>
