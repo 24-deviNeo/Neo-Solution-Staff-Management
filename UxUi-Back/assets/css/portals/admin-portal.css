@@ -852,6 +852,33 @@ body .erp-footer {
     margin-top: auto !important;
 }
 
+:is(#Admin_user_dashboard_04_bank_details, #Super_Admin_user_dashboard_04_bank_details) .search-input-wrap {
+    position: relative !important;
+    min-width: 0 !important;
+}
+
+:is(#Admin_user_dashboard_04_bank_details, #Super_Admin_user_dashboard_04_bank_details) .search-input-wrap > i {
+    position: absolute !important;
+    z-index: 2 !important;
+    top: 50% !important;
+    left: 12px !important;
+    display: inline-flex !important;
+    width: 14px !important;
+    height: 14px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    line-height: 1 !important;
+    font-size: 13px !important;
+    transform: translateY(-50%) !important;
+    pointer-events: none !important;
+}
+
+:is(#Admin_user_dashboard_04_bank_details, #Super_Admin_user_dashboard_04_bank_details) .search-input {
+    box-sizing: border-box !important;
+    min-width: 0 !important;
+    padding-left: 36px !important;
+}
+
 /* Give the documents toolbar its own tablet layout before its controls collide. */
 @media (max-width: 1200px) {
     :is(#Admin_user_dashboard_03_documents, #Super_Admin_user_dashboard_03_documents) .doc-search-box {
@@ -1732,6 +1759,49 @@ body :is(
         background: #f0fdf4 !important;
         border-color: #dcfce7 !important;
         color: #15803d !important;
+    }
+}
+
+/* Align employee action buttons within a stable-width table column on tablets. */
+@media (min-width: 901px) and (max-width: 1200px) {
+    :is(#Admin_user_dashboard_02_employees, #Super_Admin_user_dashboard_02_employees) .w3-table-wrap {
+        max-width: 100% !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+    }
+
+    :is(#Admin_user_dashboard_02_employees, #Super_Admin_user_dashboard_02_employees) #sectionAllEmployees table.emp-table thead th:last-child,
+    :is(#Admin_user_dashboard_02_employees, #Super_Admin_user_dashboard_02_employees) #sectionAllEmployees table.emp-table tbody td:last-child {
+        width: 124px !important;
+        min-width: 124px !important;
+        padding-left: 6px !important;
+        padding-right: 6px !important;
+        text-align: center !important;
+        vertical-align: middle !important;
+    }
+
+    :is(#Admin_user_dashboard_02_employees, #Super_Admin_user_dashboard_02_employees) #sectionAllEmployees .row-actions {
+        display: flex !important;
+        width: 100% !important;
+        align-items: center !important;
+        justify-content: center !important;
+        gap: 4px !important;
+        margin: 0 auto !important;
+    }
+
+    :is(#Admin_user_dashboard_02_employees, #Super_Admin_user_dashboard_02_employees) #sectionAllEmployees .row-actions .action-btn {
+        flex: 0 0 32px !important;
+        width: 32px !important;
+        min-width: 32px !important;
+        max-width: 32px !important;
+        height: 32px !important;
+        min-height: 32px !important;
+        padding: 0 !important;
+    }
+
+    :is(#Admin_user_dashboard_02_employees, #Super_Admin_user_dashboard_02_employees) #sectionAllEmployees .row-actions .action-btn svg {
+        width: 15px !important;
+        height: 15px !important;
     }
 }
 
