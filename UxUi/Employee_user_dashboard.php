@@ -45,9 +45,32 @@ require_login();
         document.addEventListener("DOMContentLoaded", function() {
             Employee_user_dashboard_close_all();
             const urlParams = new URLSearchParams(window.location.search);
-            const targetSection = urlParams.get('page') || urlParams.get('section');
-            if (targetSection === 'profile' || targetSection === 'my_profile' || targetSection === '02') {
+            const requestedPage = urlParams.get('page') || urlParams.get('section');
+            let targetSection = requestedPage;
+            if (!targetSection) {
+                try { targetSection = sessionStorage.getItem('employeePortalActivePage'); } catch (e) {}
+            }
+
+            const profileTabs = {
+                profile_hub: 'hub',
+                profile_profile: 'profile',
+                profile_documents: 'documents',
+                profile_bank: 'bank',
+                profile_leave: 'leave'
+            };
+            if (profileTabs[targetSection]) {
                 Employee_user_dashboard_02_OPEN();
+                window.switchEmployeeProfileTab(profileTabs[targetSection]);
+            } else if (targetSection === 'profile' || targetSection === 'my_profile' || targetSection === '02') {
+                Employee_user_dashboard_02_OPEN();
+            } else if (targetSection === 'daily_work_plan' || targetSection === '07') {
+                Employee_user_dashboard_07_OPEN();
+            } else if (targetSection === 'leave_requests' || targetSection === '08') {
+                Employee_user_dashboard_08_OPEN();
+            } else if (targetSection === 'notifications' || targetSection === '09') {
+                Employee_user_dashboard_09_OPEN();
+            } else if (targetSection === 'settings' || targetSection === '10') {
+                Employee_user_dashboard_10_OPEN();
             } else {
                 Employee_user_dashboard_01_OPEN();
             }
