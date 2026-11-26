@@ -286,12 +286,19 @@
     Employee_user_dashboard_02_OPEN();
   }
 
-  function Employee_user_dashboard_07_OPEN() {
+  function Employee_user_dashboard_07_OPEN(statusFilter) {
     Employee_user_dashboard_close_all();
     var el = document.getElementById("Employee_user_dashboard_07_daily_work_plan");
     if (el) el.style.display = "";
     setEmployeeSidebarActive('daily_work_plan');
     window.syncGlobalEmployeeData();
+    var searchInput = document.getElementById('workplanSearch');
+    var statusSelect = document.getElementById('workplanStatusFilter');
+    if (searchInput) searchInput.value = '';
+    if (statusSelect) {
+      statusSelect.value = statusFilter || 'all';
+      statusSelect.dispatchEvent(new Event('change', { bubbles: true }));
+    }
     if (typeof window.loadDailyPlan === 'function') {
       window.loadDailyPlan();
     }
