@@ -352,14 +352,14 @@
             if (typeof window.renderEmpBankTab === 'function') {
               window.renderEmpBankTab(updatedBank, currentlyViewingEmployee || {});
             }
-            alert('Bank details updated and encrypted successfully!');
+            
           } else {
             alert(resObj.message || 'Error saving bank details.');
             if (btn) { btn.disabled = false; btn.innerHTML = `<i class="fa-solid fa-floppy-disk"></i> Save Bank Details`; }
           }
         })
         .catch(() => {
-          alert('Bank details updated successfully.');
+          
           if (typeof window.renderEmpBankTab === 'function') {
             window.renderEmpBankTab({
               account_holder_name: holder,
@@ -1155,7 +1155,7 @@
               if (typeof window.fetchLiveDashboardData === 'function') {
                 window.fetchLiveDashboardData();
               }
-              alert('Employee details updated successfully in database!');
+              
               closeEditModal();
             } else {
               alert(res.message || 'Error updating employee.');
@@ -1202,7 +1202,7 @@
             if (currentlyViewingEmployee) {
               currentlyViewingEmployee.profile_pic = res.avatar_url;
             }
-            alert('Employee profile photo updated successfully!');
+            
             window.fetchAdminEmployees();
           } else {
             alert(res.message || 'Failed to upload photo.');
@@ -1351,7 +1351,7 @@
           .then(res => res.json())
           .then(res => {
             if (res.status === 'success') {
-              alert('Employee added successfully to database!');
+              
               addEmpForm.reset();
               closeAddModal();
               window.fetchAdminEmployees();
@@ -1914,7 +1914,7 @@
             }
             window.loadOnboardingData();
             if (res.data.email_sent) {
-              alert('Registration form created successfully! An invitation email has been dispatched to ' + res.data.target_email);
+              
             }
           } else {
             alert(res.message || 'Error generating onboarding form.');
@@ -2147,7 +2147,7 @@
         .then(res => res.json())
         .then(res => {
           if (res.status === 'success') {
-            alert(`Application approved successfully!\n\n${res.message || 'Staff member account has been provisioned.'}`);
+            
             window.closeReviewSubmissionModal();
             window.loadOnboardingData();
             window.loadAdminAccountsData();
@@ -2498,7 +2498,7 @@
         .then(res => res.json())
         .then(res => {
           if (res.status === 'success') {
-            alert(res.message || 'Action completed successfully.');
+            
             window.loadAdminAccountsData();
             if (typeof window.fetchAdminNotifications === 'function') {
               window.fetchAdminNotifications();
@@ -2533,7 +2533,7 @@
         .then(res => res.json())
         .then(res => {
           if (res.status === 'success') {
-            alert(res.message || `Role updated successfully to ${roleText}.`);
+            
             window.loadAdminAccountsData();
             if (typeof window.fetchAdminEmployees === 'function') {
               window.fetchAdminEmployees();
