@@ -289,11 +289,12 @@
     background: #ffffff;
     border: 1px solid #e2e8f0;
     border-radius: 999px;
-    padding: 10px 16px 10px 38px;
+    padding: 10px 16px 10px 38px !important;
     font-size: 13.5px;
     color: #1e293b;
     outline: none;
     box-sizing: border-box;
+    line-height: 1.25 !important;
     transition: border-color 0.2s;
   }
 
@@ -1594,10 +1595,10 @@
     <div id="sectionDailyWorkPlan">
       <!-- 2. Daily Shift Steps (Lower Section) -->
       <div class="workplan-shift-title-row" style="margin: 0 0 16px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
-        <div>
+        <!-- <div>
           <h2 style="font-size: 18px; font-weight: 800; color: var(--navy, #14204d); margin: 0 0 4px 0;">Daily Shift Plan &amp; Execution</h2>
           <p style="font-size: 13px; color: var(--muted, #64748b); margin: 0; font-weight: 500;">Plan your shift tasks in the morning (editable during the day) and submit your completed update at end-of-shift</p>
-        </div>
+        </div> -->
       </div>
 
       <div class="workplan-step-container">
@@ -1610,7 +1611,6 @@
             </div>
             <span id="morningPlanStatusBadge" class="shift-wrapup-badge pending">Shift Not Started</span>
           </div>
-          <p class="step-subtext">Write down the tasks you plan to accomplish today. You can edit this anytime today. Click <b>Submit Plan / Start Work</b> to activate your shift for the day.</p>
           
           <textarea id="dailyWorkPlanText" class="daily-plan-input" placeholder="Enter today's planned tasks:"></textarea>
 
@@ -2368,11 +2368,11 @@
 
     const notes = (shiftEndNotes?.value || '').trim();
 
-    if (!notes && !(planText?.value || '').trim()) {
+    if (!notes) {
       if (shiftEndStatusMsg) {
         shiftEndStatusMsg.style.display = 'flex';
         shiftEndStatusMsg.className = 'shift-status-alert error';
-        shiftEndStatusMsg.textContent = 'Please enter your shift update notes first.';
+        shiftEndStatusMsg.textContent = 'Please enter your work update notes before submitting the shift.';
       }
       return;
     }
