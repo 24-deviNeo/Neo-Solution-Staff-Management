@@ -880,6 +880,35 @@ body .erp-footer {
 }
 
 /* Give the documents toolbar its own tablet layout before its controls collide. */
+@media (max-width: 900px) {
+    body :is(#Admin_user_dashboard_03_documents, #Super_Admin_user_dashboard_03_documents) {
+        padding-left: 12px !important;
+        padding-right: 12px !important;
+    }
+
+    body :is(#Admin_user_dashboard_03_documents, #Super_Admin_user_dashboard_03_documents) > .main {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin-left: 0 !important;
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+        box-sizing: border-box !important;
+    }
+
+    body :is(#Admin_user_dashboard_03_documents, #Super_Admin_user_dashboard_03_documents) .doc-main-card {
+        width: calc(100% + 28px) !important;
+        max-width: none !important;
+        margin-left: -14px !important;
+        margin-right: -14px !important;
+        padding: 0 !important;
+        box-sizing: border-box !important;
+    }
+
+    body :is(#Admin_user_dashboard_03_documents, #Super_Admin_user_dashboard_03_documents) .doc-toolbar {
+        padding: 8px !important;
+    }
+}
+
 @media (max-width: 1200px) {
     :is(#Admin_user_dashboard_03_documents, #Super_Admin_user_dashboard_03_documents) .doc-search-box {
         position: relative !important;
@@ -1770,10 +1799,27 @@ body :is(
         -webkit-overflow-scrolling: touch !important;
     }
 
+    :is(#Admin_user_dashboard_02_employees, #Super_Admin_user_dashboard_02_employees) #sectionAllEmployees table.emp-table {
+        width: 100% !important;
+        min-width: 700px !important;
+        table-layout: fixed !important;
+    }
+
+    :is(#Admin_user_dashboard_02_employees, #Super_Admin_user_dashboard_02_employees) #sectionAllEmployees table.emp-table th:nth-child(1),
+    :is(#Admin_user_dashboard_02_employees, #Super_Admin_user_dashboard_02_employees) #sectionAllEmployees table.emp-table td:nth-child(1) { width: 23% !important; }
+    :is(#Admin_user_dashboard_02_employees, #Super_Admin_user_dashboard_02_employees) #sectionAllEmployees table.emp-table th:nth-child(2),
+    :is(#Admin_user_dashboard_02_employees, #Super_Admin_user_dashboard_02_employees) #sectionAllEmployees table.emp-table td:nth-child(2) { width: 14% !important; }
+    :is(#Admin_user_dashboard_02_employees, #Super_Admin_user_dashboard_02_employees) #sectionAllEmployees table.emp-table th:nth-child(3),
+    :is(#Admin_user_dashboard_02_employees, #Super_Admin_user_dashboard_02_employees) #sectionAllEmployees table.emp-table td:nth-child(3) { width: 16% !important; }
+    :is(#Admin_user_dashboard_02_employees, #Super_Admin_user_dashboard_02_employees) #sectionAllEmployees table.emp-table th:nth-child(4),
+    :is(#Admin_user_dashboard_02_employees, #Super_Admin_user_dashboard_02_employees) #sectionAllEmployees table.emp-table td:nth-child(4) { width: 17% !important; }
+    :is(#Admin_user_dashboard_02_employees, #Super_Admin_user_dashboard_02_employees) #sectionAllEmployees table.emp-table th:nth-child(5),
+    :is(#Admin_user_dashboard_02_employees, #Super_Admin_user_dashboard_02_employees) #sectionAllEmployees table.emp-table td:nth-child(5) { width: 14% !important; }
+
     :is(#Admin_user_dashboard_02_employees, #Super_Admin_user_dashboard_02_employees) #sectionAllEmployees table.emp-table thead th:last-child,
     :is(#Admin_user_dashboard_02_employees, #Super_Admin_user_dashboard_02_employees) #sectionAllEmployees table.emp-table tbody td:last-child {
-        width: 124px !important;
-        min-width: 124px !important;
+        width: 108px !important;
+        min-width: 108px !important;
         padding-left: 6px !important;
         padding-right: 6px !important;
         text-align: center !important;
@@ -1790,18 +1836,108 @@ body :is(
     }
 
     :is(#Admin_user_dashboard_02_employees, #Super_Admin_user_dashboard_02_employees) #sectionAllEmployees .row-actions .action-btn {
-        flex: 0 0 32px !important;
-        width: 32px !important;
-        min-width: 32px !important;
-        max-width: 32px !important;
-        height: 32px !important;
-        min-height: 32px !important;
+        flex: 0 0 28px !important;
+        width: 28px !important;
+        min-width: 28px !important;
+        max-width: 28px !important;
+        height: 28px !important;
+        min-height: 28px !important;
         padding: 0 !important;
     }
 
     :is(#Admin_user_dashboard_02_employees, #Super_Admin_user_dashboard_02_employees) #sectionAllEmployees .row-actions .action-btn svg {
-        width: 15px !important;
-        height: 15px !important;
+        width: 14px !important;
+        height: 14px !important;
+    }
+}
+
+/* Use the existing employee cards before a tablet-width table clips its actions. */
+@media (min-width: 901px) and (max-width: 1100px) {
+    :is(#Admin_user_dashboard_02_employees, #Super_Admin_user_dashboard_02_employees) #sectionAllEmployees > .w3-table-card {
+        display: none !important;
+    }
+
+    :is(#Admin_user_dashboard_02_employees, #Super_Admin_user_dashboard_02_employees) #sectionAllEmployees > .mobile-emp-cards {
+        display: flex !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        flex-direction: column !important;
+        gap: 10px !important;
+    }
+
+    :is(#Admin_user_dashboard_02_employees, #Super_Admin_user_dashboard_02_employees) #sectionAllEmployees .mobile-emp-card-actions > button {
+        flex: 1 1 0 !important;
+        width: auto !important;
+        min-width: 0 !important;
+        max-width: none !important;
+        min-height: 38px !important;
+        padding: 7px 8px !important;
+        justify-content: center !important;
+        white-space: nowrap !important;
+    }
+
+    :is(#Admin_user_dashboard_02_employees, #Super_Admin_user_dashboard_02_employees) #sectionAllEmployees .mobile-emp-card-actions > button span {
+        display: inline !important;
+    }
+}
+
+@media (max-width: 900px) {
+    :is(#Admin_user_dashboard_02_employees, #Super_Admin_user_dashboard_02_employees) .emp-section-tabs-bar {
+        display: grid !important;
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+        align-items: stretch !important;
+        gap: 2px !important;
+        padding: 4px 3px 6px !important;
+        overflow: visible !important;
+    }
+
+    :is(#Admin_user_dashboard_02_employees, #Super_Admin_user_dashboard_02_employees) .emp-section-tabs-bar .emp-section-tab {
+        display: grid !important;
+        grid-template-columns: minmax(0, 1fr) auto !important;
+        grid-template-rows: auto auto !important;
+        grid-template-areas: "icon icon" "label badge" !important;
+        align-content: center !important;
+        align-items: center !important;
+        justify-items: center !important;
+        column-gap: 2px !important;
+        row-gap: 3px !important;
+        min-width: 0 !important;
+        min-height: 62px !important;
+        padding: 6px 3px 8px !important;
+        overflow: visible !important;
+        text-align: center !important;
+        white-space: normal !important;
+    }
+
+    :is(#Admin_user_dashboard_02_employees, #Super_Admin_user_dashboard_02_employees) .emp-section-tab > i {
+        grid-area: icon !important;
+        justify-self: center !important;
+        margin: 0 !important;
+    }
+
+    :is(#Admin_user_dashboard_02_employees, #Super_Admin_user_dashboard_02_employees) .emp-section-tab-label {
+        grid-area: label !important;
+        width: 100% !important;
+        min-width: 0 !important;
+        align-self: center !important;
+        text-align: center !important;
+        overflow-wrap: anywhere !important;
+        line-height: 1.2 !important;
+    }
+
+    :is(#Admin_user_dashboard_02_employees, #Super_Admin_user_dashboard_02_employees) .emp-section-tab > span[id$="Badge"] {
+        grid-area: badge !important;
+        align-self: center !important;
+        justify-self: start !important;
+        width: 20px !important;
+        min-width: 20px !important;
+        height: 20px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        border-radius: 50% !important;
+        line-height: 20px !important;
+        text-align: center !important;
+        box-sizing: border-box !important;
     }
 }
 
