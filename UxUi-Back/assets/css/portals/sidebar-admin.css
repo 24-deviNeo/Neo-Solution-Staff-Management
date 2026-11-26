@@ -184,8 +184,8 @@
     min-height: 0;
     display: flex !important;
     flex-direction: column !important;
-    justify-content: space-evenly !important;
-    gap: 4px;
+    justify-content: flex-start !important;
+    gap: 8px;
     overflow-y: auto !important;
     overflow-x: hidden !important;
     scrollbar-width: thin;
@@ -485,7 +485,9 @@
         width: 290px;
         max-width: 84vw;
         height: 100vh;
+        height: 100dvh;
         max-height: 100vh;
+        max-height: 100dvh;
         transform: translateX(-100%);
         overflow: hidden !important;
         /* Keep the drawer above the dimming overlay so it remains visible and clickable. */
