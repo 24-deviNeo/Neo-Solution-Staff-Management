@@ -135,14 +135,13 @@
                 <div class="emp-cell" style="cursor: pointer;" onclick="viewEmp(${e.id})" title="Click to view ${e.name}'s profile">
                   ${getAvatarHtml(e)}
                   <div>
-                    <div class="emp-name" style="font-weight:700; color:#1e293b;">${e.name}</div>
+                    <div class="emp-name" role="button" tabindex="0" aria-label="View ${e.name}'s profile" title="View profile" style="font-weight:700; color:#1e293b; cursor:pointer;" onclick="event.stopPropagation(); viewEmp(${e.id})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();viewEmp(${e.id})}">${e.name}</div>
                     <div class="emp-email" style="font-size:12px; color:#64748b;">${e.email}</div>
                   </div>
                 </div>
               </td>
               <td><strong style="color:#14204d;">${e.dept}</strong></td>
               <td>${e.role}</td>
-              <td><span class="status-badge ${e.status}">${e.status === 'active' ? 'Active' : 'Inactive'}</span>${isOnProbation(e) ? `<span style="display:inline-flex;margin-left:6px;padding:4px 8px;border-radius:999px;background:#fff7ed;color:#c2410c;font-size:11px;font-weight:700;white-space:nowrap;">${String(e.probation_status).toLowerCase() === 'pending approval' ? 'Awaiting approval' : `Probation · ${Number(e.probation_days_worked || 0)}/${Number(e.probation_period_days || 15)} days`}</span>` : ''}</td>
               <td>${probationDatesHtml(e)}</td>
               <td>${e.joined}</td>
               <td style="text-align: center; vertical-align: middle;">
@@ -155,7 +154,7 @@
             </tr>
           `).join('');
         } else {
-          tableBody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding: 40px 20px; color: #64748b;">No employees found in database.</td></tr>';
+          tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 40px 20px; color: #64748b;">No employees found in database.</td></tr>';
         }
       }
 
@@ -168,11 +167,10 @@
                 <div class="emp-cell">
                   ${getAvatarHtml(e)}
                   <div>
-                    <div class="emp-name" style="font-weight:700; color:#1e293b;">${e.name}</div>
+                    <div class="emp-name" role="button" tabindex="0" aria-label="View ${e.name}'s profile" title="View profile" style="font-weight:700; color:#1e293b; cursor:pointer;" onclick="viewEmp(${e.id})" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();viewEmp(${e.id})}">${e.name}</div>
                     <div class="emp-email" style="font-size:12px; color:#64748b;">${e.email}</div>
                   </div>
                 </div>
-                <span class="status-badge ${e.status}">${e.status === 'active' ? 'Active' : 'Inactive'}</span>
                 ${isOnProbation(e) ? `<span style="display:inline-flex;margin-top:6px;padding:4px 8px;border-radius:999px;background:#fff7ed;color:#c2410c;font-size:11px;font-weight:700;">${String(e.probation_status).toLowerCase() === 'pending approval' ? 'Awaiting approval' : `Probation · ${Number(e.probation_days_worked || 0)}/${Number(e.probation_period_days || 15)} days`}</span>` : ''}
               </div>
               <div class="mobile-emp-info-grid">
