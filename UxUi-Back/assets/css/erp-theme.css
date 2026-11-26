@@ -818,6 +818,90 @@ body, html {
     transform: translateY(-1px);
 }
 
+/* Shared viewport and icon sizing safeguards for legacy and portal screens. */
+html {
+    width: 100%;
+    overflow-x: clip;
+}
+
+body {
+    width: 100%;
+    max-width: 3000px;
+    margin-left: auto;
+    margin-right: auto;
+    overflow-x: clip;
+}
+
+/* Font icons inherit their text scale and cannot grow beyond a normal UI icon. */
+i.fa,
+i.fas,
+i.far,
+i.fal,
+i.fad,
+i.fab,
+i[class^="fa-"],
+i[class*=" fa-"],
+.fa,
+.fas,
+.far,
+.fal,
+.fad,
+.fab {
+    font-size: min(1.25rem, 1em) !important;
+    line-height: 1;
+    vertical-align: middle;
+}
+
+img,
+video,
+canvas {
+    max-width: 100%;
+}
+
+/* Let dense grids adapt to narrow viewports and unusually wide monitors. */
+.erp-content-area,
+.employee-dashboard-content,
+[id^="Admin_user_dashboard_"],
+[id^="Super_Admin_user_dashboard_"],
+[id^="Employee_user_dashboard_"] {
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+.erp-card,
+.erp-table-container,
+.erp-stats-grid,
+.erp-form-grid {
+    width: 100%;
+    min-width: 0;
+}
+
+@media (min-width: 3001px) {
+    html, body {
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
+
+@media (max-width: 600px) {
+    .erp-content-area {
+        padding-left: var(--erp-page-gutter);
+        padding-right: var(--erp-page-gutter);
+    }
+
+    .erp-card__header,
+    .erp-card__body,
+    .erp-card__footer {
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    .erp-stats-grid {
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr));
+        gap: 0.75rem;
+    }
+}
+
 /* ==========================================================================
    RESPONSIVE BREAKPOINTS
    ========================================================================== */
