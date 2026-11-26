@@ -1539,3 +1539,58 @@ body :is(
     }
 }
 
+/* Compact, consistent employee actions on phone and tablet layouts. */
+@media (max-width: 900px) {
+    :is(#Admin_user_dashboard_02_employees, #Super_Admin_user_dashboard_02_employees) .mobile-emp-card-actions {
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        justify-content: flex-end !important;
+        gap: 6px !important;
+    }
+
+    :is(#Admin_user_dashboard_02_employees, #Super_Admin_user_dashboard_02_employees) .mobile-emp-card-actions > button {
+        display: inline-flex !important;
+        flex: 0 0 38px !important;
+        width: 38px !important;
+        min-width: 38px !important;
+        max-width: 38px !important;
+        height: 38px !important;
+        min-height: 38px !important;
+        padding: 0 !important;
+        border-radius: 8px !important;
+        box-shadow: none !important;
+        justify-content: center !important;
+    }
+
+    :is(#Admin_user_dashboard_02_employees, #Super_Admin_user_dashboard_02_employees) .mobile-emp-card-actions > button i {
+        margin: 0 !important;
+        font-size: 15px !important;
+        line-height: 1 !important;
+    }
+
+    :is(#Admin_user_dashboard_02_employees, #Super_Admin_user_dashboard_02_employees) .mobile-emp-card-actions > button span {
+        display: none !important;
+    }
+
+    #Admin_user_dashboard_02_employees .mobile-emp-card-actions .btn-mobile-emp-view,
+    #Super_Admin_user_dashboard_02_employees .mobile-emp-card-actions .btn-mobile-emp-view {
+        background: #eff6ff !important;
+        border-color: #dbeafe !important;
+        color: #3156b5 !important;
+    }
+
+    #Admin_user_dashboard_02_employees .mobile-emp-card-actions .btn-mobile-emp-edit,
+    #Super_Admin_user_dashboard_02_employees .mobile-emp-card-actions .btn-mobile-emp-edit {
+        background: #f8fafc !important;
+        border-color: #e2e8f0 !important;
+        color: #475569 !important;
+    }
+
+    #Admin_user_dashboard_02_employees .mobile-emp-card-actions .btn-mobile-emp-plan,
+    #Super_Admin_user_dashboard_02_employees .mobile-emp-card-actions .btn-mobile-emp-plan {
+        background: #f0fdf4 !important;
+        border-color: #dcfce7 !important;
+        color: #15803d !important;
+    }
+}
+
