@@ -40,15 +40,6 @@
         color: #cbd5e1;
     }
 
-    .erp-footer__left .status-dot {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        background: #10b981;
-        box-shadow: 0 0 8px #10b981;
-        display: inline-block;
-    }
-
     .erp-footer__brand {
         font-weight: 700;
         color: #ffffff;
@@ -100,7 +91,6 @@
 <!-- ================= PAGE FOOTER ================= -->
 <footer class="erp-footer">
     <div class="erp-footer__left">
-        <span class="status-dot" title="System Online"></span>
         <span class="erp-footer__brand">NEO Solution</span>
         <span>© <span id="currentYear"><?php echo date('Y'); ?></span> • All Rights Reserved</span>
     </div>
