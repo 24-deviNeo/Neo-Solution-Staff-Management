@@ -27,6 +27,14 @@ $profileColumns = [
     'address' => 'text DEFAULT NULL',
     'emergency_contact_name' => 'varchar(255) DEFAULT NULL',
     'emergency_contact_phone' => 'varchar(50) DEFAULT NULL',
+    'probation_status' => "varchar(100) DEFAULT 'In Progress'",
+    'probation_required' => 'tinyint(1) NOT NULL DEFAULT 0',
+    'probation_days_worked' => 'int NOT NULL DEFAULT 0',
+    'probation_last_counted_date' => 'date DEFAULT NULL',
+    'probation_period_days' => 'int NOT NULL DEFAULT 15',
+    'probation_start_date' => 'date DEFAULT NULL',
+    'probation_end_date' => 'date DEFAULT NULL',
+    'official_start_date' => 'date DEFAULT NULL',
 ];
 foreach ($profileColumns as $column => $definition) {
     $columnCheck = $conn->query("SHOW COLUMNS FROM `employee_profiles` WHERE `Field` = '{$column}'");
@@ -50,6 +58,7 @@ $sessionProfileId = isset($_SESSION['employee_profile_id']) ? (int)$_SESSION['em
 $sessionEmail = isset($_SESSION['user_name']) ? trim((string)$_SESSION['user_name']) : '';
 
 $userId = isset($_POST['user_id']) ? (int)$_POST['user_id'] : 0;
+$requestedProfileId = isset($_POST['profile_id']) ? (int)$_POST['profile_id'] : 0;
 if ($userId <= 0 && $sessionProfileId > 0) {
     $userId = $sessionProfileId;
 } elseif ($userId <= 0 && $sessionUid > 0) {
@@ -81,6 +90,8 @@ $schedStart = isset($_POST['schedule_start_date']) ? trim($_POST['schedule_start
 $schedEnd   = isset($_POST['schedule_end_date']) ? trim($_POST['schedule_end_date']) : '';
 $workMode   = isset($_POST['work_mode']) ? trim($_POST['work_mode']) : '';
 $probation  = isset($_POST['probation_status']) ? trim($_POST['probation_status']) : (isset($_POST['probation']) ? trim($_POST['probation']) : '');
+$probationRequired = isset($_POST['probation_required']) ? (int)!!$_POST['probation_required'] : null;
+$probationDays = isset($_POST['probation_period_days']) ? max(1, min(365, (int)$_POST['probation_period_days'])) : 15;
 $probStart  = isset($_POST['probation_start_date']) ? trim($_POST['probation_start_date']) : '';
 $probEnd    = isset($_POST['probation_end_date']) ? trim($_POST['probation_end_date']) : '';
 $offStart   = isset($_POST['official_start_date']) ? trim($_POST['official_start_date']) : '';
@@ -106,6 +117,12 @@ $safeFullName = addslashes($fullName);
 $safeSessEmail = addslashes($sessionEmail);
 
 $profileLookups = [];
+if (!$isEmployeeSelf && $requestedProfileId > 0) {
+    // Admin employee edits carry the exact employee_profiles row ID, so
+    // probation settings cannot attach to a different account with a
+    // coincidentally matching login/profile ID.
+    $profileLookups[] = "`id` = '{$requestedProfileId}'";
+}
 if ($isEmployeeSelf) {
     if ($sessionUid > 0) $profileLookups[] = "`user_id` = '{$sessionUid}'";
     if (!empty($sessionEmail)) $profileLookups[] = "`email` = '{$safeSessEmail}'";
@@ -223,9 +240,25 @@ if ($prof_id > 0) {
         if (!empty($schedEnd))    $updates[] = "`schedule_end_date` = '" . addslashes($schedEnd) . "'";
         if (!empty($workMode))    $updates[] = "`work_mode` = '" . addslashes($workMode) . "'";
         if (!empty($probation))   $updates[] = "`probation_status` = '" . addslashes($probation) . "'";
+        if ($probationRequired !== null) $updates[] = "`probation_required` = {$probationRequired}";
         if (!empty($probStart))   $updates[] = "`probation_start_date` = '" . addslashes($probStart) . "'";
         if (!empty($probEnd))     $updates[] = "`probation_end_date` = '" . addslashes($probEnd) . "'";
         if (!empty($offStart))    $updates[] = "`official_start_date` = '" . addslashes($offStart) . "'";
+        if ((isset($_POST['probation_status']) || isset($_POST['probation'])) && $probation === '') {
+            $updates[] = "`probation_status` = '" . addslashes($probation !== '' ? $probation : 'In Progress') . "'";
+        }
+        if (isset($_POST['probation_period_days'])) {
+            $updates[] = "`probation_period_days` = " . $probationDays;
+        }
+        if (isset($_POST['probation_start_date']) && empty($probStart)) {
+            $updates[] = "`probation_start_date` = NULL";
+        }
+        if (isset($_POST['probation_end_date']) && empty($probEnd)) {
+            $updates[] = "`probation_end_date` = NULL";
+        }
+        if (isset($_POST['official_start_date']) && empty($offStart)) {
+            $updates[] = "`official_start_date` = NULL";
+        }
         if ($attDays !== null)    $updates[] = "`attendance_days` = " . (int)$attDays;
         if ($main_user_id > 0 && empty($targetProf['user_id'])) {
             $updates[] = "`user_id` = '{$main_user_id}'";
@@ -306,6 +339,30 @@ if ($prof_id > 0) {
         exit;
     }
     $prof_id = (int)$conn->insert_id;
+}
+
+// Apply service milestone values to newly created admin-managed profiles too.
+if (!$isEmployeeSelf && $prof_id > 0 && empty($targetProf)) {
+    $careerUpdates = [];
+    if (isset($_POST['probation_status']) || isset($_POST['probation'])) {
+        $careerUpdates[] = "probation_status = '" . addslashes($probation !== '' ? $probation : 'In Progress') . "'";
+    }
+    if (isset($_POST['probation_period_days'])) {
+        $careerUpdates[] = 'probation_period_days = ' . $probationDays;
+    }
+    if ($probationRequired !== null) $careerUpdates[] = 'probation_required = ' . $probationRequired;
+    if (isset($_POST['probation_start_date'])) {
+        $careerUpdates[] = 'probation_start_date = ' . (!empty($probStart) ? "'" . addslashes($probStart) . "'" : 'NULL');
+    }
+    if (isset($_POST['probation_end_date'])) {
+        $careerUpdates[] = 'probation_end_date = ' . (!empty($probEnd) ? "'" . addslashes($probEnd) . "'" : 'NULL');
+    }
+    if (isset($_POST['official_start_date'])) {
+        $careerUpdates[] = 'official_start_date = ' . (!empty($offStart) ? "'" . addslashes($offStart) . "'" : 'NULL');
+    }
+    if (!empty($careerUpdates)) {
+        $conn->query("UPDATE employee_profiles SET " . implode(', ', $careerUpdates) . " WHERE id = '{$prof_id}'");
+    }
 }
 
 // 3. Synchronize with employees table (phpMyAdmin exact table schema)
