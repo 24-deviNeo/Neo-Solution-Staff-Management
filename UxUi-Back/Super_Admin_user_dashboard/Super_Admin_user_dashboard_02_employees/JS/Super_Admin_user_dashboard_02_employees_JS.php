@@ -2,6 +2,13 @@
 (function () {
   document.addEventListener('DOMContentLoaded', () => {
 
+    const probationRequiredSelect = document.getElementById('editEmpProbationRequired');
+    const probationStatusSelect = document.getElementById('editEmpProbationStatus');
+    probationRequiredSelect?.addEventListener('change', function () {
+      if (this.value === '1' && probationStatusSelect.value === 'Not Required') probationStatusSelect.value = 'In Progress';
+      if (this.value === '0' && probationStatusSelect.value === 'In Progress') probationStatusSelect.value = 'Not Required';
+    });
+
     // ---- Mobile Sidebar Toggle ----
     const menuBtn = document.getElementById('menuBtn_02') || document.getElementById('menuBtn');
     if (menuBtn) {
@@ -101,8 +108,12 @@
     function renderTable() {
       const query = searchInput ? searchInput.value.trim().toLowerCase() : '';
       const selectedDept = deptFilterSelect ? deptFilterSelect.value : 'all';
+      const isOnProbation = e => Number(e.probation_required) === 1 && /^(in progress|pending approval)$/i.test(String(e.probation_status || '').trim());
+      const probationDatesHtml = e => isOnProbation(e)
+        ? `<div style="font-weight:700;color:#334155;">${e.probation_start_date || e.joined || '—'}</div><small style="color:#64748b;">Review: ${e.probation_end_date || `${Number(e.probation_period_days || 15)} workdays`}</small>`
+        : '<span style="color:#94a3b8;">—</span>';
       const rows = employees.filter(e => {
-        const matchesFilter = activeFilter === 'all' || e.status === activeFilter;
+        const matchesFilter = activeFilter === 'all' || (activeFilter === 'probation' ? isOnProbation(e) : e.status === activeFilter);
         const employeeDept = String(e.dept || '').trim().toLowerCase();
         const isUnassignedDept = !employeeDept || employeeDept === 'unassigned' || employeeDept === 'unassigned department';
         const matchesDept = selectedDept === 'all' ||
@@ -131,7 +142,8 @@
               </td>
               <td><strong style="color:#14204d;">${e.dept}</strong></td>
               <td>${e.role}</td>
-              <td><span class="status-badge ${e.status}">${e.status === 'active' ? 'Active' : 'Inactive'}</span></td>
+              <td><span class="status-badge ${e.status}">${e.status === 'active' ? 'Active' : 'Inactive'}</span>${isOnProbation(e) ? `<span style="display:inline-flex;margin-left:6px;padding:4px 8px;border-radius:999px;background:#fff7ed;color:#c2410c;font-size:11px;font-weight:700;white-space:nowrap;">${String(e.probation_status).toLowerCase() === 'pending approval' ? 'Awaiting approval' : `Probation · ${Number(e.probation_days_worked || 0)}/${Number(e.probation_period_days || 15)} days`}</span>` : ''}</td>
+              <td>${probationDatesHtml(e)}</td>
               <td>${e.joined}</td>
               <td style="text-align: center; vertical-align: middle;">
                 <div class="row-actions" style="display:flex; align-items:center; justify-content:center; margin:0 auto; gap:6px;">
@@ -143,7 +155,7 @@
             </tr>
           `).join('');
         } else {
-          tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 40px 20px; color: #64748b;">No employees found in database.</td></tr>';
+          tableBody.innerHTML = '<tr><td colspan="7" style="text-align:center; padding: 40px 20px; color: #64748b;">No employees found in database.</td></tr>';
         }
       }
 
@@ -161,6 +173,7 @@
                   </div>
                 </div>
                 <span class="status-badge ${e.status}">${e.status === 'active' ? 'Active' : 'Inactive'}</span>
+                ${isOnProbation(e) ? `<span style="display:inline-flex;margin-top:6px;padding:4px 8px;border-radius:999px;background:#fff7ed;color:#c2410c;font-size:11px;font-weight:700;">${String(e.probation_status).toLowerCase() === 'pending approval' ? 'Awaiting approval' : `Probation · ${Number(e.probation_days_worked || 0)}/${Number(e.probation_period_days || 15)} days`}</span>` : ''}
               </div>
               <div class="mobile-emp-info-grid">
                 <div class="mobile-emp-info-item">
@@ -175,16 +188,20 @@
                   <span class="mobile-emp-info-label">Joined</span>
                   <span class="mobile-emp-info-val">${e.joined}</span>
                 </div>
+                <div class="mobile-emp-info-item">
+                  <span class="mobile-emp-info-label">Probation Dates</span>
+                  <span class="mobile-emp-info-val">${isOnProbation(e) ? `${e.probation_start_date || e.joined || '—'} – ${e.probation_end_date || `${Number(e.probation_period_days || 15)} workdays`}` : 'Not required'}</span>
+                </div>
               </div>
               <div class="mobile-emp-card-actions">
-                <button type="button" class="btn-mobile-emp-view" onclick="viewEmp(${e.id})">
-                  <i class="fa-solid fa-eye"></i> View Profile
+                <button type="button" class="btn-mobile-emp-view" aria-label="View employee profile" title="View Profile" onclick="viewEmp(${e.id})">
+                  <i class="fa-solid fa-eye" aria-hidden="true"></i><span>View Profile</span>
                 </button>
-                <button type="button" class="btn-mobile-emp-edit" onclick="editEmp(${e.id})">
-                  <i class="fa-solid fa-pen"></i> Edit
+                <button type="button" class="btn-mobile-emp-edit" aria-label="Edit employee" title="Edit" onclick="editEmp(${e.id})">
+                  <i class="fa-solid fa-pen" aria-hidden="true"></i><span>Edit</span>
                 </button>
-                <button type="button" class="btn-mobile-emp-plan" onclick="viewEmpDailyPlans(${e.id})">
-                  <i class="fa-solid fa-calendar-check"></i> Daily Plans
+                <button type="button" class="btn-mobile-emp-plan" aria-label="View employee daily plans" title="Daily Plans" onclick="viewEmpDailyPlans(${e.id})">
+                  <i class="fa-solid fa-calendar-check" aria-hidden="true"></i><span>Daily Plans</span>
                 </button>
               </div>
             </div>
@@ -195,10 +212,14 @@
       }
 
       if (empCount) {
+        const probationCount = employees.filter(emp => Number(emp.probation_required) === 1 && /^(in progress|pending approval)$/i.test(String(emp.probation_status || 'In Progress').trim())).length;
+        const probationLabel = `${probationCount} on probation`;
+        const probationPill = document.querySelector('#filterPills [data-filter="probation"]');
+        if (probationPill) probationPill.textContent = `Probation (${probationCount})`;
         if (activeFilter === 'all' && !query) {
-          empCount.textContent = `${employees.length} total employee${employees.length === 1 ? '' : 's'}`;
+          empCount.textContent = `${employees.length} total employee${employees.length === 1 ? '' : 's'} · ${probationLabel}`;
         } else {
-          empCount.textContent = `${rows.length} of ${employees.length} employee${employees.length === 1 ? '' : 's'}`;
+          empCount.textContent = `${rows.length} of ${employees.length} employee${employees.length === 1 ? '' : 's'} · ${probationLabel}`;
         }
       }
     }
@@ -902,6 +923,25 @@
     const closeEditEmpModal = document.getElementById('closeEditEmpModal');
     const cancelEditEmpModal = document.getElementById('cancelEditEmpModal');
     const editEmpForm = document.getElementById('editEmpForm');
+    const editProbationStart = document.getElementById('editEmpProbationStartDate');
+    const editProbationEnd = document.getElementById('editEmpProbationEndDate');
+    const editProbationDays = document.getElementById('editEmpProbationDays');
+
+    function syncEditProbationEndDate() {
+      const startValue = editProbationStart?.value || '';
+      const days = Math.max(1, Math.min(365, parseInt(editProbationDays?.value || '15', 10) || 15));
+      if (!startValue || !editProbationEnd) return;
+      const endDate = new Date(startValue + 'T00:00:00');
+      let workdaysAdded = 0;
+      while (workdaysAdded < days) {
+        const weekday = endDate.getDay();
+        if (weekday !== 0 && weekday !== 6) workdaysAdded++;
+        if (workdaysAdded < days) endDate.setDate(endDate.getDate() + 1);
+      }
+      editProbationEnd.value = [endDate.getFullYear(), String(endDate.getMonth() + 1).padStart(2, '0'), String(endDate.getDate()).padStart(2, '0')].join('-');
+    }
+    editProbationStart?.addEventListener('change', syncEditProbationEndDate);
+    editProbationDays?.addEventListener('input', syncEditProbationEndDate);
 
     function closeEditModal() {
       editEmpModal?.classList.remove('active');
@@ -923,6 +963,13 @@
       }
       document.getElementById('editEmpJoined').value = e.joined;
       document.getElementById('editEmpType').value = e.employment_type || 'Full-Time (Permanent)';
+      document.getElementById('editEmpOfficialStartDate').value = e.official_start_date || e.joined || '';
+      document.getElementById('editEmpProbationRequired').value = String(e.probation_required || 0);
+      document.getElementById('editEmpProbationStatus').value = e.probation_status || (Number(e.probation_required) === 1 ? 'In Progress' : 'Not Required');
+      document.getElementById('editEmpProbationStartDate').value = e.probation_start_date || e.joined || '';
+      document.getElementById('editEmpProbationDays').value = e.probation_period_days || 15;
+      document.getElementById('editEmpProbationEndDate').value = e.probation_end_date || '';
+      if (!e.probation_end_date) syncEditProbationEndDate();
       if (document.getElementById('editEmpLocation')) {
         document.getElementById('editEmpLocation').value = e.work_location || e.location || 'Colombo HQ';
       }
@@ -1062,11 +1109,13 @@
         const weekly_roster = document.getElementById('editEmpWeeklyRoster')?.value || '';
         const employment_type = document.getElementById('editEmpType').value;
         const work_location = document.getElementById('editEmpLocation')?.value.trim() || 'Colombo HQ';
+        const currEmp = employees.find(emp => Number(emp.id) === Number(id));
 
         const updateUrl = (typeof window.pth !== 'undefined' ? window.pth : '../') + 'UxUi-Back/Employee/update_profile/update_profile.php';
         const formData = new FormData();
         formData.append('portal_role', portalRole);
         formData.append('user_id', id);
+        formData.append('profile_id', String(currEmp?.profile_id || ''));
         formData.append('full_name', name);
         formData.append('email', email);
         formData.append('dept', dept);
@@ -1078,9 +1127,14 @@
         formData.append('weekly_roster', weekly_roster);
         formData.append('employment_type', employment_type);
         formData.append('work_location', work_location);
+        formData.append('official_start_date', document.getElementById('editEmpOfficialStartDate')?.value || '');
+        formData.append('probation_required', document.getElementById('editEmpProbationRequired')?.value || '0');
+        formData.append('probation_status', document.getElementById('editEmpProbationStatus')?.value || 'Not Required');
+        formData.append('probation_start_date', document.getElementById('editEmpProbationStartDate')?.value || '');
+        formData.append('probation_end_date', document.getElementById('editEmpProbationEndDate')?.value || '');
+        formData.append('probation_period_days', document.getElementById('editEmpProbationDays')?.value || '15');
         formData.append('emergency_contact_name', document.getElementById('editEmpEmName')?.value.trim() || '');
         formData.append('emergency_contact_phone', document.getElementById('editEmpEmPhone')?.value.trim() || '');
-        const currEmp = employees.find(emp => Number(emp.id) === Number(id));
         const empCode = currEmp?.emp_code || currEmp?.employee_id_code || ('EMP-' + String(id).padStart(3, '0'));
         const accountId = currEmp?.account_id || '';
         formData.append('employee_id_code', empCode);
@@ -2190,8 +2244,6 @@
 
     window.filterAdminTable = function(filter) {
       currentAdminFilter = filter;
-      const statusSelect = document.getElementById('adminStatusFilter');
-      if (statusSelect) statusSelect.value = filter;
       document.querySelectorAll('#adminFilterPills .w3-pill').forEach(pill => {
         pill.classList.toggle('active', pill.getAttribute('data-filter') === filter);
       });
