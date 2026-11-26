@@ -68,7 +68,10 @@ $profileName = '';
 $profileDept = '';
 $profileRole = '';
 
-$pRes = $db->get_result("SELECT id, full_name, department, job_title FROM `employee_profiles` WHERE user_id = {$userId} OR id = {$userId} LIMIT 1");
+$pRes = $db->get_result("SELECT id, full_name, department, job_title FROM `employee_profiles` WHERE user_id = {$userId} ORDER BY id DESC LIMIT 1");
+if (!$pRes || $pRes->num_rows === 0) {
+    $pRes = $db->get_result("SELECT id, full_name, department, job_title FROM `employee_profiles` WHERE id = {$userId} LIMIT 1");
+}
 if ($pRes && ($p = $pRes->fetch_assoc())) {
     $profileId = (int)$p['id'];
     $profileName = trim((string)($p['full_name'] ?? ''));
@@ -82,6 +85,13 @@ if ($pRes && ($p = $pRes->fetch_assoc())) {
         $profileDept = trim((string)($e['department'] ?? ''));
         $profileRole = trim((string)($e['role'] ?? ''));
     }
+}
+
+// Store the latest work-plan date counted toward probation. The end-of-shift
+// update is the confirmation that both today's plan and work update were sent.
+$probationDateColumn = $db->get_result("SHOW COLUMNS FROM `employee_profiles` WHERE `Field` = 'probation_last_counted_date'");
+if ($probationDateColumn && $probationDateColumn->num_rows === 0) {
+    $db->get_result("ALTER TABLE `employee_profiles` ADD COLUMN `probation_last_counted_date` DATE DEFAULT NULL");
 }
 
 if ($profileName === '' && !empty($_SESSION['user_name'])) {
@@ -118,6 +128,11 @@ $profileSql = $profileId > 0 ? (string)$profileId : 'NULL';
 // Action 1: Evening Shift End Wrap-Up (Simple, clean, sync to tasks)
 if ($action === 'shift_end_update' || isset($_POST['evening_update'])) {
     $eveningUpdate = trim((string)($_POST['evening_update'] ?? ''));
+    if ($eveningUpdate === '') {
+        http_response_code(422);
+        echo json_encode(['status' => 'error', 'message' => 'Please enter your work update before submitting the shift.']);
+        exit;
+    }
     $taskStatus = trim((string)($_POST['task_status'] ?? 'Completed'));
     if ($taskStatus !== 'Pending' && $taskStatus !== 'Completed') {
         $taskStatus = 'Completed';
@@ -198,6 +213,24 @@ if ($action === 'shift_end_update' || isset($_POST['evening_update'])) {
         $db->get_result("UPDATE `daily_employee_work_plans` SET `task_id` = {$taskId} WHERE id = {$planId}");
     }
 
+    // Count a probation workday once per employee per date, only after both
+    // the daily plan and a non-empty shift update have been submitted.
+    $probationProgress = null;
+    $probationProfileResult = $db->get_result("SELECT `id`, `probation_required`, `probation_status`, `probation_period_days`, `probation_days_worked`, `probation_start_date`, `probation_last_counted_date` FROM `employee_profiles` WHERE `id` = {$profileId} LIMIT 1");
+    $probationProfile = $probationProfileResult ? $probationProfileResult->fetch_assoc() : null;
+    if ($probationProfile && (int)($probationProfile['probation_required'] ?? 0) === 1 && preg_match('/^in progress$/i', trim((string)($probationProfile['probation_status'] ?? '')))) {
+        $requiredDays = max(1, (int)($probationProfile['probation_period_days'] ?? 15));
+        $workedDays = max(0, (int)($probationProfile['probation_days_worked'] ?? 0));
+        $probationStartDate = (string)($probationProfile['probation_start_date'] ?? '');
+        $alreadyCountedToday = (string)($probationProfile['probation_last_counted_date'] ?? '') === $today;
+        if (!$alreadyCountedToday && $probationStartDate !== '' && $today >= $probationStartDate && $workedDays < $requiredDays) {
+            $workedDays++;
+            $newProbationStatus = $workedDays >= $requiredDays ? 'Pending Approval' : 'In Progress';
+            $db->get_result("UPDATE `employee_profiles` SET `probation_days_worked` = {$workedDays}, `probation_last_counted_date` = '{$today}', `probation_status` = '{$newProbationStatus}' WHERE `id` = {$profileId} AND `probation_required` = 1 AND `probation_status` = 'In Progress' AND (`probation_last_counted_date` IS NULL OR `probation_last_counted_date` <> '{$today}')");
+            $probationProgress = ['worked' => $workedDays, 'required' => $requiredDays, 'status' => $newProbationStatus];
+        }
+    }
+
     // Notify Admin
     if (class_exists('SystemNotifications')) {
         SystemNotifications::create(
@@ -233,6 +266,7 @@ if ($action === 'shift_end_update' || isset($_POST['evening_update'])) {
         'message' => 'Shift update saved.',
         'task_id' => $taskId,
         'task_status' => $taskStatus,
+        'probation_progress' => $probationProgress,
         'data' => $updatedPlanRes ? $updatedPlanRes->fetch_assoc() : null
     ]);
     exit;
