@@ -880,7 +880,7 @@
       try {
         const fd = new FormData(); fd.append('phone_number', phone);
         const r = await call(url.phone(), fd);
-        if (r.status === 'success') { if (phoneInput) phoneInput.value = r.phone_number || phone; alert(r.message || 'Phone number saved.'); }
+        if (r.status === 'success') { if (phoneInput) phoneInput.value = r.phone_number || phone;  }
         else alert(r.message || 'Could not save phone number.');
       } catch (e) { alert(e.message); }
       finally { btnSavePhone.disabled = false; btnSavePhone.textContent = orig; }
@@ -912,7 +912,7 @@
         try {
           const fd = new FormData(); fd.append('action', 'disable');
           const r = await call(url.toggle(), fd);
-          if (r.status === 'success') { setToggle(false); if (verifyBox) verifyBox.style.display = 'none'; alert('Two-Factor Authentication disabled.'); }
+          if (r.status === 'success') { setToggle(false); if (verifyBox) verifyBox.style.display = 'none';  }
           else { alert(r.message || 'Could not disable 2FA.'); toggle.checked = true; }
         } catch (e) { alert(e.message); toggle.checked = true; }
       }
@@ -930,7 +930,7 @@
         const item = first(await call(url.otp(), fd));
         if (item && String(item.error) === '0') {
           if (verifyBox) verifyBox.style.display = 'none'; if (otpInput) otpInput.value = '';
-          setToggle(true); alert('Two-Factor Authentication enabled.');
+          setToggle(true); 
         } else showBox(tfAlert, (item && item.message) || 'Invalid code.', 'err');
       } catch (e) { showBox(tfAlert, e.message, 'err'); }
       finally { btnVerify.disabled = false; btnVerify.textContent = orig; }
