@@ -62,8 +62,8 @@ $is_auth_page = true;
     <!-- Header component -->
     <?php
     include_once '../../imports/Company_Info/Company_Info_Variable_List.php';
-    include_once '../../View-List/Main/Google-Login/Main_User_Google_Login_Config.php';
-    include_once '../../View-List/Main/Microsoft-Login/Main_User_Microsoft_Login_Config.php';
+    $company_obj = new Company_Info_Variable_List();
+    // Google and Microsoft sign-in are disabled.
     include_once '../../UxUi-Back/Common/header.php';
     ?>
 
