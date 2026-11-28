@@ -8,6 +8,11 @@ if (!in_array($current_msg, $public_messages) && !is_logged_in()) {
     require_login();
 }
 
+if ($current_msg === 'User-Login-Successful' && is_logged_in()) {
+    header('Location: ' . get_dashboard_redirect_url());
+    exit;
+}
+
 $is_auth_page = true;
 $role_str = strtolower($_SESSION['user_role'] ?? '');
 $is_super_admin = (strpos($role_str, 'super') !== false || (isset($_SESSION['main_user_account_access_level_list_id']) && (int)$_SESSION['main_user_account_access_level_list_id'] === 1));
