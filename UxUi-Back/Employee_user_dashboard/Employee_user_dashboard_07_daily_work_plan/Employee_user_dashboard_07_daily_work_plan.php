@@ -309,7 +309,28 @@
     flex: 1 1 auto;
   }
 
+  .filter-select-wrap {
+    position: relative;
+    flex: 0 1 170px;
+    min-width: 145px;
+  }
+
+  .filter-select-wrap::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: 15px;
+    width: 8px;
+    height: 8px;
+    border-right: 2px solid #64748b;
+    border-bottom: 2px solid #64748b;
+    transform: translateY(-70%) rotate(45deg);
+    pointer-events: none;
+  }
+
   .filter-pill-select {
+    display: block;
+    width: 100%;
     background: #ffffff;
     border: 1px solid #e2e8f0;
     border-radius: 999px;
@@ -320,10 +341,7 @@
     outline: none;
     cursor: pointer;
     appearance: none;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b' stroke-width='2'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 12px center;
-    background-size: 14px;
+    background-image: none !important;
   }
 
   /* Tasks Grid: 2 Columns on Desktop, 1 Column on Mobile */
@@ -1032,16 +1050,25 @@
     }
 
     #Employee_user_dashboard_07_daily_work_plan .filter-dropdowns-row .filter-pill-select {
-      flex: 1 1 0 !important;
-      width: 50% !important;
+      flex: 1 1 auto !important;
+      width: 100% !important;
       min-width: 0 !important;
       max-width: none !important;
       box-sizing: border-box !important;
-      padding: 10px 28px 10px 14px !important;
+      padding: 10px 42px 10px 14px !important;
       font-size: 13px !important;
-      background-position: right 10px center !important;
       text-overflow: ellipsis;
       white-space: nowrap;
+    }
+
+    #Employee_user_dashboard_07_daily_work_plan .filter-dropdowns-row .filter-select-wrap {
+      flex: 1 1 0 !important;
+      width: calc(50% - 4px) !important;
+      min-width: 0 !important;
+    }
+
+    #Employee_user_dashboard_07_daily_work_plan .filter-select-wrap::after {
+      right: 14px;
     }
 
     #Employee_user_dashboard_07_daily_work_plan .workplan-tasks-grid {
@@ -1568,18 +1595,22 @@
         </div>
 
         <div class="filter-dropdowns-row">
-          <select class="filter-pill-select" id="workplanCategoryFilter" onchange="filterWorkplanTasks()">
-            <option value="all">All Modes</option>
-            <option value="Online">Online</option>
-            <option value="Onsite">Onsite</option>
-          </select>
+          <div class="filter-select-wrap">
+            <select class="filter-pill-select" id="workplanCategoryFilter" onchange="filterWorkplanTasks()">
+              <option value="all">All Modes</option>
+              <option value="Online">Online</option>
+              <option value="Onsite">Onsite</option>
+            </select>
+          </div>
 
-          <select class="filter-pill-select" id="workplanStatusFilter" onchange="filterWorkplanTasks()">
-            <option value="all">All Statuses</option>
-            <option value="Pending">Pending</option>
-            <option value="In Progress">In Progress</option>
-            <option value="Completed">Completed</option>
-          </select>
+          <div class="filter-select-wrap">
+            <select class="filter-pill-select" id="workplanStatusFilter" onchange="filterWorkplanTasks()">
+              <option value="all">All Statuses</option>
+              <option value="Pending">Pending</option>
+              <option value="In Progress">In Progress</option>
+              <option value="Completed">Completed</option>
+            </select>
+          </div>
         </div>
       </div>
 
