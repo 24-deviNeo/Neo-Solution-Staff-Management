@@ -285,10 +285,10 @@ $dashboard_btn_text = $is_super_admin ? 'Continue to Super Admin Dashboard' : ($
               customizeSuccess(
                   'Login Successful',
                   'Welcome back to <?php echo $portal_label; ?>',
-                  'Authentication verified. Directing you to your <?php echo strtolower($portal_label); ?>...',
+                  'Authentication verified. Choose when you are ready to continue.',
                   '<?php echo $dashboard_btn_text; ?>',
                   '<?php echo $target_dashboard_url; ?>',
-                  2500,
+                  0,
                   true,
                   'Direct Link',
                   '<?php echo $target_dashboard_url; ?>'
