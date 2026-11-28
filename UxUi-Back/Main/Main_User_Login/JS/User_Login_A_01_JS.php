@@ -38,8 +38,7 @@
                             window.location.href = "<?php echo $home_page ?><?php echo $User_login_url ?>OTP-Two-step-Verification<?php echo $online_offline_extention ?>?type=" + type;
 
                         } else {
-                            var sucessMsg = encodeURIComponent("User-Login-Successful");
-                            window.location.href = "<?php echo $home_page ?><?php echo $User_login_url ?>Successful-Page<?php echo $online_offline_extention ?>?message=" + sucessMsg;
+                            window.location.href = json[0].redirect_url || ("<?php echo $home_page ?>" + (json[0].url_home || "UxUi/Employee_user_dashboard.php"));
                         }
 
                     } else {
