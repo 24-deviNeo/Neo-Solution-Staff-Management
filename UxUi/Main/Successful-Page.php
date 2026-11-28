@@ -25,12 +25,6 @@ if (empty($target_dashboard_url)) {
     }
 }
 
-// A normal username/password login should land on the dashboard immediately.
-// Keep the success screen for registration, verification, and other messages.
-if ($current_msg === 'User-Login-Successful' && is_logged_in()) {
-    header('Location: ' . $target_dashboard_url);
-    exit;
-}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -39,7 +33,7 @@ if ($current_msg === 'User-Login-Successful' && is_logged_in()) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
-    <?php if (!empty($target_dashboard_url) && is_logged_in() && $current_msg !== 'Admin-Registration-Pending-Approval'): ?>
+    <?php if (!empty($target_dashboard_url) && is_logged_in() && $current_msg !== 'Admin-Registration-Pending-Approval' && $current_msg !== 'User-Login-Successful'): ?>
     <meta http-equiv="refresh" content="3;url=<?php echo htmlspecialchars($target_dashboard_url); ?>">
     <?php endif; ?>
     <link rel="icon" type="image/png" href="https://www.svgrepo.com/show/373594/favicon.svg">
