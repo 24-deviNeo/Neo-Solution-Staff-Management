@@ -30,9 +30,15 @@ if (isset($_GET['relogin']) || isset($_GET['logout']) || isset($_GET['action']) 
     if (isset($_COOKIE['main_user_account_cook'])) {
         setcookie('main_user_account_cook', '', time() - 3600, '/');
     }
-} else {
-    redirect_if_logged_in();
 }
+
+// A valid remembered session skips the credential form, but lands on the
+// success page so the user chooses when to continue to their portal.
+if (is_logged_in()) {
+    header('Location: ' . rtrim($home_page, '/') . '/UxUi/Main/Successful-Page' . $online_offline_extention . '?message=User-Login-Successful');
+    exit;
+}
+
 $is_auth_page = true;
 ?>
 <!DOCTYPE html>
@@ -43,7 +49,6 @@ $is_auth_page = true;
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="robots" content="noindex, nofollow">
     <title>Portal Login | NEO Solution</title>
-    <link rel="icon" type="image/png" href="https://www.svgrepo.com/show/373594/favicon.svg">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
