@@ -32,10 +32,10 @@ if (isset($_GET['relogin']) || isset($_GET['logout']) || isset($_GET['action']) 
     }
 }
 
-// A valid remembered session skips the credential form, but lands on the
-// success page so the user chooses when to continue to their portal.
+// A valid remembered session skips the credential form and goes straight to
+// the role's dashboard without displaying the login success page.
 if (is_logged_in()) {
-    header('Location: ' . rtrim($home_page, '/') . '/UxUi/Main/Successful-Page' . $online_offline_extention . '?message=User-Login-Successful');
+    header('Location: ' . get_dashboard_redirect_url());
     exit;
 }
 
