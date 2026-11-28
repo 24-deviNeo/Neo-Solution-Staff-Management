@@ -500,8 +500,7 @@
                     var json = JSON.parse(res);
                     if (json[0].error === "0") {
                         // alert("varifyed");
-                        var sucessMsg = encodeURIComponent("User-Login-Successful");
-                        window.location.href = "<?php echo $home_page ?><?php echo $User_login_url ?>Successful-Page<?php echo $online_offline_extention ?>?message=" + sucessMsg;
+                        window.location.href = "<?php echo $home_page ?>UxUi/Main/User-Profile<?php echo $online_offline_extention ?>";
 
                     } else {
                         // alert("Error: " + json[0].error);
@@ -529,8 +528,7 @@
                     var json = JSON.parse(res);
                     if (json[0].error === "0") {
                         // alert("varifyed");
-                        var sucessMsg = encodeURIComponent("User-Login-Successful");
-                        window.location.href = "<?php echo $home_page ?><?php echo $User_login_url ?>Successful-Page<?php echo $online_offline_extention ?>?message=" + sucessMsg;
+                        window.location.href = "<?php echo $home_page ?>UxUi/Main/User-Profile<?php echo $online_offline_extention ?>";
 
                     } else {
                         // alert("Error: " + json[0].error);
