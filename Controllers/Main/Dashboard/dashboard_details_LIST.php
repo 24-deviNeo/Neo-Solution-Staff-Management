@@ -140,7 +140,7 @@ class dashboard_details_LIST
         new ProjectTaskStore();
         $res = $data_base_obj->get_result("SELECT
             SUM(CASE WHEN `is_pending` = 1 THEN 1 ELSE 0 END) AS pending_cnt,
-            SUM(CASE WHEN `is_completed` = 1 THEN 1 ELSE 0 END) AS completed_cnt,
+            SUM(CASE WHEN `is_completed` = 1 AND `created_at` >= DATE_SUB(NOW(), INTERVAL 30 DAY) THEN 1 ELSE 0 END) AS completed_cnt,
             SUM(CASE WHEN `is_pending` = 0 AND `is_completed` = 0 THEN 1 ELSE 0 END) AS in_prog_cnt
             FROM `project_tasks`");
         if ($res && $row = $res->fetch_assoc()) {
@@ -149,7 +149,7 @@ class dashboard_details_LIST
             $stats['in_progress_tasks'] = (int)($row['in_prog_cnt'] ?? 0);
         }
 
-        // 3. Leave Requests Count strictly from leave_requests table
+        // 3. Pending leave requests include all records, regardless of age.
         $res = $data_base_obj->get_result("SELECT COUNT(*) AS total FROM `leave_requests` WHERE LOWER(TRIM(status)) = 'pending'");
         if ($res && $row = $res->fetch_assoc()) {
             $stats['pending_leaves'] = (int)($row['total'] ?? 0);
