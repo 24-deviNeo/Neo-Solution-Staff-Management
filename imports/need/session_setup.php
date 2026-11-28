@@ -3,14 +3,13 @@
 include_once __DIR__ . '/daily_presence.php';
 
 if (session_status() === PHP_SESSION_NONE && !headers_sent()) {
-    // Keep app sessions alive across long periods of inactivity. Users sign out
-    // explicitly through the portal's logout action.
-    $session_lifetime = 10 * 365 * 24 * 60 * 60;
-    @ini_set('session.gc_maxlifetime', (string)$session_lifetime);
+    // Keep authentication only for the current browser session. A remembered
+    // ten-year session allowed a later visit to skip the password screen.
+    @ini_set('session.gc_maxlifetime', (string)(8 * 60 * 60));
 
     $session_cookie_params = session_get_cookie_params();
     session_set_cookie_params([
-        'lifetime' => $session_lifetime,
+        'lifetime' => 0,
         'path' => !empty($session_cookie_params['path']) ? $session_cookie_params['path'] : '/',
         'domain' => $session_cookie_params['domain'] ?? '',
         'secure' => !empty($session_cookie_params['secure']) || (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off'),
@@ -61,6 +60,78 @@ if ($docRoot !== '' && $projectDir && strpos($projectDir, $docRoot) === 0) {
 $home_page = $scheme . '://' . $host . '/' . $projectPrefix;
 $User_login_url = "UxUi/Main/";
 $home_page_url = $home_page . "index" . $online_offline_extention;
+
+// Restore a previously authenticated browser from its account cookie. The cookie
+// is a server-issued bearer token stored in main_user_login.cook_key; never use
+// it to restore a session during an explicit logout/relogin or an OTP challenge.
+if (
+    session_status() === PHP_SESSION_ACTIVE &&
+    empty($_SESSION['user_id']) &&
+    empty($_SESSION['otp_pending']) &&
+    empty($_GET['relogin']) && empty($_GET['logout']) && empty($_GET['action']) &&
+    !empty($_COOKIE['main_user_account_cook']) &&
+    !headers_sent()
+) {
+    try {
+        include_once __DIR__ . '/DB.php';
+        $rememberToken = trim((string)$_COOKIE['main_user_account_cook']);
+        if ($rememberToken !== '' && $rememberToken !== 'NO_DATA') {
+            $db = new DataBase();
+            $conn = $db->get_data_base_connction();
+            $safeToken = $conn->real_escape_string($rememberToken);
+            $result = $conn->query("SELECT id, user_name, first_name, last_name, name_show, image_url, ac_type, main_user_account_access_level_list_id, account_active_state, full_block, temp_lock FROM main_user_login WHERE cook_key = '{$safeToken}' LIMIT 1");
+            $row = $result ? $result->fetch_assoc() : null;
+
+            if ($row && (int)$row['account_active_state'] === 1 && (int)$row['full_block'] !== 1 && (int)$row['temp_lock'] !== 1) {
+                session_regenerate_id(true);
+                $accessLevelId = (int)$row['main_user_account_access_level_list_id'];
+                $role = trim((string)$row['ac_type']);
+                $urlHome = '';
+                include_once __DIR__ . '/../../Controllers/Main/main_user_account_access_level_list/main_user_account_access_level_list_SINGLE_DATA.php';
+                $accessLevel = new main_user_account_access_level_list_SINGLE_DATA($accessLevelId);
+                if ($accessLevel->get_state()) {
+                    $role = trim((string)$accessLevel->get_type_of_access()) ?: $role;
+                    $urlHome = trim((string)$accessLevel->get_url_home());
+                }
+                if ($accessLevelId === 1) {
+                    $role = 'super_admin';
+                    $urlHome = $urlHome ?: 'UxUi/Super_Admin_user_dashboard.php';
+                } elseif ($accessLevelId === 2) {
+                    $role = 'admin';
+                    $urlHome = $urlHome ?: 'UxUi/Admin_user_dashboard.php';
+                } elseif ($accessLevelId === 3) {
+                    $role = 'Employee';
+                    $urlHome = 'UxUi/Employee_user_dashboard.php';
+                }
+
+                $_SESSION['user_id'] = (int)$row['id'];
+                $_SESSION['user_name'] = (string)$row['user_name'];
+                $_SESSION['user'] = (string)$row['user_name'];
+                $_SESSION['user_role'] = $role;
+                $_SESSION['ac_type'] = $role;
+                $_SESSION['main_user_account_access_level_list_id'] = $accessLevelId;
+                $_SESSION['url_home'] = $urlHome;
+                $_SESSION['first_name'] = (string)$row['first_name'];
+                $_SESSION['last_name'] = (string)$row['last_name'];
+                $_SESSION['name_show'] = (string)$row['name_show'];
+                $_SESSION['full_name'] = trim((string)$row['name_show']) ?: trim((string)$row['first_name'] . ' ' . (string)$row['last_name']);
+                $_SESSION['image_url'] = (string)$row['image_url'];
+                $_SESSION['user_main_cook_id'] = $rememberToken;
+                $_SESSION['session_token'] = bin2hex(random_bytes(32));
+            } else {
+                setcookie('main_user_account_cook', '', [
+                    'expires' => time() - 3600,
+                    'path' => '/',
+                    'secure' => !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off',
+                    'httponly' => true,
+                    'samesite' => 'Lax'
+                ]);
+            }
+        }
+    } catch (\Throwable $e) {
+        // A failed database lookup should leave the visitor unauthenticated.
+    }
+}
 
 include_once __DIR__ . '/auth_guard.php';
 
