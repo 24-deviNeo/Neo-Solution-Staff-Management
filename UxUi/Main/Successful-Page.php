@@ -24,6 +24,13 @@ if (empty($target_dashboard_url)) {
         $target_dashboard_url = rtrim($home_page, '/') . '/UxUi/Employee_user_dashboard' . $online_offline_extention;
     }
 }
+
+// A normal username/password login should land on the dashboard immediately.
+// Keep the success screen for registration, verification, and other messages.
+if ($current_msg === 'User-Login-Successful' && is_logged_in()) {
+    header('Location: ' . $target_dashboard_url);
+    exit;
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
