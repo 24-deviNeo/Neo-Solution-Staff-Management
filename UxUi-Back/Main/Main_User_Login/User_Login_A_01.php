@@ -51,6 +51,7 @@
                           </button>
                       </div>
 
+                      <?php if (false): // Google and Microsoft sign-in are disabled. ?>
                       <!-- Divider: Separates traditional login from social options -->
                       <div class="erp-divider">
                           <div class="erp-divider__line"></div>
@@ -98,6 +99,7 @@
 
 
                       </div>
+                      <?php endif; ?>
 
                       <!-- Forgot Password Link: Helps users reset password -->
                       <div class="erp-text-center erp-mt-md">
