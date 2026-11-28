@@ -2,6 +2,10 @@
 ob_start();
 
 require_once "../../../imports/need/session_setup.php";
+// Microsoft sign-in is disabled; direct callback requests cannot create a session.
+header("Location: " . get_login_page_url());
+exit;
+
 require_once "../../../imports/Company_Info/Company_Info_Variable_List.php";
 require_once "../../../imports/need/DB.php";
 require_once "Main_User_Microsoft_Login_Config.php";
@@ -143,7 +147,7 @@ if ($is_google_authentication_enable == "1") {
 
     unset($_SESSION['otp_pending']);
 
-    header("Location: " . $home_page . $User_login_url . "Successful-Page" . $online_offline_extention . "?message=User-Login-Successful");
+    header("Location: " . get_dashboard_redirect_url());
 
     exit;
 }
