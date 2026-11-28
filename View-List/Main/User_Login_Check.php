@@ -156,10 +156,11 @@ if ($User_Account_Check_obj->check_user_name()) {
             $_SESSION['user_role'] = $user_role;
             $_SESSION['ac_type'] = $User_Account_Check_obj->get_ac_type() ?: $user_role;
         } else {
-            if (empty($url_home)) {
-                $url_home = 'UxUi/Employee_user_dashboard.php';
-                $user_role = 'Employee';
-            }
+            // Employee accounts always land on the employee portal after login.
+            // Ignore stale/custom access-level home URLs that can send them back
+            // to the login or another portal page.
+            $url_home = 'UxUi/Employee_user_dashboard.php';
+            $user_role = 'Employee';
             $_SESSION['user_role'] = $user_role;
             $_SESSION['ac_type'] = $user_role;
 
