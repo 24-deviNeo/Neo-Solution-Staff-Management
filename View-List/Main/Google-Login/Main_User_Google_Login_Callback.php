@@ -1,6 +1,10 @@
 <?php
 ob_start();
 require_once "../../../imports/need/session_setup.php";
+// Google sign-in is disabled; direct callback requests cannot create a session.
+header("Location: " . get_login_page_url());
+exit;
+
 require_once "../../../imports/Company_Info/Company_Info_Variable_List.php";
 require_once "Main_User_Google_Login_Config.php";
 include_once "../../../Controllers/Main/main_user_login/main_user_login_ADD_UPDATE.php";
@@ -116,6 +120,6 @@ if ($is_google_authentication_enable == "1") {
 } else {
 
     unset($_SESSION['otp_pending']);
-    header("Location: " . $home_page . $User_login_url . "Successful-Page" . $online_offline_extention . "?message=User-Login-Successful");
+header("Location: " . get_dashboard_redirect_url());
     exit;
 }
