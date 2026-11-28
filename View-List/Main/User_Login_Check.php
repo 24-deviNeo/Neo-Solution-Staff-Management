@@ -280,6 +280,7 @@ if ($User_Account_Check_obj->check_user_name()) {
         $state['error'] = "0";
         $state['url_home'] = $url_home;
         $state['user_role'] = $user_role;
+        $state['redirect_url'] = get_dashboard_redirect_url();
 
         // Check if employee account requires mobile OTP verification
         if (!$isAdmin) {
